@@ -1,0 +1,483 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "8 persona outlets. Fictional names and addresses. Bookings and closures are recorded by the rep (est where flagged)."
+ },
+ "outlets": [
+  {
+   "id": "OUT-01",
+   "name": "Mauli General Stores",
+   "persona": {
+    "no": 1,
+    "label": "The Flagship Kirana",
+    "role": "helps-most",
+    "oneLine": "Big summer, but stocks up late when scheme details are late."
+   },
+   "channel": "Traditional Kirana",
+   "shopType": "Traditional Kirana",
+   "area": "Kothrud",
+   "address": "Karve Road, Kothrud",
+   "locationContext": "Busy residential main road",
+   "tier": "Diamond",
+   "visitsPerMonth": 4,
+   "registeredOn": "2014-06-10",
+   "owner": {
+    "name": "Vilas Kale",
+    "behaviour": "Plans with the rep; waits for scheme terms",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "bottler",
+    "count": 1,
+    "litres": 300,
+    "afternoonOutage": false,
+    "lastAudit": {
+     "date": "2026-04-15",
+     "pure": true,
+     "fillPct": 85,
+     "tempC": 5
+    }
+   },
+   "credit": {
+    "limit": 18000,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": "2026-04-21",
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "residential",
+    "main-road"
+   ],
+   "closures": [],
+   "bookings": [],
+   "empties": {
+    "cratesHeld": 5
+   }
+  },
+  {
+   "id": "OUT-02",
+   "name": "Samarth Kirana",
+   "persona": {
+    "no": 2,
+    "label": "The Cautious Kirana",
+    "role": "handle-with-care",
+    "oneLine": "Customers want cold drinks; no cooler, tight credit and last year’s leftovers hold him back."
+   },
+   "channel": "Traditional Kirana",
+   "shopType": "Traditional Kirana",
+   "area": "Warje",
+   "address": "Lane 7, Warje",
+   "locationContext": "Quiet residential lane",
+   "tier": "Bronze",
+   "visitsPerMonth": 2,
+   "registeredOn": "2017-03-02",
+   "owner": {
+    "name": "Sadashiv Mane",
+    "behaviour": "Careful and short of cash; wary after last summer’s leftovers",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "none",
+    "count": 0,
+    "litres": 0,
+    "afternoonOutage": false,
+    "lastAudit": null
+   },
+   "credit": {
+    "limit": 4500,
+    "outstanding": 1800,
+    "overdue": 1800,
+    "lastPaymentDate": "2026-03-24",
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "residential"
+   ],
+   "closures": [],
+   "bookings": []
+  },
+  {
+   "id": "OUT-03",
+   "name": "Thanda Corner Cold Drinks",
+   "persona": {
+    "no": 3,
+    "label": "The Cold-Drink Shop",
+    "role": "helps-most",
+    "oneLine": "Summer is the whole year: order size and cold coolers decide it."
+   },
+   "channel": "Convenience",
+   "shopType": "Cold-drink shop",
+   "area": "Kothrud",
+   "address": "Near the college gate, Paud Road, Kothrud",
+   "locationContext": "College road",
+   "tier": "Gold",
+   "visitsPerMonth": 4,
+   "registeredOn": "2019-02-15",
+   "owner": {
+    "name": "Imran Shaikh",
+    "behaviour": "Knows his trade; plans around summer",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "bottler",
+    "count": 2,
+    "litres": 300,
+    "afternoonOutage": true,
+    "lastAudit": {
+     "date": "2026-04-15",
+     "pure": true,
+     "fillPct": 90,
+     "tempC": 9
+    }
+   },
+   "credit": {
+    "limit": 15000,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": "2026-04-21",
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "college",
+    "main-road"
+   ],
+   "closures": [],
+   "bookings": [],
+   "empties": {
+    "cratesHeld": 6
+   }
+  },
+  {
+   "id": "OUT-04",
+   "name": "Lakeside Bhel & Snacks",
+   "persona": {
+    "no": 4,
+    "label": "The Lakeside Snack Stall",
+    "role": "thin-data",
+    "oneLine": "Weekend crowds, one visit a month, and sales we never see."
+   },
+   "channel": "Entertainment & Leisure",
+   "shopType": "Snack stall",
+   "area": "Pashan",
+   "address": "Lake promenade, Pashan",
+   "locationContext": "By the lake, busiest at weekends",
+   "tier": "Iron",
+   "visitsPerMonth": 1,
+   "registeredOn": "2021-11-05",
+   "owner": {
+    "name": "Balu Waghmare",
+    "behaviour": "Buys what he can carry; pays cash above his limit; tops up at the wholesale market",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "ice-box",
+    "count": 1,
+    "litres": 40,
+    "afternoonOutage": false,
+    "lastAudit": null
+   },
+   "credit": {
+    "limit": 1500,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": "2026-03-31",
+    "paymentMode": "cash-and-credit"
+   },
+   "tags": [
+    "tourist-spot",
+    "weekend-crowds"
+   ],
+   "closures": [],
+   "bookings": []
+  },
+  {
+   "id": "OUT-05",
+   "name": "Sunrise School Canteen",
+   "persona": {
+    "no": 5,
+    "label": "The School Canteen",
+    "role": "stays-quiet",
+    "oneLine": "Shuts on 1 May, just as the route peaks."
+   },
+   "channel": "Education",
+   "shopType": "School canteen",
+   "area": "Bavdhan",
+   "address": "Inside Sunrise School, Bavdhan",
+   "locationContext": "Inside a school",
+   "tier": "Silver",
+   "visitsPerMonth": 3,
+   "registeredOn": "2018-06-12",
+   "owner": {
+    "name": "Kavita Joshi",
+    "behaviour": "Canteen contractor; orders by term, exams and holidays",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "bottler",
+    "count": 1,
+    "litres": 150,
+    "afternoonOutage": false,
+    "lastAudit": {
+     "date": "2026-04-15",
+     "pure": true,
+     "fillPct": 55,
+     "tempC": 6
+    }
+   },
+   "credit": {
+    "limit": 5000,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": "2026-04-18",
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "school"
+   ],
+   "closures": [
+    {
+     "from": "2025-05-01",
+     "to": "2025-06-15",
+     "reason": "Maharashtra Day holiday, then school summer vacation (reopened 16 Jun; 2025 dates est.)",
+     "est": true
+    },
+    {
+     "from": "2025-10-16",
+     "to": "2025-11-05",
+     "reason": "Diwali break (dates est.)",
+     "est": true
+    },
+    {
+     "from": "2026-05-01",
+     "to": "2026-06-14",
+     "reason": "Maharashtra Day holiday, then school summer vacation (reopens 15 Jun)"
+    }
+   ],
+   "bookings": []
+  },
+  {
+   "id": "OUT-06",
+   "name": "Shubh Mangal Banquets",
+   "persona": {
+    "no": 6,
+    "label": "The Banquet Hall",
+    "role": "own-calendar",
+    "oneLine": "Follows wedding bookings, not the weather."
+   },
+   "channel": "Eating & Drinking",
+   "shopType": "Banquet hall",
+   "area": "Bavdhan",
+   "address": "Chandni Chowk road, Bavdhan",
+   "locationContext": "Wedding and events venue",
+   "tier": "Silver",
+   "visitsPerMonth": 3,
+   "registeredOn": "2016-10-20",
+   "owner": {
+    "name": "Prakash Kulkarni",
+    "behaviour": "Manager; orders event by event from the booking calendar",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "bottler",
+    "count": 1,
+    "litres": 150,
+    "afternoonOutage": false,
+    "lastAudit": {
+     "date": "2026-04-15",
+     "pure": true,
+     "fillPct": 70,
+     "tempC": 6
+    }
+   },
+   "credit": {
+    "limit": 12000,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": "2026-04-18",
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "events"
+   ],
+   "closures": [],
+   "bookings": [
+    {
+     "date": "2026-04-29",
+     "event": "Engagement, ~150 guests",
+     "expectedCases": 2,
+     "est": true
+    },
+    {
+     "date": "2026-04-30",
+     "event": "Wedding, ~350 guests",
+     "expectedCases": 5,
+     "est": true
+    },
+    {
+     "date": "2026-05-01",
+     "event": "Haldi, ~120 guests",
+     "expectedCases": 2,
+     "est": true
+    },
+    {
+     "date": "2026-05-02",
+     "event": "Wedding, ~450 guests",
+     "expectedCases": 6,
+     "est": true
+    },
+    {
+     "date": "2026-05-03",
+     "event": "Reception, ~300 guests",
+     "expectedCases": 4,
+     "est": true
+    },
+    {
+     "date": "2026-05-05",
+     "event": "Thread ceremony, ~150 guests",
+     "expectedCases": 2,
+     "est": true
+    },
+    {
+     "date": "2026-05-07",
+     "event": "Wedding, ~400 guests",
+     "expectedCases": 5,
+     "est": true
+    },
+    {
+     "date": "2026-05-08",
+     "event": "Sangeet, ~200 guests",
+     "expectedCases": 3,
+     "est": true
+    },
+    {
+     "date": "2026-05-09",
+     "event": "Wedding, ~500 guests",
+     "expectedCases": 7,
+     "est": true
+    },
+    {
+     "date": "2026-05-10",
+     "event": "Reception, ~250 guests",
+     "expectedCases": 3,
+     "est": true
+    },
+    {
+     "date": "2026-05-13",
+     "event": "Engagement, ~150 guests",
+     "expectedCases": 2,
+     "est": true
+    },
+    {
+     "date": "2026-05-14",
+     "event": "Haldi, ~120 guests",
+     "expectedCases": 2,
+     "est": true
+    },
+    {
+     "date": "2026-05-15",
+     "event": "Wedding, ~450 guests",
+     "expectedCases": 6,
+     "est": true
+    },
+    {
+     "date": "2026-05-16",
+     "event": "Wedding, ~400 guests",
+     "expectedCases": 6,
+     "est": true
+    }
+   ],
+   "empties": {
+    "cratesHeld": 4
+   }
+  },
+  {
+   "id": "OUT-07",
+   "name": "Mahalaxmi Beverage Agency",
+   "persona": {
+    "no": 7,
+    "label": "The Beverage Wholesaler",
+    "role": "stays-quiet",
+    "oneLine": "Month-end loads that look like demand but aren’t retail."
+   },
+   "channel": "Wholesale",
+   "shopType": "Beverage wholesaler",
+   "area": "Warje",
+   "address": "Warje market",
+   "locationContext": "Drinks wholesaler in the market",
+   "tier": "Diamond",
+   "visitsPerMonth": 4,
+   "registeredOn": "2012-04-02",
+   "owner": {
+    "name": "Mahesh Agarwal",
+    "behaviour": "Volume trader; buys month-end deals and sells on, some off the route",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "none",
+    "count": 0,
+    "litres": 0,
+    "afternoonOutage": false,
+    "lastAudit": null
+   },
+   "credit": {
+    "limit": 75000,
+    "outstanding": 16500,
+    "overdue": 16500,
+    "lastPaymentDate": "2026-04-07",
+    "paymentMode": "cash-and-credit"
+   },
+   "tags": [
+    "month-end-loads",
+    "market"
+   ],
+   "closures": [],
+   "bookings": []
+  },
+  {
+   "id": "OUT-08",
+   "name": "Ashirwad General Store",
+   "persona": {
+    "no": 8,
+    "label": "The New Owner",
+    "role": "thin-data",
+    "oneLine": "No history at all: today is his first order."
+   },
+   "channel": "Traditional Kirana",
+   "shopType": "Traditional Kirana",
+   "area": "Pashan",
+   "address": "Sus Road, Pashan",
+   "locationContext": "Neighbourhood shop under a new owner",
+   "tier": "Bronze",
+   "visitsPerMonth": 2,
+   "registeredOn": "2026-04-22",
+   "owner": {
+    "name": "Nitin Salunkhe",
+    "behaviour": "New and careful; wants numbers before he commits",
+    "usuallyPresent": true
+   },
+   "cooler": {
+    "type": "none",
+    "count": 0,
+    "litres": 0,
+    "afternoonOutage": false,
+    "lastAudit": null
+   },
+   "credit": {
+    "limit": 5000,
+    "outstanding": 0,
+    "overdue": 0,
+    "lastPaymentDate": null,
+    "paymentMode": "credit"
+   },
+   "tags": [
+    "residential",
+    "new-outlet"
+   ],
+   "closures": [],
+   "bookings": []
+  }
+ ]
+}

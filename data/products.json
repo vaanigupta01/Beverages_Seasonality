@@ -1,0 +1,358 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "13 SKUs. PTR = MRP × units × 0.85 (0.80 for water), rounded. Summer multipliers from research Table E (est)."
+ },
+ "categories": [
+  "Sparkling",
+  "Juice drinks",
+  "Water",
+  "Energy"
+ ],
+ "products": [
+  {
+   "sku": "CL200G",
+   "name": "Cola 200 ml returnable glass",
+   "category": "Sparkling",
+   "flavour": "Cola",
+   "pack": {
+    "type": "glass",
+    "ml": 200
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "crate",
+   "litresPerCase": 4.8,
+   "mrpPerUnit": 10,
+   "ptrPerCase": 204,
+   "marginPct": 15,
+   "shelfLifeDays": 180,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": true,
+   "depositPerCrate": null,
+   "focus": true,
+   "summerMultiplier": 3.0,
+   "est": [
+    "summerMultiplier",
+    "depositPerCrate"
+   ]
+  },
+  {
+   "sku": "CL250",
+   "name": "Cola 250 ml PET",
+   "category": "Sparkling",
+   "flavour": "Cola",
+   "pack": {
+    "type": "PET",
+    "ml": 250
+   },
+   "unitsPerCase": 28,
+   "caseLabel": "case",
+   "litresPerCase": 7.0,
+   "mrpPerUnit": 20,
+   "ptrPerCase": 476,
+   "marginPct": 15,
+   "shelfLifeDays": 120,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": true,
+   "summerMultiplier": 3.0,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "LL250",
+   "name": "Lemon-lime 250 ml PET",
+   "category": "Sparkling",
+   "flavour": "Lemon-lime",
+   "pack": {
+    "type": "PET",
+    "ml": 250
+   },
+   "unitsPerCase": 28,
+   "caseLabel": "case",
+   "litresPerCase": 7.0,
+   "mrpPerUnit": 20,
+   "ptrPerCase": 476,
+   "marginPct": 15,
+   "shelfLifeDays": 120,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 3.2,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "OR250",
+   "name": "Orange 250 ml PET",
+   "category": "Sparkling",
+   "flavour": "Orange",
+   "pack": {
+    "type": "PET",
+    "ml": 250
+   },
+   "unitsPerCase": 28,
+   "caseLabel": "case",
+   "litresPerCase": 7.0,
+   "mrpPerUnit": 20,
+   "ptrPerCase": 476,
+   "marginPct": 15,
+   "shelfLifeDays": 120,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 2.5,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "CL300C",
+   "name": "Cola 300 ml can",
+   "category": "Sparkling",
+   "flavour": "Cola",
+   "pack": {
+    "type": "can",
+    "ml": 300
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "case",
+   "litresPerCase": 7.2,
+   "mrpPerUnit": 40,
+   "ptrPerCase": 816,
+   "marginPct": 15,
+   "shelfLifeDays": 240,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 2.0,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "CL750",
+   "name": "Cola 750 ml PET",
+   "category": "Sparkling",
+   "flavour": "Cola",
+   "pack": {
+    "type": "PET",
+    "ml": 750
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "case",
+   "litresPerCase": 18.0,
+   "mrpPerUnit": 40,
+   "ptrPerCase": 816,
+   "marginPct": 15,
+   "shelfLifeDays": 120,
+   "chilled": "partly",
+   "singleServe": false,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 2.2,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "OR1250",
+   "name": "Orange 1.25 L PET",
+   "category": "Sparkling",
+   "flavour": "Orange",
+   "pack": {
+    "type": "PET",
+    "ml": 1250
+   },
+   "unitsPerCase": 12,
+   "caseLabel": "case",
+   "litresPerCase": 15.0,
+   "mrpPerUnit": 65,
+   "ptrPerCase": 663,
+   "marginPct": 15,
+   "shelfLifeDays": 180,
+   "chilled": "no",
+   "singleServe": false,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 1.8,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "CL2250",
+   "name": "Cola 2.25 L PET",
+   "category": "Sparkling",
+   "flavour": "Cola",
+   "pack": {
+    "type": "PET",
+    "ml": 2250
+   },
+   "unitsPerCase": 9,
+   "caseLabel": "case",
+   "litresPerCase": 20.25,
+   "mrpPerUnit": 95,
+   "ptrPerCase": 727,
+   "marginPct": 15,
+   "shelfLifeDays": 180,
+   "chilled": "no",
+   "singleServe": false,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 1.8,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "MG150T",
+   "name": "Mango drink 150 ml Tetra",
+   "category": "Juice drinks",
+   "flavour": "Mango",
+   "pack": {
+    "type": "tetra",
+    "ml": 150
+   },
+   "unitsPerCase": 40,
+   "caseLabel": "case",
+   "litresPerCase": 6.0,
+   "mrpPerUnit": 10,
+   "ptrPerCase": 340,
+   "marginPct": 15,
+   "shelfLifeDays": 180,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": true,
+   "summerMultiplier": 3.0,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "MG600",
+   "name": "Mango drink 600 ml PET",
+   "category": "Juice drinks",
+   "flavour": "Mango",
+   "pack": {
+    "type": "PET",
+    "ml": 600
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "case",
+   "litresPerCase": 14.4,
+   "mrpPerUnit": 38,
+   "ptrPerCase": 775,
+   "marginPct": 15,
+   "shelfLifeDays": 120,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 2.5,
+   "est": [
+    "summerMultiplier",
+    "mrpPerUnit"
+   ]
+  },
+  {
+   "sku": "WT1000",
+   "name": "Packaged water 1 L PET",
+   "category": "Water",
+   "flavour": "Water",
+   "pack": {
+    "type": "PET",
+    "ml": 1000
+   },
+   "unitsPerCase": 15,
+   "caseLabel": "case",
+   "litresPerCase": 15.0,
+   "mrpPerUnit": 20,
+   "ptrPerCase": 240,
+   "marginPct": 20,
+   "shelfLifeDays": 365,
+   "chilled": "yes",
+   "singleServe": false,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": true,
+   "summerMultiplier": 2.75,
+   "est": [
+    "summerMultiplier"
+   ]
+  },
+  {
+   "sku": "WT500",
+   "name": "Packaged water 500 ml PET",
+   "category": "Water",
+   "flavour": "Water",
+   "pack": {
+    "type": "PET",
+    "ml": 500
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "case",
+   "litresPerCase": 12.0,
+   "mrpPerUnit": 10,
+   "ptrPerCase": 192,
+   "marginPct": 20,
+   "shelfLifeDays": 365,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 3.0,
+   "est": [
+    "summerMultiplier",
+    "shelfLifeDays"
+   ]
+  },
+  {
+   "sku": "EN250",
+   "name": "Energy drink 250 ml PET",
+   "category": "Energy",
+   "flavour": "Energy",
+   "pack": {
+    "type": "PET",
+    "ml": 250
+   },
+   "unitsPerCase": 24,
+   "caseLabel": "case",
+   "litresPerCase": 6.0,
+   "mrpPerUnit": 20,
+   "ptrPerCase": 408,
+   "marginPct": 15,
+   "shelfLifeDays": 270,
+   "chilled": "yes",
+   "singleServe": true,
+   "returnable": false,
+   "depositPerCrate": null,
+   "focus": false,
+   "summerMultiplier": 1.5,
+   "est": [
+    "summerMultiplier",
+    "shelfLifeDays"
+   ]
+  }
+ ]
+}

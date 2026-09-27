@@ -1,0 +1,561 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "Region index to the demo week only; events known in advance, plus 2025 anchors (anchor: true) used to build history. No hindsight."
+ },
+ "regionIndex": {
+  "est": true,
+  "basis": "January average week = 1.0",
+  "2025": {
+   "2025-W01": 1.0,
+   "2025-W02": 1.0,
+   "2025-W03": 1.0,
+   "2025-W04": 1.0,
+   "2025-W05": 1.05,
+   "2025-W06": 1.05,
+   "2025-W07": 1.1,
+   "2025-W08": 1.2,
+   "2025-W09": 1.3,
+   "2025-W10": 1.4,
+   "2025-W11": 1.5,
+   "2025-W12": 1.7,
+   "2025-W13": 1.9,
+   "2025-W14": 2.1,
+   "2025-W15": 2.4,
+   "2025-W16": 2.5,
+   "2025-W17": 2.4,
+   "2025-W18": 2.2,
+   "2025-W19": 2.0,
+   "2025-W20": 1.8,
+   "2025-W21": 1.6,
+   "2025-W22": 1.3,
+   "2025-W23": 1.2,
+   "2025-W24": 1.1,
+   "2025-W25": 1.1,
+   "2025-W26": 1.0,
+   "2025-W27": 1.0,
+   "2025-W28": 0.9,
+   "2025-W29": 0.9,
+   "2025-W30": 0.9,
+   "2025-W31": 0.9,
+   "2025-W32": 0.9,
+   "2025-W33": 0.9,
+   "2025-W34": 0.9,
+   "2025-W35": 0.9,
+   "2025-W36": 0.95,
+   "2025-W37": 0.95,
+   "2025-W38": 0.95,
+   "2025-W39": 1.0,
+   "2025-W40": 1.05,
+   "2025-W41": 1.1,
+   "2025-W42": 1.1,
+   "2025-W43": 1.1,
+   "2025-W44": 1.05,
+   "2025-W45": 1.0,
+   "2025-W46": 1.0,
+   "2025-W47": 1.0,
+   "2025-W48": 1.0,
+   "2025-W49": 1.0,
+   "2025-W50": 1.0,
+   "2025-W51": 1.0,
+   "2025-W52": 1.0
+  },
+  "2026": {
+   "2026-W01": 1.0,
+   "2026-W02": 1.0,
+   "2026-W03": 1.0,
+   "2026-W04": 1.0,
+   "2026-W05": 1.05,
+   "2026-W06": 1.05,
+   "2026-W07": 1.1,
+   "2026-W08": 1.2,
+   "2026-W09": 1.3,
+   "2026-W10": 1.5,
+   "2026-W11": 1.6,
+   "2026-W12": 1.8,
+   "2026-W13": 2.0,
+   "2026-W14": 2.2,
+   "2026-W15": 2.6,
+   "2026-W16": 2.8,
+   "2026-W17": 2.8,
+   "2026-W18": 2.7
+  }
+ },
+ "phases": {
+  "2025": {
+   "2025-W01": "off-season",
+   "2025-W02": "off-season",
+   "2025-W03": "off-season",
+   "2025-W04": "off-season",
+   "2025-W05": "off-season",
+   "2025-W06": "off-season",
+   "2025-W07": "off-season",
+   "2025-W08": "off-season",
+   "2025-W09": "pre-season",
+   "2025-W10": "pre-season",
+   "2025-W11": "ramp",
+   "2025-W12": "ramp",
+   "2025-W13": "ramp",
+   "2025-W14": "ramp",
+   "2025-W15": "peak",
+   "2025-W16": "peak",
+   "2025-W17": "peak",
+   "2025-W18": "peak",
+   "2025-W19": "peak",
+   "2025-W20": "decline",
+   "2025-W21": "decline",
+   "2025-W22": "monsoon",
+   "2025-W23": "monsoon",
+   "2025-W24": "monsoon",
+   "2025-W25": "monsoon",
+   "2025-W26": "monsoon",
+   "2025-W27": "monsoon",
+   "2025-W28": "monsoon",
+   "2025-W29": "monsoon",
+   "2025-W30": "monsoon",
+   "2025-W31": "monsoon",
+   "2025-W32": "monsoon",
+   "2025-W33": "monsoon",
+   "2025-W34": "monsoon",
+   "2025-W35": "monsoon",
+   "2025-W36": "monsoon",
+   "2025-W37": "monsoon",
+   "2025-W38": "monsoon",
+   "2025-W39": "off-season",
+   "2025-W40": "off-season",
+   "2025-W41": "off-season",
+   "2025-W42": "off-season",
+   "2025-W43": "off-season",
+   "2025-W44": "off-season",
+   "2025-W45": "off-season",
+   "2025-W46": "off-season",
+   "2025-W47": "off-season",
+   "2025-W48": "off-season",
+   "2025-W49": "off-season",
+   "2025-W50": "off-season",
+   "2025-W51": "off-season",
+   "2025-W52": "off-season"
+  },
+  "2026": {
+   "2026-W01": "off-season",
+   "2026-W02": "off-season",
+   "2026-W03": "off-season",
+   "2026-W04": "off-season",
+   "2026-W05": "off-season",
+   "2026-W06": "off-season",
+   "2026-W07": "off-season",
+   "2026-W08": "off-season",
+   "2026-W09": "pre-season",
+   "2026-W10": "pre-season",
+   "2026-W11": "ramp",
+   "2026-W12": "ramp",
+   "2026-W13": "ramp",
+   "2026-W14": "ramp",
+   "2026-W15": "peak",
+   "2026-W16": "peak",
+   "2026-W17": "peak",
+   "2026-W18": "peak"
+  }
+ },
+ "forecast": {
+  "asOf": "2026-04-28",
+  "est": true,
+  "periods": [
+   {
+    "from": "2026-04-29",
+    "to": "2026-05-04",
+    "maxC": [
+     38,
+     40
+    ],
+    "rainChance": "none"
+   },
+   {
+    "from": "2026-05-05",
+    "to": "2026-05-11",
+    "maxC": [
+     39,
+     41
+    ],
+    "rainChance": "low"
+   }
+  ],
+  "monsoonSignalNext14Days": false
+ },
+ "climatology": {
+  "normalOnsetPune": "06-10",
+  "plusMinusDays": 3,
+  "onsets": {
+   "2017": "2017-06-10",
+   "2018": "2018-06-08",
+   "2019": "2019-06-20",
+   "2020": "2020-06-11",
+   "2021": "2021-06-09",
+   "2022": "2022-06-10",
+   "2023": "2023-06-24",
+   "2024": "2024-06-06",
+   "2025": "2025-05-26"
+  }
+ },
+ "events": [
+  {
+   "id": "EV-HOLI-26",
+   "name": "Holi",
+   "from": "2026-03-03",
+   "to": "2026-03-04",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana",
+     "Convenience"
+    ],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": 1.2,
+   "source": "Free Press Journal, Mar 2026",
+   "est": true
+  },
+  {
+   "id": "EV-GUDI-26",
+   "name": "Gudi Padwa",
+   "from": "2026-03-19",
+   "to": "2026-03-19",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": [
+     "residential"
+    ]
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": 1.15,
+   "source": "Hindu calendar",
+   "est": true
+  },
+  {
+   "id": "EV-EIDF-26",
+   "name": "Eid al-Fitr",
+   "from": "2026-03-21",
+   "to": "2026-03-21",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": []
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": 1.3,
+   "source": "India.com, Mar 2026",
+   "est": true
+  },
+  {
+   "id": "EV-IPL-26",
+   "name": "IPL 2026 (evening matches)",
+   "from": "2026-03-28",
+   "to": "2026-05-31",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": [
+     "residential"
+    ]
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": [
+    1.1,
+    1.2
+   ],
+   "source": "Olympics.com, 2026",
+   "est": true
+  },
+  {
+   "id": "EV-HEAT-26",
+   "name": "First 40°C spell",
+   "from": "2026-04-12",
+   "to": "2026-04-19",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana",
+     "Convenience",
+     "Entertainment & Leisure"
+    ],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": [
+    1.3,
+    1.5
+   ],
+   "source": "Bridge Chronicle; Punekar News",
+   "est": true
+  },
+  {
+   "id": "EV-AMBEDKAR-26",
+   "name": "Ambedkar Jayanti",
+   "from": "2026-04-14",
+   "to": "2026-04-14",
+   "appliesTo": {
+    "channels": [
+     "Convenience"
+    ],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": 1.3,
+   "source": "State holiday calendar",
+   "est": true
+  },
+  {
+   "id": "EV-MHDAY-26",
+   "name": "Maharashtra Day long weekend",
+   "from": "2026-05-01",
+   "to": "2026-05-03",
+   "appliesTo": {
+    "channels": [],
+    "tags": [
+     "highway",
+     "petrol-pump",
+     "tourist-spot"
+    ]
+   },
+   "packs": null,
+   "multiplier": [
+    1.5,
+    2.0
+   ],
+   "source": "State holiday calendar",
+   "est": true
+  },
+  {
+   "id": "EV-SCHOOLVAC-26",
+   "name": "School summer vacation (schools)",
+   "from": "2026-05-02",
+   "to": "2026-06-14",
+   "appliesTo": {
+    "channels": [
+     "Education"
+    ],
+    "tags": [
+     "school"
+    ]
+   },
+   "packs": null,
+   "multiplier": 0.1,
+   "source": "Lokmat Times, 30 Mar 2026",
+   "est": true
+  },
+  {
+   "id": "EV-SCHOOLVAC-KIR-26",
+   "name": "School summer vacation (families at home)",
+   "from": "2026-05-02",
+   "to": "2026-06-14",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": [
+     "residential"
+    ]
+   },
+   "packs": null,
+   "multiplier": 1.15,
+   "source": "Lokmat Times, 30 Mar 2026",
+   "est": true
+  },
+  {
+   "id": "EV-ADHIK-26",
+   "name": "Adhik Jyeshtha: no wedding dates",
+   "from": "2026-05-17",
+   "to": "2026-06-15",
+   "appliesTo": {
+    "channels": [
+     "Eating & Drinking"
+    ],
+    "tags": [
+     "events"
+    ]
+   },
+   "packs": null,
+   "multiplier": 0.5,
+   "source": "AstroSage (Hindu Panchang)",
+   "est": true
+  },
+  {
+   "id": "EV-EIDA-26",
+   "name": "Eid al-Adha",
+   "from": "2026-05-28",
+   "to": "2026-05-28",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": []
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": 1.3,
+   "source": "timeanddate.com",
+   "est": true
+  },
+  {
+   "id": "EV-IPLFINAL-26",
+   "name": "IPL final",
+   "from": "2026-05-31",
+   "to": "2026-05-31",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": [
+     "residential"
+    ]
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": 1.3,
+   "source": "Olympics.com, 2026",
+   "est": true
+  },
+  {
+   "id": "EV-SCHOOLOPEN-26",
+   "name": "Schools reopen",
+   "from": "2026-06-15",
+   "to": "2026-06-15",
+   "appliesTo": {
+    "channels": [
+     "Education"
+    ],
+    "tags": [
+     "school"
+    ]
+   },
+   "packs": null,
+   "multiplier": 0.8,
+   "source": "Lokmat Times, 30 Mar 2026",
+   "est": true
+  },
+  {
+   "id": "EV-RAIN-25",
+   "name": "Heavy pre-monsoon rain",
+   "from": "2025-05-24",
+   "to": "2025-05-26",
+   "appliesTo": {
+    "channels": [],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": 0.6,
+   "source": "Deccan Herald, 26 May 2025",
+   "est": true,
+   "anchor": true
+  },
+  {
+   "id": "EV-MONSOON-25",
+   "name": "Monsoon onset over Pune",
+   "from": "2025-05-26",
+   "to": "2025-05-26",
+   "appliesTo": {
+    "channels": [],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": null,
+   "source": "IMD via Deccan Herald",
+   "est": true,
+   "anchor": true
+  },
+  {
+   "id": "EV-MHDAY-25",
+   "name": "Maharashtra Day (a Thursday: no long weekend)",
+   "from": "2025-05-01",
+   "to": "2025-05-01",
+   "appliesTo": {
+    "channels": [],
+    "tags": []
+   },
+   "packs": null,
+   "multiplier": 1.0,
+   "source": "State holiday calendar",
+   "est": true,
+   "anchor": true
+  },
+  {
+   "id": "EV-DIWALI-25",
+   "name": "Diwali",
+   "from": "2025-10-13",
+   "to": "2025-10-26",
+   "appliesTo": {
+    "channels": [
+     "Traditional Kirana"
+    ],
+    "tags": [
+     "residential"
+    ]
+   },
+   "packs": [
+    "CL750",
+    "OR1250",
+    "CL2250"
+   ],
+   "multiplier": 1.3,
+   "source": "Hindu calendar (20 Oct 2025)",
+   "est": true,
+   "anchor": true
+  },
+  {
+   "id": "EV-WEDDINGS-25",
+   "name": "November wedding season",
+   "from": "2025-11-02",
+   "to": "2025-11-30",
+   "appliesTo": {
+    "channels": [
+     "Eating & Drinking"
+    ],
+    "tags": [
+     "events"
+    ]
+   },
+   "packs": null,
+   "multiplier": 1.1,
+   "source": "Research findings (est)",
+   "est": true,
+   "anchor": true
+  }
+ ],
+ "schools": {
+  "2025": {
+   "vacationFrom": "2025-05-02",
+   "reopen": "2025-06-16",
+   "examsFrom": "2025-04-15",
+   "est": true
+  },
+  "2026": {
+   "vacationFrom": "2026-05-02",
+   "reopen": "2026-06-15",
+   "examsFrom": "2026-04-15",
+   "source": "Lokmat Times, 30 Mar 2026 (exam start est.)"
+  }
+ }
+}

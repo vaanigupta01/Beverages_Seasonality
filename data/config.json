@@ -1,0 +1,55 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "Demo settings."
+ },
+ "demoDate": "2026-04-28",
+ "region": {
+  "name": "Pune West",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "areas": [
+   "Kothrud",
+   "Warje",
+   "Bavdhan",
+   "Pashan"
+  ]
+ },
+ "rep": {
+  "id": "REP-01",
+  "name": "Rohit Jagtap",
+  "role": "Pre-seller",
+  "routeOutletsToday": 27,
+  "languages": [
+   "Marathi",
+   "Hindi",
+   "English (app)"
+  ]
+ },
+ "distributor": {
+  "name": "Kothrud Beverage Distributors",
+  "deliveryLeadDays": 1
+ },
+ "history": {
+  "fromWeek": "2025-W01",
+  "toWeek": "2026-W17",
+  "weekStartsOn": "Monday"
+ },
+ "focusSkus": [
+  "CL250",
+  "CL200G",
+  "MG150T",
+  "WT1000"
+ ],
+ "assumptions": {
+  "est": true,
+  "coolerCases250ByLitres": {
+   "60": 2,
+   "150": 5,
+   "300": 10
+  },
+  "iceBoxCases250": 1
+ }
+}

@@ -1,0 +1,90 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "Stock as the distributor reported it on Sat 25 Apr 2026 (weekly report; may be days old)."
+ },
+ "asOf": "2026-04-25",
+ "items": [
+  {
+   "sku": "CL200G",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "CL250",
+   "status": "rationed",
+   "maxCasesPerOutlet": 6,
+   "rationAppliesTo": "paid-cases",
+   "note": "Allocation cut for peak weeks; free scheme cases don't count"
+  },
+  {
+   "sku": "LL250",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "OR250",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "CL300C",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "CL750",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "OR1250",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "CL2250",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "MG150T",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "MG600",
+   "status": "out",
+   "maxCasesPerOutlet": 0,
+   "note": "Out at the distributor"
+  },
+  {
+   "sku": "WT1000",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "WT500",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  },
+  {
+   "sku": "EN250",
+   "status": "ok",
+   "maxCasesPerOutlet": null,
+   "note": ""
+  }
+ ]
+}

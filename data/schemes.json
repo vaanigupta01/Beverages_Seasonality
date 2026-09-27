@@ -1,0 +1,117 @@
+{
+ "meta": {
+  "generatedBy": "scripts/generate_data.py",
+  "seed": 20260428,
+  "est": true,
+  "note": "Schemes valid in 2026. Summer Single-Serve is pooled; uses are free cases, counted by order date within the calendar month; free cases don't count against the 250 ml ration."
+ },
+ "schemes": [
+  {
+   "id": "SCH-SS26",
+   "name": "Summer Single-Serve",
+   "type": "free-goods",
+   "skus": [
+    "CL250",
+    "LL250",
+    "CL200G"
+   ],
+   "rule": {
+    "buyCases": 10,
+    "freeCases": 1,
+    "pooled": true,
+    "freeSku": "largest-line",
+    "usesCountedBy": "order-date-calendar-month",
+    "freeCasesCountAgainstRation": false
+   },
+   "eligibleTiers": [
+    "Diamond",
+    "Gold",
+    "Silver"
+   ],
+   "requiresBottlerCooler": false,
+   "capUsesPerMonth": 4,
+   "validFrom": "2026-03-01",
+   "validTo": "2026-05-31",
+   "payout": "Free case delivered; the bottler credits the distributor within 30 days of the claim",
+   "extras": "Free cooler shelf-strip with the first qualifying order",
+   "est": false
+  },
+  {
+   "id": "SCH-MG26",
+   "name": "Mango Push",
+   "type": "percent-off",
+   "skus": [
+    "MG150T",
+    "MG600"
+   ],
+   "rule": {
+    "minCases": 5,
+    "percent": 8,
+    "pooled": true
+   },
+   "eligibleTiers": "all",
+   "requiresBottlerCooler": false,
+   "capUsesPerMonth": null,
+   "validFrom": "2026-04-01",
+   "validTo": "2026-06-30",
+   "payout": "Taken off the invoice",
+   "extras": null,
+   "est": false
+  },
+  {
+   "id": "SCH-WT26",
+   "name": "Water Summer",
+   "type": "free-goods",
+   "skus": [
+    "WT1000"
+   ],
+   "rule": {
+    "buyCases": 8,
+    "freeCases": 1,
+    "pooled": false,
+    "freeSku": "WT1000"
+   },
+   "eligibleTiers": "all",
+   "requiresBottlerCooler": true,
+   "capUsesPerMonth": null,
+   "validFrom": "2026-04-01",
+   "validTo": "2026-06-30",
+   "payout": "Free case delivered with the order",
+   "extras": null,
+   "est": true
+  },
+  {
+   "id": "SCH-NEW",
+   "name": "New Outlet Activation",
+   "type": "first-order",
+   "skus": "all",
+   "rule": {
+    "percent": 12,
+    "withinDaysOfRegistration": 90
+   },
+   "eligibleTiers": "all",
+   "requiresBottlerCooler": false,
+   "capUsesPerMonth": null,
+   "validFrom": null,
+   "validTo": null,
+   "payout": "Taken off the invoice",
+   "extras": null,
+   "est": false
+  },
+  {
+   "id": "PRG-PURITY",
+   "name": "Cooler Purity Program",
+   "type": "program",
+   "skus": [],
+   "rule": null,
+   "eligibleTiers": "all",
+   "requiresBottlerCooler": true,
+   "capUsesPerMonth": null,
+   "validFrom": null,
+   "validTo": null,
+   "payout": "₹300 a month if the cooler holds only our drinks at the monthly photo audit",
+   "extras": "New coolers are placed only at Diamond, Gold and Silver outlets",
+   "est": false
+  }
+ ]
+}
