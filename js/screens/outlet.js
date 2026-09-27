@@ -56,6 +56,7 @@ export function render(root, { id }) {
         ${tools.actionsRow(o, directionsUrl(o))}
       </header>
 
+      ${slot('outlet-season')}
       ${slot('outlet-brief')}
 
       ${savedToday.length ? html`<section class="callout callout-ok">

@@ -19,10 +19,12 @@ Derived fields:
                           events below can target personas the way the dataset scopes them.
 - outlets[].cooler        type from cooler.ownedBy; afternoonOutage from power-cut events.
                           No audit data in the dataset, so lastAudit is null.
-- calendar.forecast       from the 2026 heatwave event that spans the demo date.
-- calendar.climatology    from the monsoon onset events.
-- calendar.events         territory and persona events, with the IPL match days of each
-                          year folded into one "IPL evening matches" entry.
+- calendar.forecast, climatology, regionIndex, phases
+                          from data-source/season-inputs.json (the Season Check engine's inputs).
+- calendar.events         territory and persona events. IPL: one event per match day (quiet),
+                          plus one display-only summary per season (anchor).
+- products[].chilled, summerMultiplier
+                          the engine's values for its 13 packs; the others derived (see products).
 - history.json            weekly paid cases summed from orders.json, 2024-W01 to 2026-W17.
 - peers.json              the dataset's groups, one entry per (tier, cooler) found among the
                           members; the group's median cases a week is split across SKUs by
@@ -61,6 +63,7 @@ credit = {r["outletId"]: r for r in load("credit")["rows"]}
 events = load("events")["events"]
 visits_src = load("visits")
 orders_src = load("orders_history")["orders"]
+SEASON = json.loads((ROOT / "data-source" / "season-inputs.json").read_text(encoding="utf-8"))
 
 # ---- products ----------------------------------------------------------------
 CATEGORY = {"Juice drink": "Juice drinks"}          # the app's translations use the plural
@@ -145,12 +148,53 @@ for o in orders:
     for l in o["lines"]:
         hist[o["outletId"]][l["sku"]][i] += l["cases"]
 
+# ---- products: season fields for the engine ---------------------------------------
+# chilled and summerMultiplier: the engine's own values for its 13 packs (data-source/season-inputs.json).
+# Other packs: summerMultiplier = the pack's 2025 swing across the territory (best 4 weeks ÷ Jan–Feb),
+# scaled so the 13 known packs' median ratio holds; chilled from the pack (single-serve → yes,
+# 600 ml–1 L → partly, larger → no). Marked in products[].est.
+MONTHLY_2025 = defaultdict(lambda: [0.0] * 12)
+for o in orders:
+    if o["date"][:4] == "2025":
+        for l in o["lines"]:
+            MONTHLY_2025[l["sku"]][int(o["date"][5:7]) - 1] += l["cases"]
+
+
+def swing_2025(sku):
+    """Best 2025 month ÷ the Jan–Feb average; None when Jan–Feb sold under 5 cases (too thin to trust)."""
+    m = MONTHLY_2025.get(sku)
+    if not m or m[0] + m[1] < 5:
+        return None
+    return max(m) / ((m[0] + m[1]) / 2)
+
+
+KNOWN = SEASON["products"]
+ratios = sorted(KNOWN[k]["summerMultiplier"] / sw for k in KNOWN if (sw := swing_2025(k)))
+scale = ratios[len(ratios) // 2] if ratios else 1
+for p in products:
+    if p["sku"] in KNOWN:
+        p.update(KNOWN[p["sku"]])
+    else:
+        sw = swing_2025(p["sku"])
+        p["summerMultiplier"] = round(min(3.5, max(1.0, sw * scale)), 2) if sw else None
+        p["chilled"] = "yes" if p["singleServe"] else ("partly" if p["pack"]["ml"] <= 1000 else "no")
+        p["est"] = ["summerMultiplier", "chilled"]
+# Too thin to measure: the median of the same category's measured packs.
+for p in products:
+    if p["summerMultiplier"] is None:
+        same = sorted(q["summerMultiplier"] for q in products if q["category"] == p["category"] and q["summerMultiplier"] is not None)
+        p["summerMultiplier"] = same[len(same) // 2] if same else 2.0
+
 # ---- outlets -------------------------------------------------------------------
 # DEMO ADDITION: one beat of the territory belongs to a neighbouring rep, so the
 # cross-territory warning can be shown. Not in fa-data.
 NEIGHBOUR = {"id": "REP-02", "name": "Sagar Deshmukh", "subAreas": ["Someshwarwadi"]}
 COOLER = {"bottler": "bottler", "outlet-icebox": "ice-box", "outlet": "own-fridge", None: "none"}
 PAYMENT = {"credit": "credit", "cash": "cash"}
+# Outlets that pay cash above their limit are "cash-and-credit" in the app's contract: the engine
+# then asks for the excess in cash instead of trimming the order.
+def payment_mode(c):
+    return "cash-and-credit" if c["paysCashAboveLimit"] else PAYMENT.get(c["paymentMode"], c["paymentMode"])
 power_cuts = {e["outletId"]: e for e in events if e["type"] == "power-cut" and e["endDate"] >= TODAY}
 
 
@@ -192,11 +236,11 @@ def outlet(o):
         "cooler": cooler(o),
         "credit": {"limit": c["creditLimit"], "outstanding": c["outstanding"], "overdue": c["overdue"],
                    "overdueDays": c["overdueDays"], "headroom": c["headroom"], "creditDays": c["creditDays"],
-                   "lastPaymentDate": c["lastPaymentDate"], "paymentMode": PAYMENT.get(c["paymentMode"], c["paymentMode"]),
+                   "lastPaymentDate": c["lastPaymentDate"], "paymentMode": payment_mode(c),
                    "paysCashAboveLimit": c["paysCashAboveLimit"], "requestedLimit": c["requestedLimit"]},
         "carryLimitCases": o["carryLimitCases"],
         "repId": NEIGHBOUR["id"] if o["subArea"] in NEIGHBOUR["subAreas"] and not o["onTodaysRoute"] else "REP-01",
-        "tags": [f"persona:{p['id']}", f"persona:{p['id']}|shop:{o['shopType']}"],
+        "tags": [f"persona:{p['id']}", f"persona:{p['id']}|shop:{o['shopType']}"] + (["school"] if o["shopType"] == "School" else []),
         "closures": closures(o),
         "bookings": bookings(o),
     }
@@ -239,21 +283,11 @@ for p in products:
     stock_items.append(item)
 
 # ---- calendar --------------------------------------------------------------------
-heat = next((e for e in events if e["type"] == "weather" and "Heatwave" in e["label"]
-             and e["startDate"] <= TODAY <= e["endDate"]), None)
-forecast = {"asOf": TODAY, "est": True, "periods": [], "monsoonSignalNext14Days": False}
-if heat:
-    temps = [int(x) for x in re.findall(r"\d+", heat["label"])[:2]]
-    forecast["periods"].append({"from": (D(TODAY) + dt.timedelta(days=1)).isoformat(), "to": heat["endDate"],
-                                "maxC": temps if len(temps) == 2 else temps * 2, "rainChance": "none",
-                                "source": heat["eventId"]})
-monsoons = sorted((e for e in events if e["type"] == "weather" and e["label"].startswith("Monsoon")), key=lambda e: e["startDate"])
-normal = next((e for e in monsoons if "normal" in e["label"]), monsoons[0])
-climatology = {"normalOnsetPune": normal["startDate"][5:], "plusMinusDays": 3,
-               "onsets": {e["startDate"][:4]: e["startDate"] for e in monsoons if e["startDate"] < TODAY},
-               "forecastOnset": next((e["startDate"] for e in monsoons if e["startDate"] >= TODAY), None)}
-forecast["monsoonSignalNext14Days"] = bool(climatology["forecastOnset"] and D(climatology["forecastOnset"]) <= D(TODAY) + dt.timedelta(days=14))
-
+# Season inputs come from the Season Check engine v2 (data-source/season-inputs.json): forecast,
+# climatology, region season index and phases. They replace the figures this script used to derive
+# from fa-data's weather events (a 40-42 C heatwave label), so the engine runs on the data it was built for.
+forecast = SEASON["forecast"]
+climatology = SEASON["climatology"]
 
 def applies(e):
     if e.get("scope") == "persona":
@@ -271,6 +305,11 @@ for e in events:
         continue                    # carried in forecast and climatology instead
     if e["type"] == "sport":
         ipl[e["startDate"][:4]].append(e)
+        # Each match day is its own event, so the engine lifts demand only on match days.
+        # "quiet": the talking points show the season summary below instead of every match.
+        cal_events.append({"id": e["eventId"], "type": "sport", "name": e["label"], "from": e["startDate"], "to": e["endDate"],
+                           "appliesTo": applies(e), "packs": None, "multiplier": e["demandMultiplier"],
+                           "source": e.get("confidence"), "quiet": True, "est": True})
         continue
     cal_events.append({"id": e["eventId"], "type": e["type"], "name": e["label"], "from": e["startDate"], "to": e["endDate"],
                        "appliesTo": applies(e), "packs": None, "multiplier": e["demandMultiplier"],
@@ -282,7 +321,7 @@ for year, days in ipl.items():
                        "from": later[0] if later else days[0]["startDate"], "to": days[-1]["endDate"],
                        "matchDays": [e["startDate"] for e in days],
                        "appliesTo": applies(days[0]), "packs": None, "multiplier": days[0]["demandMultiplier"],
-                       "source": days[0].get("confidence"), "est": True})
+                       "source": days[0].get("confidence"), "anchor": True, "est": True})   # display only; the engine skips anchors
 cal_events.sort(key=lambda e: (e["from"], e["id"]))
 
 # ---- peers ------------------------------------------------------------------------
@@ -305,6 +344,43 @@ for g in load("peers")["groups"]:
                        "outletsInGroup": g["memberCount"], "casesPerWeekNow": g["casesPerWeekNow"],
                        "weeklyCasesBySku": weekly, "est": True})
 
+# Route outlets whose channel has no group in peers.json (e.g. the lakeside snack stall) would
+# otherwise borrow a group of bigger shops. For them, derive one from the data: outlets of the
+# same persona type and cooler kind (at least peers.json's minimum group size), per-outlet cases a
+# week over the last 4 complete weeks. Labelled "derived" in the file.
+MIN_GROUP = load("peers").get("minimumGroupSize", 8)
+last4_from = (D(TODAY) - dt.timedelta(days=D(TODAY).weekday() + 28)).isoformat()
+last4_to = (D(TODAY) - dt.timedelta(days=D(TODAY).weekday())).isoformat()
+have = {(g["channel"], g["tier"], g["cooler"]) for g in groups}
+for o in outlets:
+    key = (o["channel"], o["tier"], o["cooler"]["type"])
+    if not visits[o["id"]]["todayOnRoute"] or any(g["channel"] == o["channel"] for g in groups):
+        continue
+    same = [m for m in outlets if m["segment"]["id"] == o["segment"]["id"] and m["id"] != o["id"]]
+    members = [m for m in same if m["cooler"]["type"] == o["cooler"]["type"]]
+    basis = "same cooler kind"
+    if len(members) < MIN_GROUP:
+        members, basis = same, "any cooler"
+    if len(members) < MIN_GROUP:
+        continue
+    ids = {m["id"] for m in members}
+    per = defaultdict(float); mix = defaultdict(float)
+    for x in orders:
+        if x["outletId"] in ids and last4_from <= x["date"] < last4_to:
+            for l in x["lines"]:
+                per[x["outletId"]] += l["cases"] / 4
+                mix[l["sku"]] += l["cases"]
+    weeks = sorted(per.get(i, 0.0) for i in ids)
+    q = lambda f: round(weeks[min(len(weeks) - 1, int(f * len(weeks)))], 1)
+    median = weeks[len(weeks) // 2]
+    total = sum(mix.values()) or 1
+    groups.append({"key": f"DERIVED-{o['segment']['id']}|{o['tier']}|{o['cooler']['type']}", "peerGroupId": f"DERIVED-{o['segment']['id']}-{o['cooler']['type']}",
+                   "channel": o["channel"], "tier": o["tier"], "cooler": o["cooler"]["type"], "tierBand": None,
+                   "outletsInGroup": len(members), "casesPerWeekNow": {"p25": q(0.25), "median": round(median, 1), "p75": q(0.75)},
+                   "weeklyCasesBySku": {sku: {iso_week(TODAY): round(median * n / total, 2)} for sku, n in sorted(mix.items(), key=lambda x: -x[1])},
+                   "derived": f"{len(members)} {o['segment']['label'].removeprefix('The ')} shops ({basis}), last 4 complete weeks",
+                   "est": True})
+
 # ---- stock on hand (not in the original contract; for Season Check) ----------------
 cs = load("current_stock")
 
@@ -320,6 +396,7 @@ config = {
     "history": {"fromWeek": week_keys[0], "toWeek": week_keys[-1], "weekStartsOn": "Monday"},
     "focusSkus": cfg["focusSkus"],
     "seasonCheck": cfg["seasonCheck"],
+    "assumptions": SEASON["coolerAssumptions"],
     "seasonWindowLabel": cfg.get("seasonWindowLabel"),
     "dataProvenance": cfg.get("dataProvenance"),
 }
@@ -407,7 +484,8 @@ dump("distributor_stock", {"asOf": stock_src["syncedAt"][:10], "syncedAt": stock
                            "assumption": stock_src["assumption"], "items": stock_items,
                            "historicalConstraints": stock_src["historicalConstraints"]},
      "Morning sync on the demo date, from distributor_stock.json. Reliable for in or out of stock, not for quantity.")
-dump("calendar", {"forecast": forecast, "climatology": climatology, "events": cal_events},
+dump("calendar", {"regionIndex": SEASON["regionIndex"], "phases": SEASON["phases"],
+                  "forecast": forecast, "climatology": climatology, "events": cal_events},
      "Dated events from events.json. Forecast derived from the heatwave event spanning the demo date.")
 dump("peers", {"minimumGroupSize": 8, "groups": groups}, "Peer groups from peers.json. Aggregated and anonymised.")
 dump("field", field, "DEMO ADDITIONS, synthetic: territory split, district reps, targets, newer-SKU evidence, yesterday's stock.")

@@ -4,7 +4,7 @@ import * as data from '../data.js';
 import * as orders from '../orders.js';
 import * as fmt from '../format.js';
 import { t } from '../i18n.js';
-import { html, mount, fresh, icon, appBar, emptyState } from '../ui.js';
+import { html, mount, fresh, icon, appBar, emptyState, slot } from '../ui.js';
 
 export function render(root, { id }) {
   const view = fresh(root);
@@ -45,6 +45,7 @@ export function render(root, { id }) {
           <div><dt>${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} <span class="muted">· ${fmt.relative(delivery, today)}</span></dd></div>
         </dl>
       </section>
+      ${slot('saved-outlook')}
       <div class="stack">
         <a class="btn btn-primary btn-block" href="#/home">${icon('route')}<span>${t('saved.backRoute')}</span></a>
         <a class="btn btn-secondary btn-block" href="#/outlets">${icon('store')}<span>${t('saved.list')}</span></a>

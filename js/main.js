@@ -23,6 +23,8 @@ import * as leaderboard from './screens/leaderboard.js';
 import * as talkingPoints from './feature/talking-points.js';
 import * as landing from './feature/landing.js';
 import * as store from './feature/store.js';
+import * as season from './feature/season-engine.js';
+import * as seasonCheck from './feature/season-check.js';
 
 const { t, label } = i18n;
 const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard };
@@ -54,7 +56,7 @@ function renderRoute() {
   cleanup = SCREENS[name].render(screenEl, { id, sub }) ?? null;
   window.scrollTo(0, 0);
   screenEl.focus({ preventScroll: true });
-  const outletId = name === 'scheme' ? sub : name === 'saved' ? null : id;
+  const outletId = name === 'scheme' ? sub : name === 'saved' ? (orders.orderById(id)?.outletId ?? null) : id;
   app.emit('screen:rendered', { screen: name, outletId, root: screenEl });
 }
 
@@ -144,9 +146,10 @@ async function boot() {
 
   talkingPoints.install();
   landing.install();
+  seasonCheck.install();
 
   // Handles for feature code and the console.
-  window.gtApp = { app, router, cart, data, orders, schemes, fmt, i18n, talkingPoints };
+  window.gtApp = { app, router, cart, data, orders, schemes, fmt, i18n, talkingPoints, season };
 
   router.start(renderRoute);
   if (!location.hash) redirect(session.user() ? '#/home' : '#/login');

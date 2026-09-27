@@ -14,6 +14,7 @@ import * as schemes from '../schemes.js';
 import * as fmt from '../format.js';
 import { t } from '../i18n.js';
 import { html, mount, icon, openSheet } from '../ui.js';
+import { coverFor } from './season-engine.js';
 
 const VISIBLE = 3;          // points shown before "Show more"
 const MAX_POINTS = 6;       // one visit, a few points: the most useful first
@@ -105,10 +106,11 @@ function itemHtml(p, extra = false) {
 /** → { owner: [point], rep: [point], cover: { today, delivery, nextVisit } }, most useful first. */
 export function pointsFor(o) {
   const today = data.demoDate();
-  const cfg = data.config();
-  const nextVisit = data.visits(o.id)?.nextVisitAfterToday ?? fmt.addDays(today, 7);
-  const delivery = fmt.addDays(today, cfg.distributor?.deliveryLeadDays ?? 1);
-  const cover = { today, delivery, nextVisit };
+  // Same window as the order suggestion (delivery → next delivery), so brief and order agree.
+  const win = coverFor(o);
+  const nextVisit = win.nextVisit;
+  const delivery = win.delivery;
+  const cover = { today, delivery, nextVisit, nextDelivery: win.nextDelivery };
   const all = orders.allOrdersFor(o.id);
   const past = all.filter((x) => x.source !== 'demo' && x.date < today);
   const bought = boughtSkus(past, cover);
@@ -171,8 +173,8 @@ function closurePoint(c, { today, delivery }) {
   };
 }
 
-function bookingsPoint(o, { today, nextVisit }) {
-  const list = (o.bookings ?? []).filter((b) => b.date >= today && b.date < nextVisit);
+function bookingsPoint(o, { today, nextDelivery }) {
+  const list = (o.bookings ?? []).filter((b) => b.date >= today && b.date < nextDelivery);
   if (!list.length) return null;
   const cases = list.reduce((n, b) => n + (b.expectedCases ?? 0), 0);
   const big = [...list].sort((a, b) => (b.expectedCases ?? 0) - (a.expectedCases ?? 0))[0];
@@ -258,7 +260,7 @@ const eventApplies = (e, o) => {
 function eventPoints(o, cal, { today }, hasClosure) {
   const horizon = fmt.addDays(today, HORIZON_DAYS);
   return (cal.events ?? [])
-    .filter((e) => e.from <= horizon && e.to >= today && eventApplies(e, o))
+    .filter((e) => !e.quiet && e.from <= horizon && e.to >= today && eventApplies(e, o))
     .map((e) => {
       const m = e.multiplier;
       const hi = Array.isArray(m) ? m[1] : m;

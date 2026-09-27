@@ -113,6 +113,7 @@ function renderBooking(root, o) {
       </div>
     </div>
 
+    ${slot('booking-season')}
     ${slot('booking-live')}
 
     <div class="page page-book">
@@ -184,7 +185,9 @@ function renderBooking(root, o) {
     const tokens = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
     let shown = 0;
     rows.forEach((li) => {
-      const hit = (!category || li.dataset.category === category) && tokens.every((tk) => li.dataset.search.includes(tk));
+      // A category chip, or a feature tag on the row (e.g. "suggested" from the order assistant).
+      const inCat = !category || li.dataset.category === category || (li.dataset.tags ?? '').split(' ').includes(category);
+      const hit = inCat && tokens.every((tk) => li.dataset.search.includes(tk));
       li.hidden = !hit;
       if (hit) shown += 1;
     });
