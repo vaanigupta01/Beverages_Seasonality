@@ -1098,7 +1098,7 @@ modules['data'] = (() => {
 //   in the page by scripts/build_single.py, as <script type="application/json" id="data-<name>">.
 
 const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock', 'field'];
-const SERVED = location.protocol === 'http:' || location.protocol === 'https:';
+const SERVED = typeof location !== 'undefined' && (location.protocol === 'http:' || location.protocol === 'https:');
 
 const db = {};
 const idx = { outlets: new Map(), products: new Map(), orders: new Map(), stock: new Map(), onHand: new Map() };
@@ -1185,6 +1185,13 @@ async function loadData() {
   console.info(`[data] ${FILES.length} files loaded from ${SERVED ? 'data/*.json' : 'the copy embedded in this page'}`);
 }
 
+/** Tests and scripts (Node): load the files directly, { config: {…}, outlets: {…}, … }. */
+function useData(files) {
+  Object.assign(db, files);
+  validate();
+  buildIndexes();
+}
+
 // ---- selectors (the feature reuses these) ---------------------------------
 
 const config = () => db.config;
@@ -1229,7 +1236,7 @@ const repFor = (outletId) => db.field.reps.find((r) => r.id === (outlet(outletId
 /** True while data/ still holds the stub (any file's meta.note starts with "STUB"). */
 const isStub = () => Object.values(db).some((f) => String(f?.meta?.note ?? '').startsWith('STUB'));
 
-return { SERVED, DataError, hasEmbedded, loadData, config, demoDate, outlets, outlet, products, product, categories, schemes, pastOrders, history, historyWeeks, visits, route, stock, stockFor, calendar, peers, onHand, field, myRepId, repFor, isStub };
+return { SERVED, DataError, hasEmbedded, loadData, useData, config, demoDate, outlets, outlet, products, product, categories, schemes, pastOrders, history, historyWeeks, visits, route, stock, stockFor, calendar, peers, onHand, field, myRepId, repFor, isStub };
 })();
 
 /* ==================== js/cart.js ==================== */

@@ -37,6 +37,15 @@ python3 scripts/build_single.py
 
 `scripts/generate_data.py` and `scripts/make_stub.py` produced the earlier 8-outlet data. They are kept for reference only. Running them would overwrite `data/`.
 
+## Season Check (the order assistant)
+
+The engine is `js/feature/season-engine.js` (spec: `docs/season-check-algo-v2.md`); the screens are `js/feature/season-check.js`. It suggests how much each outlet should order today, pack by pack, and checks the live cart. The inputs it was built on (the forecast, the region season index, each pack's season multiplier and the cooler capacity) live in `data-source/season-inputs.json`, and `scripts/import_fa_data.py` merges them into `data/`. The outlet personas and their numbers are in `docs/personas.md`.
+
+```
+node test/season-engine.test.mjs --heatwave   # results for the 8 personas + 17 checks
+node test/persona-cart-matrix.mjs            # which rules fire per persona × cart type
+```
+
 ## Host it on GitHub Pages
 
 1. Push this folder to a GitHub repository. Keep `index.html`, `data/` and the empty `.nojekyll` file at the root.

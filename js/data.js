@@ -8,7 +8,7 @@
 //   in the page by scripts/build_single.py, as <script type="application/json" id="data-<name>">.
 
 const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock', 'field'];
-export const SERVED = location.protocol === 'http:' || location.protocol === 'https:';
+export const SERVED = typeof location !== 'undefined' && (location.protocol === 'http:' || location.protocol === 'https:');
 
 const db = {};
 const idx = { outlets: new Map(), products: new Map(), orders: new Map(), stock: new Map(), onHand: new Map() };
@@ -93,6 +93,13 @@ export async function loadData() {
   validate();
   buildIndexes();
   console.info(`[data] ${FILES.length} files loaded from ${SERVED ? 'data/*.json' : 'the copy embedded in this page'}`);
+}
+
+/** Tests and scripts (Node): load the files directly, { config: {…}, outlets: {…}, … }. */
+export function useData(files) {
+  Object.assign(db, files);
+  validate();
+  buildIndexes();
 }
 
 // ---- selectors (the feature reuses these) ---------------------------------
