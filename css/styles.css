@@ -859,3 +859,26 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 .soh-name { display: flex; flex-direction: column; min-width: 0; font-weight: 600; }
 .soh-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-weight: 700; }
 .soh-val .pill { min-height: 20px; padding: 0 8px; }
+
+/* booking: stock status, details, newer packs */
+.sku-status { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; }
+.stock-tag { display: inline-flex; align-items: center; gap: 5px; font-size: var(--t-xs); font-weight: 650; color: var(--ok-ink); }
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.stock-tag.is-limited { color: var(--caution-ink); }
+.stock-tag.is-out { color: var(--danger-ink); }
+.new-tag { font-size: var(--t-xs); font-weight: 700; padding: 1px 8px; border-radius: var(--pill); background: var(--thin-bg); color: var(--thin-ink); }
+.sku-more { min-height: 32px; padding: 0 4px; margin-left: auto; border: 0; background: transparent; color: var(--accent); font-size: var(--t-xs); font-weight: 700; }
+.sku.is-out { background: #fbfcfe; }
+.sku.is-out .sku-name { color: var(--muted); }
+.sku-detail { grid-column: 1 / -1; margin-top: var(--s3); padding: var(--s3); border-radius: var(--r2); background: var(--paper); font-size: var(--t-sm); }
+.sku-facts > div { display: flex; justify-content: space-between; gap: var(--s3); padding: 4px 0; }
+.sku-facts dt { color: var(--ink-2); }
+.sku-facts dd { font-weight: 650; text-align: right; }
+.sku-detail .fine { margin-top: 6px; }
+.alt-line { display: flex; gap: 6px; align-items: flex-start; margin-top: var(--s2); color: var(--caution-ink); font-weight: 600; }
+.alt-line .icon { width: 16px; height: 16px; margin-top: 2px; }
+.evidence { margin-top: var(--s3); padding-top: var(--s2); border-top: 1px solid var(--line); }
+.evidence-title { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--thin-ink); margin-bottom: 4px; }
+.evidence-title .icon { width: 16px; height: 16px; }
+.evidence li { padding: 2px 0; }
+.demo-flag { font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 4px; border: 1px dashed var(--line-strong); color: var(--muted); white-space: nowrap; }

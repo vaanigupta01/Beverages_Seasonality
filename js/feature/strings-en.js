@@ -157,4 +157,23 @@ export const FIELD_EN = {
   'f.soh.conf.medium': 'Medium',
   'f.soh.conf.low': 'Low confidence',
   'f.soh.method': 'Estimated, not counted: last delivery minus modelled sales since then. Confidence falls as the delivery gets older. {counted} SKUs use your shelf count instead.',
+
+  // SKU info on booking
+  'f.sku.ration': 'Limited · {n} per outlet',
+  'f.sku.details': 'Details',
+  'f.sku.newer': 'Newer pack',
+  'f.sku.shelf': 'Shelf life',
+  'f.sku.shelfDays': '{n} days shelf life',
+  'f.sku.dist': 'Distributor stock',
+  'f.sku.focus': 'Focus SKU',
+  'f.sku.focusYes': 'Yes · counts towards pre-season placement',
+  'f.sku.syncNote': 'Status from this morning\'s distributor sync; it can change during the day.',
+  'f.sku.alt': 'Out at the distributor. Closest available: {name}.',
+  'f.sku.outHint': 'Out of stock at the distributor',
+  'f.sku.overRation': 'Distributor ration is {n} paid cases per outlet',
+  'f.sku.evTitle': 'Why retailers are taking it',
+  'f.sku.evBuyers': 'retailers in {area} ordered it in the last {weeks} weeks ({cases} cases)',
+  'f.sku.evGrew': 'of them ordered more than in the same weeks last year',
+  'f.sku.evOfftake': '{unit} sold to consumers in {region} in {weeks} weeks',
+  'f.sku.demoEv': 'Demo evidence',
 };

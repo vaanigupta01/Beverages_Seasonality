@@ -11,6 +11,11 @@ import { cart, MAX_CASES } from '../cart.js';
 import * as fmt from '../format.js';
 import { t, label, lang } from '../i18n.js';
 import { html, mount, fresh, icon, appBar, slot, emptyState, openSheet, toast } from '../ui.js';
+import * as sku from '../feature/sku-info.js';
+import { otherRep, confirmCrossTerritory } from '../feature/outlet-tools.js';
+
+// Outlets where the rep already confirmed a cross-territory order this session.
+const crossOk = new Set();
 
 const lcFirst = (s) => (lang() === 'en' ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
@@ -28,6 +33,18 @@ export function render(root, { id }) {
 
   if (!cart.isEmpty() && cart.outletId && cart.outletId !== o.id) {
     askSwitch(root, o, () => {
+      cart.start(o.id);
+      inner = renderBooking(root, o);
+      app.emit('screen:rendered', { screen: 'book', outletId: o.id, root });
+    });
+    return cleanup;
+  }
+  // Another rep's outlet: warn about the incentive split and ask before booking.
+  if (otherRep(o) && !crossOk.has(o.id) && cart.outletId !== o.id) {
+    fresh(root);
+    confirmCrossTerritory(o).then((go) => {
+      if (!go) return router.go(`#/outlet/${o.id}`, { replace: true });
+      crossOk.add(o.id);
       cart.start(o.id);
       inner = renderBooking(root, o);
       app.emit('screen:rendered', { screen: 'book', outletId: o.id, root });
@@ -135,17 +152,19 @@ function renderBooking(root, o) {
     hintTimers.set(hint, setTimeout(() => { hint.hidden = true; }, 2500));
   }
 
-  function syncRow(sku) {
-    const li = rows.get(sku);
+  function syncRow(sku_) {
+    const li = rows.get(sku_);
     if (!li) return;
-    const n = cart.get(sku);
+    const n = cart.get(sku_);
     const input = li.querySelector('.qty');
     if (document.activeElement !== input) input.value = String(n);
     li.classList.toggle('has-qty', n > 0);
     li.querySelector('[data-step="-1"]').disabled = n <= 0;
-    li.querySelector('[data-step="1"]').disabled = n >= MAX_CASES;
-    const quick = li.querySelector('[data-quick]');
-    if (quick) quick.disabled = n >= MAX_CASES;
+    const out = !sku.isOrderable(sku_);
+    li.querySelector('[data-step="1"]').disabled = n >= MAX_CASES || out;
+    li.querySelectorAll('[data-quick]').forEach((b) => { b.disabled = n >= MAX_CASES || out; });
+    const ration = sku.stockStatus(sku_).ration;
+    if (ration && n > ration) showHint(li, t('f.sku.overRation', { n: ration }));
   }
 
   function syncFooter() {
@@ -205,6 +224,13 @@ function renderBooking(root, o) {
       }
       return;
     }
+    const more = e.target.closest('[data-more]');
+    if (more) {
+      const detail = more.closest('.sku').querySelector('[data-detail]');
+      detail.hidden = !detail.hidden;
+      more.setAttribute('aria-expanded', String(!detail.hidden));
+      return;
+    }
     const chip = e.target.closest('.chip[data-cat]');
     if (chip) {
       category = chip.dataset.cat;
@@ -235,6 +261,11 @@ function renderBooking(root, o) {
       if (afterSeparator.has(input) && value.startsWith(prev) && /^\d+$/.test(value.slice(prev.length))) {
         input.value = prev;
         showHint(li, t('book.hintWhole'));
+        return;
+      }
+      if (Number(value) > 0 && !sku.isOrderable(li.dataset.sku)) {
+        input.value = '0';
+        showHint(li, t('f.sku.outHint'));
         return;
       }
       if (/^\d*$/.test(value) && (value === '' || Number(value) <= MAX_CASES)) {
@@ -282,11 +313,12 @@ function skuRow(p, o, today, pastAndDemo) {
     return html`<button type="button" class="scheme-chip is-add" data-quick="${n}" data-scheme="${s.id}" aria-label="${t('book.chipAdd', { n, unit, name: p.name, scheme: s.name })}">${icon('tag')}<span>${schemes.chipText(s)}</span><span class="chip-plus" aria-hidden="true">+${n}</span></button>`;
   });
 
-  return html`<li class="sku" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
+  return html`<li class="sku ${sku.isOrderable(p.sku) ? '' : 'is-out'}" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
     <div class="sku-text">
       <p class="sku-name">${p.name}</p>
       <p class="sku-pack">${pack}</p>
       <p class="sku-rate"><strong>${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit })}</strong>${p.returnable ? t('book.deposit') : ''} · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })}</p>
+      <p class="sku-status">${sku.statusTag(p.sku)}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}<button type="button" class="sku-more" data-more aria-expanded="false">${t('f.sku.details')}</button></p>
     </div>
     <div class="stepper">
       <button type="button" class="step" data-step="-1" aria-label="${t('book.fewer', { unit, name: p.name })}">−</button>
@@ -295,6 +327,7 @@ function skuRow(p, o, today, pastAndDemo) {
     </div>
     <p class="qty-hint" data-qty-hint role="status" hidden></p>
     ${chips.length ? html`<div class="sku-chips">${chips}</div>` : ''}
+    ${sku.detailHtml(p, o)}
     ${slot('sku-hint', { tag: 'div', attrs: { 'data-sku': p.sku } })}
   </li>`;
 }

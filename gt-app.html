@@ -875,6 +875,29 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 .soh-name { display: flex; flex-direction: column; min-width: 0; font-weight: 600; }
 .soh-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-weight: 700; }
 .soh-val .pill { min-height: 20px; padding: 0 8px; }
+
+/* booking: stock status, details, newer packs */
+.sku-status { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; }
+.stock-tag { display: inline-flex; align-items: center; gap: 5px; font-size: var(--t-xs); font-weight: 650; color: var(--ok-ink); }
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+.stock-tag.is-limited { color: var(--caution-ink); }
+.stock-tag.is-out { color: var(--danger-ink); }
+.new-tag { font-size: var(--t-xs); font-weight: 700; padding: 1px 8px; border-radius: var(--pill); background: var(--thin-bg); color: var(--thin-ink); }
+.sku-more { min-height: 32px; padding: 0 4px; margin-left: auto; border: 0; background: transparent; color: var(--accent); font-size: var(--t-xs); font-weight: 700; }
+.sku.is-out { background: #fbfcfe; }
+.sku.is-out .sku-name { color: var(--muted); }
+.sku-detail { grid-column: 1 / -1; margin-top: var(--s3); padding: var(--s3); border-radius: var(--r2); background: var(--paper); font-size: var(--t-sm); }
+.sku-facts > div { display: flex; justify-content: space-between; gap: var(--s3); padding: 4px 0; }
+.sku-facts dt { color: var(--ink-2); }
+.sku-facts dd { font-weight: 650; text-align: right; }
+.sku-detail .fine { margin-top: 6px; }
+.alt-line { display: flex; gap: 6px; align-items: flex-start; margin-top: var(--s2); color: var(--caution-ink); font-weight: 600; }
+.alt-line .icon { width: 16px; height: 16px; margin-top: 2px; }
+.evidence { margin-top: var(--s3); padding-top: var(--s2); border-top: 1px solid var(--line); }
+.evidence-title { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--thin-ink); margin-bottom: 4px; }
+.evidence-title .icon { width: 16px; height: 16px; }
+.evidence li { padding: 2px 0; }
+.demo-flag { font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 4px; border: 1px dashed var(--line-strong); color: var(--muted); white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -1457,6 +1480,25 @@ const FIELD_EN = {
   'f.soh.conf.medium': 'Medium',
   'f.soh.conf.low': 'Low confidence',
   'f.soh.method': 'Estimated, not counted: last delivery minus modelled sales since then. Confidence falls as the delivery gets older. {counted} SKUs use your shelf count instead.',
+
+  // SKU info on booking
+  'f.sku.ration': 'Limited · {n} per outlet',
+  'f.sku.details': 'Details',
+  'f.sku.newer': 'Newer pack',
+  'f.sku.shelf': 'Shelf life',
+  'f.sku.shelfDays': '{n} days shelf life',
+  'f.sku.dist': 'Distributor stock',
+  'f.sku.focus': 'Focus SKU',
+  'f.sku.focusYes': 'Yes · counts towards pre-season placement',
+  'f.sku.syncNote': 'Status from this morning\'s distributor sync; it can change during the day.',
+  'f.sku.alt': 'Out at the distributor. Closest available: {name}.',
+  'f.sku.outHint': 'Out of stock at the distributor',
+  'f.sku.overRation': 'Distributor ration is {n} paid cases per outlet',
+  'f.sku.evTitle': 'Why retailers are taking it',
+  'f.sku.evBuyers': 'retailers in {area} ordered it in the last {weeks} weeks ({cases} cases)',
+  'f.sku.evGrew': 'of them ordered more than in the same weeks last year',
+  'f.sku.evOfftake': '{unit} sold to consumers in {region} in {weeks} weeks',
+  'f.sku.demoEv': 'Demo evidence',
 };
 
 return { FIELD_EN };
@@ -3737,8 +3779,7 @@ async function confirmCrossTerritory(o) {
   const key = await openSheet({
     title: t('f.terr.title'),
     body: html`<p class="sheet-lede">${t('f.terr.body', { name: o.name, rep: rep.name, territory: rep.territory })}</p>
-      <div class="warn-box">${icon('alert')}<p>${t('f.terr.incentive', { pct })}</p></div>
-      <p class="fine">${data.field().crossTerritory?.rule ?? ''}</p>`,
+      <div class="warn-box">${icon('alert')}<p>${t('f.terr.incentive', { pct })}</p></div>`,
     actions: [
       { key: 'go', label: t('f.terr.go', { pct }), tone: 'primary' },
       { key: 'back', label: t('f.terr.back'), tone: 'secondary' },
@@ -4273,6 +4314,94 @@ function notesCard(o, v, today) {
 return { directionsUrl, render };
 })();
 
+/* ==================== js/feature/sku-info.js ==================== */
+modules['feature/sku-info'] = (() => {
+// What the rep needs to know about one SKU when ordering it: distributor availability
+// (morning sync; reliable for in/out, not for quantity), an alternative when it is out,
+// shelf life, and adoption evidence for the newer packs.
+
+const data = modules['data'];
+const orders = modules['orders'];
+const fmt = modules['format'];
+const { t } = modules['i18n'];
+const { html, icon } = modules['ui'];
+
+const ADOPTION_WEEKS = 8;   // "nearby retailers increased orders": last 8 weeks vs the same 8 weeks last year
+
+/** → { kind: 'available'|'limited'|'out', status, ration, note } from the morning sync. */
+function stockStatus(sku) {
+  const it = data.stockFor(sku);
+  const status = it?.sourceStatus ?? (it?.status === 'out' ? 'out-of-stock' : it?.status === 'rationed' ? 'rationed' : 'available');
+  const kind = status === 'out-of-stock' ? 'out' : status === 'available' ? 'available' : 'limited';
+  return { kind, status, ration: it?.status === 'rationed' ? it.maxCasesPerOutlet : null, note: it?.note ?? '' };
+}
+
+const isOrderable = (sku) => stockStatus(sku).kind !== 'out';
+
+/** Closest available SKU of the same flavour and category (nearest pack size), else null. */
+function alternativeFor(sku) {
+  const p = data.product(sku);
+  if (!p) return null;
+  return data.products()
+    .filter((q) => q.sku !== sku && q.flavour === p.flavour && q.category === p.category && isOrderable(q.sku))
+    .sort((a, b) => Math.abs(a.pack.ml - p.pack.ml) - Math.abs(b.pack.ml - p.pack.ml))[0] ?? null;
+}
+
+function statusTag(sku) {
+  const s = stockStatus(sku);
+  const text = s.kind === 'out' ? t('f.stock.s.out-of-stock')
+    : s.ration ? t('f.sku.ration', { n: s.ration })
+    : s.kind === 'limited' ? t(`f.stock.s.${s.status}`) : t('f.stock.s.available');
+  return html`<span class="stock-tag is-${s.kind}"><span class="stock-dot" aria-hidden="true"></span>${text}</span>`;
+}
+
+/** Newer-SKU evidence: nearby retailers (same area) ordering it more than last year, plus the
+ *  demo offtake figure from field.json (labelled as demo evidence). */
+function newSkuEvidence(sku, outlet) {
+  const entry = data.field().newSkus?.find((x) => x.sku === sku);
+  if (!entry) return null;
+  const today = data.demoDate();
+  const from = fmt.addDays(today, -7 * ADOPTION_WEEKS);
+  const lyFrom = fmt.addDays(from, -364); const lyTo = fmt.addDays(today, -364);
+  const casesAt = (id, a, b) => orders.allOrdersFor(id).filter((x) => x.date >= a && x.date < b)
+    .reduce((n, x) => n + x.lines.filter((l) => l.sku === sku).reduce((m, l) => m + l.cases, 0), 0);
+  const nearby = data.outlets().filter((o) => o.area === outlet.area && o.id !== outlet.id);
+  const buyers = nearby.filter((o) => casesAt(o.id, from, today) > 0);
+  const grew = buyers.filter((o) => casesAt(o.id, from, today) > casesAt(o.id, lyFrom, lyTo));
+  const cases = buyers.reduce((n, o) => n + casesAt(o.id, from, today), 0);
+  return { entry, area: outlet.area, buyers: buyers.length, grew: grew.length, cases, weeks: ADOPTION_WEEKS };
+}
+
+const isNewer = (sku) => Boolean(data.field().newSkus?.some((x) => x.sku === sku));
+
+/** The expandable detail under a SKU row. `extra` is filled by the order assistant. */
+function detailHtml(p, outlet) {
+  const s = stockStatus(p.sku);
+  const ev = newSkuEvidence(p.sku, outlet);
+  const alt = s.kind === 'out' ? alternativeFor(p.sku) : null;
+  return html`<div class="sku-detail" data-detail hidden>
+    <dl class="sku-facts">
+      <div><dt>${t('f.sku.shelf')}</dt><dd>${t('f.sku.shelfDays', { n: p.shelfLifeDays })}</dd></div>
+      <div><dt>${t('f.sku.dist')}</dt><dd>${statusTag(p.sku)}</dd></div>
+      ${p.focus ? html`<div><dt>${t('f.sku.focus')}</dt><dd>${t('f.sku.focusYes')}</dd></div>` : ''}
+    </dl>
+    <p class="fine">${s.note ? `${s.note} ` : ''}${t('f.sku.syncNote')}</p>
+    ${alt ? html`<p class="alt-line">${icon('info')}<span>${t('f.sku.alt', { name: alt.name })}</span></p>` : ''}
+    ${ev ? html`<div class="evidence">
+      <p class="evidence-title">${icon('trend')}<span>${t('f.sku.evTitle')}</span></p>
+      <ul>
+        ${ev.buyers ? html`<li><b>${ev.buyers}</b> ${t('f.sku.evBuyers', { area: ev.area, weeks: ev.weeks, cases: fmt.num(ev.cases) })}</li>` : ''}
+        ${ev.grew ? html`<li><b>${ev.grew}</b> ${t('f.sku.evGrew')}</li>` : ''}
+        <li><b>${fmt.num(ev.entry.offtake.units)}+</b> ${t('f.sku.evOfftake', { unit: ev.entry.offtake.unitLabel, region: ev.entry.offtake.region, weeks: ev.entry.offtake.weeks })} <span class="demo-flag">${t('f.sku.demoEv')}</span></li>
+      </ul>
+    </div>` : ''}
+    <div data-assist-detail></div>
+  </div>`;
+}
+
+return { stockStatus, isOrderable, alternativeFor, statusTag, newSkuEvidence, isNewer, detailHtml };
+})();
+
 /* ==================== js/screens/book.js ==================== */
 modules['screens/book'] = (() => {
 // Order booking: find SKUs (search + category), set quantities, see schemes, running total.
@@ -4288,6 +4417,11 @@ const { cart, MAX_CASES } = modules['cart'];
 const fmt = modules['format'];
 const { t, label, lang } = modules['i18n'];
 const { html, mount, fresh, icon, appBar, slot, emptyState, openSheet, toast } = modules['ui'];
+const sku = modules['feature/sku-info'];
+const { otherRep, confirmCrossTerritory } = modules['feature/outlet-tools'];
+
+// Outlets where the rep already confirmed a cross-territory order this session.
+const crossOk = new Set();
 
 const lcFirst = (s) => (lang() === 'en' ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
@@ -4305,6 +4439,18 @@ function render(root, { id }) {
 
   if (!cart.isEmpty() && cart.outletId && cart.outletId !== o.id) {
     askSwitch(root, o, () => {
+      cart.start(o.id);
+      inner = renderBooking(root, o);
+      app.emit('screen:rendered', { screen: 'book', outletId: o.id, root });
+    });
+    return cleanup;
+  }
+  // Another rep's outlet: warn about the incentive split and ask before booking.
+  if (otherRep(o) && !crossOk.has(o.id) && cart.outletId !== o.id) {
+    fresh(root);
+    confirmCrossTerritory(o).then((go) => {
+      if (!go) return router.go(`#/outlet/${o.id}`, { replace: true });
+      crossOk.add(o.id);
       cart.start(o.id);
       inner = renderBooking(root, o);
       app.emit('screen:rendered', { screen: 'book', outletId: o.id, root });
@@ -4412,17 +4558,19 @@ function renderBooking(root, o) {
     hintTimers.set(hint, setTimeout(() => { hint.hidden = true; }, 2500));
   }
 
-  function syncRow(sku) {
-    const li = rows.get(sku);
+  function syncRow(sku_) {
+    const li = rows.get(sku_);
     if (!li) return;
-    const n = cart.get(sku);
+    const n = cart.get(sku_);
     const input = li.querySelector('.qty');
     if (document.activeElement !== input) input.value = String(n);
     li.classList.toggle('has-qty', n > 0);
     li.querySelector('[data-step="-1"]').disabled = n <= 0;
-    li.querySelector('[data-step="1"]').disabled = n >= MAX_CASES;
-    const quick = li.querySelector('[data-quick]');
-    if (quick) quick.disabled = n >= MAX_CASES;
+    const out = !sku.isOrderable(sku_);
+    li.querySelector('[data-step="1"]').disabled = n >= MAX_CASES || out;
+    li.querySelectorAll('[data-quick]').forEach((b) => { b.disabled = n >= MAX_CASES || out; });
+    const ration = sku.stockStatus(sku_).ration;
+    if (ration && n > ration) showHint(li, t('f.sku.overRation', { n: ration }));
   }
 
   function syncFooter() {
@@ -4482,6 +4630,13 @@ function renderBooking(root, o) {
       }
       return;
     }
+    const more = e.target.closest('[data-more]');
+    if (more) {
+      const detail = more.closest('.sku').querySelector('[data-detail]');
+      detail.hidden = !detail.hidden;
+      more.setAttribute('aria-expanded', String(!detail.hidden));
+      return;
+    }
     const chip = e.target.closest('.chip[data-cat]');
     if (chip) {
       category = chip.dataset.cat;
@@ -4512,6 +4667,11 @@ function renderBooking(root, o) {
       if (afterSeparator.has(input) && value.startsWith(prev) && /^\d+$/.test(value.slice(prev.length))) {
         input.value = prev;
         showHint(li, t('book.hintWhole'));
+        return;
+      }
+      if (Number(value) > 0 && !sku.isOrderable(li.dataset.sku)) {
+        input.value = '0';
+        showHint(li, t('f.sku.outHint'));
         return;
       }
       if (/^\d*$/.test(value) && (value === '' || Number(value) <= MAX_CASES)) {
@@ -4559,11 +4719,12 @@ function skuRow(p, o, today, pastAndDemo) {
     return html`<button type="button" class="scheme-chip is-add" data-quick="${n}" data-scheme="${s.id}" aria-label="${t('book.chipAdd', { n, unit, name: p.name, scheme: s.name })}">${icon('tag')}<span>${schemes.chipText(s)}</span><span class="chip-plus" aria-hidden="true">+${n}</span></button>`;
   });
 
-  return html`<li class="sku" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
+  return html`<li class="sku ${sku.isOrderable(p.sku) ? '' : 'is-out'}" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
     <div class="sku-text">
       <p class="sku-name">${p.name}</p>
       <p class="sku-pack">${pack}</p>
       <p class="sku-rate"><strong>${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit })}</strong>${p.returnable ? t('book.deposit') : ''} · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })}</p>
+      <p class="sku-status">${sku.statusTag(p.sku)}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}<button type="button" class="sku-more" data-more aria-expanded="false">${t('f.sku.details')}</button></p>
     </div>
     <div class="stepper">
       <button type="button" class="step" data-step="-1" aria-label="${t('book.fewer', { unit, name: p.name })}">−</button>
@@ -4572,6 +4733,7 @@ function skuRow(p, o, today, pastAndDemo) {
     </div>
     <p class="qty-hint" data-qty-hint role="status" hidden></p>
     ${chips.length ? html`<div class="sku-chips">${chips}</div>` : ''}
+    ${sku.detailHtml(p, o)}
     ${slot('sku-hint', { tag: 'div', attrs: { 'data-sku': p.sku } })}
   </li>`;
 }

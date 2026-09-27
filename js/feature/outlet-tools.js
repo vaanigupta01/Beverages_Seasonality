@@ -33,8 +33,7 @@ export async function confirmCrossTerritory(o) {
   const key = await openSheet({
     title: t('f.terr.title'),
     body: html`<p class="sheet-lede">${t('f.terr.body', { name: o.name, rep: rep.name, territory: rep.territory })}</p>
-      <div class="warn-box">${icon('alert')}<p>${t('f.terr.incentive', { pct })}</p></div>
-      <p class="fine">${data.field().crossTerritory?.rule ?? ''}</p>`,
+      <div class="warn-box">${icon('alert')}<p>${t('f.terr.incentive', { pct })}</p></div>`,
     actions: [
       { key: 'go', label: t('f.terr.go', { pct }), tone: 'primary' },
       { key: 'back', label: t('f.terr.back'), tone: 'secondary' },
