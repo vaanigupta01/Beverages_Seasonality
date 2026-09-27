@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Builds the app as ONE file (CSS, JavaScript and an embedded copy of the data), written twice:
-  gt-app.html  – double-click to use offline (reads the embedded copy)
-  index.html   – the page GitHub Pages serves (reads data/*.json next to it)
-Both files are identical; the page decides at run time where its data comes from.
+Builds the app as ONE file (CSS and JavaScript inline), written twice:
+  gt-app.html  – double-click to use offline; carries an embedded copy of the data
+  index.html   – the page GitHub Pages serves; reads data/*.json next to it, so it
+                 carries no copy of the data (the data is several MB)
+The app code is identical; the page decides at run time where its data comes from.
 
 Source: scripts/shell.html (page template), css/, js/ and data/.
 Rerun this after changing any of them, from the project folder:
@@ -23,7 +24,7 @@ JS = ROOT / "js"
 OUTPUTS = [ROOT / "gt-app.html", ROOT / "index.html"]
 SHELL = ROOT / "scripts" / "shell.html"
 DATA_FILES = ["config", "outlets", "products", "schemes", "orders", "history", "visits",
-              "distributor_stock", "calendar", "peers"]
+              "distributor_stock", "calendar", "peers", "current_stock"]
 
 IMPORT_NS = re.compile(r"""^import\s+\*\s+as\s+(\w+)\s+from\s+['"](.+?)['"];?\s*$""")
 IMPORT_NAMED = re.compile(r"""^import\s+\{([^}]*)\}\s+from\s+['"](.+?)['"];?\s*$""")
@@ -104,18 +105,21 @@ app_script = (
 
 page = page.replace(LINK, f"<style>\n{css}\n</style>")
 page = page.replace(f"  {SCRIPT}\n", "").replace(SCRIPT, "")
-page = page.replace(
+TEMPLATE_NOTE = "<!-- Build template for scripts/build_single.py (not a page to open). The built app is gt-app.html / index.html. -->"
+offline = page.replace(
     "</body>",
     f"{app_script}\n\n<!-- ==================== DATA (from data/*.json) ==================== -->\n"
     + "\n".join(data_blocks) + "\n</body>",
-)
-page = page.replace(
-    "<!-- Build template for scripts/build_single.py (not a page to open). The built app is gt-app.html / index.html. -->",
+).replace(TEMPLATE_NOTE,
     "<!-- GT App prototype · single file, BUILT by scripts/build_single.py from scripts/shell.html, css/, js/ and data/.\n"
     "     Don't edit this file: edit the source and rebuild. Served over http(s) it reads data/*.json;\n"
     "     opened from disk it reads the copy embedded at the bottom. -->", 1)
+hosted = page.replace("</body>", f"{app_script}\n</body>").replace(TEMPLATE_NOTE,
+    "<!-- GT App prototype · hosted page, BUILT by scripts/build_single.py from scripts/shell.html, css/ and js/.\n"
+    "     Don't edit this file: edit the source and rebuild. It reads data/*.json next to it;\n"
+    "     to use the app without a server, open gt-app.html instead. -->", 1)
 
-for out in OUTPUTS:
-    out.write_text(page, encoding="utf-8")
-size = OUTPUTS[0].stat().st_size / 1024
-print(f"Wrote {' and '.join(o.name for o in OUTPUTS)}: {len(order)} modules, {len(data_blocks)} data files, {size:.0f} KB each")
+for out, text in zip(OUTPUTS, (offline, hosted)):
+    out.write_text(text, encoding="utf-8")
+print(f"Wrote {len(order)} modules: {OUTPUTS[0].name} with {len(data_blocks)} embedded data files "
+      f"({OUTPUTS[0].stat().st_size / 1024:.0f} KB), {OUTPUTS[1].name} reading data/ ({OUTPUTS[1].stat().st_size / 1024:.0f} KB)")

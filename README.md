@@ -21,12 +21,21 @@ Any username and password works; the username becomes the rep's name.
 
 ## Where the data comes from
 
-The persona data lives in **`data/*.json`**, one file per part of the data contract: `config`, `outlets`, `products`, `schemes`, `orders`, `history`, `visits`, `distributor_stock`, `calendar` and `peers`. All ten are required.
+The data is the **Season Check dataset** in **`fa-data/`**: 240 outlets, 60 SKUs and 12,324 orders from 1 Jan 2024 to 27 Apr 2026 (seed 20260428). Its own documentation is `fa-data/docs/DATA_README.md`, and its generators are in `fa-data/scripts/`. Everything in it is synthetic.
 
-- **Hosted**, the page reads `data/*.json` sitting next to it. To check, change a number in `data/outlets.json` (for example an outlet's credit limit), commit, reload the page, and the screen changes. No rebuild is needed.
-- **Offline**, `gt-app.html` uses the copy of the data embedded at the bottom of the file. The copy is refreshed whenever the file is rebuilt.
+The app reads **`data/*.json`**, 11 files in the shape of the data contract in PROGRESS.md: `config`, `outlets`, `products`, `schemes`, `orders`, `history`, `visits`, `distributor_stock`, `calendar`, `peers` and `current_stock`. `scripts/import_fa_data.py` builds them from `fa-data/data/`. It only reshapes the data and never adds numbers of its own; the top of the script lists every field it derives (closures, bookings, the forecast, peer groups and so on). If a file breaks the contract, the app names the file and the field.
 
-The current data comes from the personas chat (`scripts/generate_data.py`, fixed seed): 8 outlets, 13 SKUs, and 343 past orders from 31 Dec 2024 to 21 Apr 2026. If a file breaks the contract, the app names the file and the field.
+- **Hosted**, the page reads `data/*.json` next to it. Change a number there, commit and reload, and the screen changes. No rebuild is needed.
+- **Offline**, `gt-app.html` uses the copy of the data embedded at the bottom of the file (about 5.5 MB). The copy is refreshed whenever the file is rebuilt.
+
+To bring in a new version of the dataset, replace `fa-data/`, then run:
+
+```
+python3 scripts/import_fa_data.py
+python3 scripts/build_single.py
+```
+
+`scripts/generate_data.py` and `scripts/make_stub.py` produced the earlier 8-outlet data. They are kept for reference only. Running them would overwrite `data/`.
 
 ## Host it on GitHub Pages
 
@@ -38,7 +47,7 @@ All paths are relative, so the app also works in the `/<repo>/` subfolder. The b
 
 ## Changing the app
 
-`gt-app.html` and `index.html` are the same file, **generated** from the source:
+`gt-app.html` and `index.html` are **generated** from the source. They run the same app code, but only `gt-app.html` carries the embedded copy of the data. `index.html` stays small (about 240 KB) and reads `data/`:
 
 - `js/`: the app code, one module per concern and per screen;
 - `css/styles.css`: the design tokens (at the top), then the components;
@@ -50,9 +59,10 @@ Don't edit the two generated files by hand. Change the source and rebuild them w
 ## Structure
 
 ```
-index.html              the app (generated) — the hosted home page
-gt-app.html             the same app (generated) — double-click to use offline
-data/*.json             persona data, read by the hosted page (10 files)
+index.html              the app (generated) — the hosted home page; reads data/
+gt-app.html             the same app with the data inside (generated) — double-click to use offline
+data/*.json             the app's data, built from fa-data/ (11 files)
+fa-data/                the Season Check dataset: source data, docs and generators
 js/main.js              boot, hash router, demo bar, Reset demo
 js/app.js               event bus (app.on / app.emit), session, router.go
 js/data.js              loads the data (files when hosted, embedded copy offline), selectors
@@ -66,7 +76,7 @@ js/feature/talking-points.js   the talking-points card and the booking-screen bu
 js/ui.js                safe HTML templates, icons, components, sheet, toast, feature slots
 js/screens/*.js         login, home, outlets, outlet, book, review, saved, scheme
 css/styles.css          design tokens and components
-scripts/                shell.html (page template), build_single.py, generate_data.py (personas chat), make_stub.py (old stub)
+scripts/                shell.html (page template), build_single.py, import_fa_data.py (fa-data → data/), generate_data.py and make_stub.py (earlier data, not used)
 docs/                   personas and data validation (personas chat)
 ```
 

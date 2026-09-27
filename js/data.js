@@ -7,11 +7,11 @@
 // - Opened without a server (gt-app.html double-clicked, or a preview snapshot): the copy embedded
 //   in the page by scripts/build_single.py, as <script type="application/json" id="data-<name>">.
 
-const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers'];
+const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock'];
 export const SERVED = location.protocol === 'http:' || location.protocol === 'https:';
 
 const db = {};
-const idx = { outlets: new Map(), products: new Map(), orders: new Map(), stock: new Map() };
+const idx = { outlets: new Map(), products: new Map(), orders: new Map(), stock: new Map(), onHand: new Map() };
 
 export class DataError extends Error {
   constructor(file, detail) {
@@ -68,6 +68,7 @@ function validate() {
   need('visits', visits?.outlets && typeof visits.outlets === 'object', 'outlets');
   need('distributor_stock', Array.isArray(stock?.items), 'items[]');
   need('peers', Array.isArray(db.peers?.groups), 'groups[]');
+  need('current_stock', Array.isArray(db.current_stock?.rows), 'rows[]');
 }
 
 function buildIndexes() {
@@ -77,6 +78,10 @@ function buildIndexes() {
   db.orders.orders.forEach((o) => {
     if (!idx.orders.has(o.outletId)) idx.orders.set(o.outletId, []);
     idx.orders.get(o.outletId).push(o);
+  });
+  db.current_stock.rows.forEach((r) => {
+    if (!idx.onHand.has(r.outletId)) idx.onHand.set(r.outletId, []);
+    idx.onHand.get(r.outletId).push(r);
   });
 }
 
@@ -121,6 +126,9 @@ export const stock = () => db.distributor_stock;
 export const stockFor = (sku) => idx.stock.get(sku) ?? null;
 export const calendar = () => db.calendar;
 export const peers = () => db.peers;
+
+/** Estimated cases on hand today, per SKU: [{ sku, estimatedCasesOnHand, confidence, repCountedCases? … }]. */
+export const onHand = (outletId) => idx.onHand.get(outletId) ?? [];
 
 /** True while data/ still holds the stub (any file's meta.note starts with "STUB"). */
 export const isStub = () => Object.values(db).some((f) => String(f?.meta?.note ?? '').startsWith('STUB'));
