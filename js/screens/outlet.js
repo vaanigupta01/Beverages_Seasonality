@@ -8,6 +8,7 @@ import { cart } from '../cart.js';
 import * as fmt from '../format.js';
 import { t, label } from '../i18n.js';
 import { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState } from '../ui.js';
+import * as tools from '../feature/outlet-tools.js';
 
 /**
  * Google Maps directions to the outlet (two-wheeler, as reps ride motorbikes). Uses exact
@@ -43,17 +44,16 @@ export function render(root, { id }) {
     <div class="page">
       <header class="outlet-head">
         ${personaTag(o)}
-        <h1 class="display outlet-name">${o.name}</h1>
+        <div class="outlet-title"><h1 class="display outlet-name">${o.name}</h1><span data-part="issues">${tools.issuesBadge(o)}</span></div>
         <p class="outlet-addr">${address}${o.locationContext ? html` <span class="muted">· ${o.locationContext}</span>` : ''}</p>
         <div class="row-tags">
           ${tierBadge(o, { visits: true })}
           ${pill(typeLabel, 'neutral')}
           ${v?.todayOnRoute ? pill(t('outlet.stop', { n: v.routeOrder }), 'info', 'route') : pill(t('outlets.notOnRoute'), 'neutral')}
+          ${tools.territoryPill(o)}
         </div>
-        <div class="outlet-actions">
-          ${o.owner?.name ? html`<p class="outlet-owner">${o.owner.role ? label('role', o.owner.role) : t('outlet.owner')}: ${o.owner.name}</p>` : html`<span></span>`}
-          <a class="btn btn-secondary btn-compact" href="${directionsUrl(o)}" target="_blank" rel="noopener noreferrer" aria-label="${t('outlet.directionsLabel', { name: o.name })}">${icon('map')}<span>${t('outlet.directions')}</span></a>
-        </div>
+        ${o.owner?.name ? html`<p class="outlet-owner">${o.owner.role ? label('role', o.owner.role) : t('outlet.owner')}: ${o.owner.name}</p>` : ''}
+        ${tools.actionsRow(o, directionsUrl(o))}
       </header>
 
       ${slot('outlet-brief')}
@@ -75,16 +75,23 @@ export function render(root, { id }) {
       </section>`)}
 
       ${lastOrderCard(all, v, today, savedToday.length > 0)}
+      ${tools.stockOnHandCard(o)}
       ${paymentCard(o, today)}
       ${schemesCard(o, all, today)}
       ${historyCard(all, today)}
       ${coolerCard(o, today)}
       ${bookingsCard(o, today)}
-      ${notesCard(v, today)}
+      <div data-part="notes">${notesCard(o, v, today)}</div>
     </div>
     <div class="bottom-bar">
       <a class="btn btn-primary btn-block" href="#/book/${o.id}">${bookLabel}</a>
     </div>`);
+
+  // Notes and issues redraw in place, so the rep keeps their scroll position.
+  tools.wire(view, o, (part) => {
+    const el = view.querySelector(`[data-part="${part}"]`);
+    if (el) mount(el, part === 'notes' ? notesCard(o, v, today) : tools.issuesBadge(o));
+  });
 }
 
 function notFound(view, id) {
@@ -110,7 +117,7 @@ function lastOrderCard(all, v, today, visitedToday) {
   return card('calendar', t('card.lastOrder'), html`<dl class="kv">
     ${last
       ? html`<div><dt>${t('kv.lastOrder')}</dt><dd>${fmt.shortDate(last.date)} <span class="muted">· ${fmt.relative(last.date, today)}</span></dd></div>
-        <div><dt>${t('kv.cases')}</dt><dd>${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}</dd></div>
+        <details class="kv-expand"><summary><span class="kv-dt">${t('kv.cases')}</span><span class="kv-dd">${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}${icon('chevron', 'collapse-chev')}</span></summary>${tools.orderLinesHtml(last)}</details>
         <div><dt>${t('kv.value')}</dt><dd>${fmt.rupees(last.netValue)}</dd></div>`
       : html`<div><dt>${t('kv.lastOrder')}</dt><dd class="muted">${t('kv.noOrders')}</dd></div>`}
     <div><dt>${t('kv.lastVisit')}</dt><dd>${lastVisit ? html`${fmt.shortDate(lastVisit.date)} <span class="muted">· ${fmt.relative(lastVisit.date, today)}${lastVisit.minutes ? ` · ${t('kv.minutes', { n: lastVisit.minutes })}` : ''}</span>` : html`<span class="muted">${t('kv.noVisits')}</span>`}</dd></div>
@@ -249,9 +256,9 @@ function bookingsCard(o, today) {
     <p class="fine">${upcoming.length > 3 ? `${t('bookings.next', { n: upcoming.length, date: fmt.shortDate(upcoming.at(-1).date), cases: fmt.casesText(total) })} ` : ''}${t('bookings.note')}</p>`);
 }
 
-function notesCard(v, today) {
-  const notes = (v?.visits ?? []).filter((x) => x.note && x.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 2);
-  return card('note', t('card.notes'), notes.length
-    ? html`<ul class="notes">${notes.map((n) => html`<li><p class="note-date">${fmt.shortDate(n.date)}</p><p>${n.note}</p></li>`)}</ul>`
-    : emptyState({ icon: 'note', title: t('notes.empty'), compact: true }));
+function notesCard(o, v, today) {
+  const notes = tools.notesList(o, v, today);
+  return html`<section class="card"><div class="card-head"><h2 class="card-title">${icon('note')}<span>${t('card.notes')}</span></h2>
+    <button type="button" class="btn btn-ghost btn-compact" data-tool="note">${icon('plus')}<span>${t('f.tools.addNote')}</span></button></div>
+    ${notes.length ? tools.notesHtml(notes) : emptyState({ icon: 'note', title: t('notes.empty'), compact: true })}</section>`;
 }

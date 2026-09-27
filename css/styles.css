@@ -813,3 +813,49 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 .defs dt { font-weight: 700; font-size: var(--t-sm); }
 .defs dd { font-size: var(--t-sm); color: var(--ink-2); }
 .card .fine { margin-top: var(--s3); }
+
+/* outlet tools */
+.outlet-title { display: flex; align-items: flex-start; gap: var(--s2); flex-wrap: wrap; }
+.outlet-title .outlet-name { flex: 1 1 auto; min-width: 0; }
+.issue-badge { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 4px; padding: 0 12px; border: 0; border-radius: var(--pill); background: var(--danger-bg); color: var(--danger-ink); font-size: var(--t-xs); font-weight: 750; }
+.issue-badge .icon { width: 15px; height: 15px; }
+.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); margin-top: var(--s3); }
+.tool { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: var(--s2) 4px; border: 1px solid var(--line); border-radius: var(--r2); background: var(--card); color: var(--ink-2); font-size: var(--t-xs); font-weight: 650; text-decoration: none; box-shadow: var(--shadow-card); }
+.tool .icon { width: 22px; height: 22px; color: var(--accent); }
+.tool:active { background: var(--press); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); margin: -8px 0 var(--s2); }
+.card-head .card-title { margin: 0; }
+.notes > li.is-fresh { position: relative; }
+.note-date .icon { width: 13px; height: 13px; vertical-align: -2px; }
+.textarea { height: auto; min-height: 96px; padding: var(--s3); resize: vertical; line-height: 1.45; font: inherit; }
+.mic.is-on { background: var(--danger-bg); color: var(--danger-ink); border-color: #f3c3bd; }
+.mic.is-on .icon { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+.cat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-chips .chip { min-height: 40px; }
+.issue-list > li { padding: var(--s3) 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+.issue-list > li:first-child { border-top: 0; }
+.issue-list > li:not(.is-open) > p:not(.issue-meta) { color: var(--muted); }
+.issue-meta { display: flex; align-items: center; gap: var(--s2); font-size: var(--t-xs); }
+.call-num { display: flex; align-items: center; gap: var(--s2); padding: var(--s3); border-radius: var(--r2); background: var(--paper); font-weight: 650; }
+.prep { display: grid; gap: var(--s2); }
+.prep li { display: flex; gap: var(--s2); align-items: flex-start; font-size: var(--t-sm); color: var(--ink-2); }
+.prep .icon { width: 18px; height: 18px; color: var(--accent); margin-top: 1px; }
+.warn-box { display: flex; gap: var(--s2); align-items: flex-start; padding: var(--s3); border-radius: var(--r2); background: var(--caution-bg); color: var(--caution-ink); font-weight: 600; font-size: var(--t-sm); }
+.kv-expand { padding: 10px 0; border-top: 1px solid var(--line); }
+.kv-expand > summary { display: flex; justify-content: space-between; gap: var(--s3); list-style: none; cursor: pointer; min-height: 28px; align-items: center; }
+.kv-expand > summary::-webkit-details-marker { display: none; }
+.kv-dt { color: var(--ink-2); }
+.kv-dd { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--accent); }
+.kv-expand[open] .collapse-chev { transform: rotate(90deg); }
+.order-lines { margin-top: var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r1); background: var(--paper); }
+.order-lines li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--s3); align-items: baseline; padding: 6px 0; font-size: var(--t-sm); border-top: 1px solid var(--line); }
+.order-lines li:first-child { border-top: 0; }
+.ol-name { display: flex; flex-direction: column; font-weight: 600; min-width: 0; }
+.ol-pack, .soh-meta { font-size: var(--t-xs); color: var(--muted); font-weight: 400; }
+.ol-val { min-width: 64px; text-align: right; color: var(--ink-2); }
+.soh li { display: flex; justify-content: space-between; gap: var(--s3); padding: 8px 0; border-top: 1px solid var(--line); font-size: var(--t-sm); }
+.soh li:first-child { border-top: 0; }
+.soh-name { display: flex; flex-direction: column; min-width: 0; font-weight: 600; }
+.soh-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-weight: 700; }
+.soh-val .pill { min-height: 20px; padding: 0 8px; }

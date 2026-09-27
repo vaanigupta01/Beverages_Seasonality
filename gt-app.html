@@ -829,6 +829,52 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 .defs dt { font-weight: 700; font-size: var(--t-sm); }
 .defs dd { font-size: var(--t-sm); color: var(--ink-2); }
 .card .fine { margin-top: var(--s3); }
+
+/* outlet tools */
+.outlet-title { display: flex; align-items: flex-start; gap: var(--s2); flex-wrap: wrap; }
+.outlet-title .outlet-name { flex: 1 1 auto; min-width: 0; }
+.issue-badge { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 4px; padding: 0 12px; border: 0; border-radius: var(--pill); background: var(--danger-bg); color: var(--danger-ink); font-size: var(--t-xs); font-weight: 750; }
+.issue-badge .icon { width: 15px; height: 15px; }
+.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); margin-top: var(--s3); }
+.tool { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: var(--s2) 4px; border: 1px solid var(--line); border-radius: var(--r2); background: var(--card); color: var(--ink-2); font-size: var(--t-xs); font-weight: 650; text-decoration: none; box-shadow: var(--shadow-card); }
+.tool .icon { width: 22px; height: 22px; color: var(--accent); }
+.tool:active { background: var(--press); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); margin: -8px 0 var(--s2); }
+.card-head .card-title { margin: 0; }
+.notes > li.is-fresh { position: relative; }
+.note-date .icon { width: 13px; height: 13px; vertical-align: -2px; }
+.textarea { height: auto; min-height: 96px; padding: var(--s3); resize: vertical; line-height: 1.45; font: inherit; }
+.mic.is-on { background: var(--danger-bg); color: var(--danger-ink); border-color: #f3c3bd; }
+.mic.is-on .icon { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+.cat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-chips .chip { min-height: 40px; }
+.issue-list > li { padding: var(--s3) 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+.issue-list > li:first-child { border-top: 0; }
+.issue-list > li:not(.is-open) > p:not(.issue-meta) { color: var(--muted); }
+.issue-meta { display: flex; align-items: center; gap: var(--s2); font-size: var(--t-xs); }
+.call-num { display: flex; align-items: center; gap: var(--s2); padding: var(--s3); border-radius: var(--r2); background: var(--paper); font-weight: 650; }
+.prep { display: grid; gap: var(--s2); }
+.prep li { display: flex; gap: var(--s2); align-items: flex-start; font-size: var(--t-sm); color: var(--ink-2); }
+.prep .icon { width: 18px; height: 18px; color: var(--accent); margin-top: 1px; }
+.warn-box { display: flex; gap: var(--s2); align-items: flex-start; padding: var(--s3); border-radius: var(--r2); background: var(--caution-bg); color: var(--caution-ink); font-weight: 600; font-size: var(--t-sm); }
+.kv-expand { padding: 10px 0; border-top: 1px solid var(--line); }
+.kv-expand > summary { display: flex; justify-content: space-between; gap: var(--s3); list-style: none; cursor: pointer; min-height: 28px; align-items: center; }
+.kv-expand > summary::-webkit-details-marker { display: none; }
+.kv-dt { color: var(--ink-2); }
+.kv-dd { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--accent); }
+.kv-expand[open] .collapse-chev { transform: rotate(90deg); }
+.order-lines { margin-top: var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r1); background: var(--paper); }
+.order-lines li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--s3); align-items: baseline; padding: 6px 0; font-size: var(--t-sm); border-top: 1px solid var(--line); }
+.order-lines li:first-child { border-top: 0; }
+.ol-name { display: flex; flex-direction: column; font-weight: 600; min-width: 0; }
+.ol-pack, .soh-meta { font-size: var(--t-xs); color: var(--muted); font-weight: 400; }
+.ol-val { min-width: 64px; text-align: right; color: var(--ink-2); }
+.soh li { display: flex; justify-content: space-between; gap: var(--s3); padding: 8px 0; border-top: 1px solid var(--line); font-size: var(--t-sm); }
+.soh li:first-child { border-top: 0; }
+.soh-name { display: flex; flex-direction: column; min-width: 0; font-weight: 600; }
+.soh-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-weight: 700; }
+.soh-val .pill { min-height: 20px; padding: 0 8px; }
 </style>
 </head>
 <body>
@@ -1344,6 +1390,73 @@ const FIELD_EN = {
   'f.lb.short.focusCoveragePct': 'Focus SKU reach',
   'f.lb.short.monthTargetPct': 'April target',
   'f.lb.short.casesOrdered': 'Cases',
+
+  // outlet tools
+  'f.tools.label': 'Outlet actions',
+  'f.tools.call': 'Call',
+  'f.tools.note': 'Note',
+  'f.tools.issue': 'Issue',
+  'f.tools.addNote': 'Add note',
+  'f.call.title': 'Call {name}',
+  'f.call.owner': 'the owner',
+  'f.call.demoNumber': 'Demo: no phone number on file',
+  'f.call.ask': 'Ask if {owner} is at the shop and whether it is open today.',
+  'f.call.usual': 'You usually reach here around {time}. Confirm that suits them.',
+  'f.call.next': 'If today does not work, the next planned visit is {date}.',
+  'f.call.log': 'After the call, tap what you found out. It is saved as a note.',
+  'f.call.dial': 'Call now',
+  'f.call.dialDemo': 'Call (demo: will not dial)',
+  'f.call.noNumber': 'Demo: dialling is off because there is no real number on file',
+  'f.call.present': 'Owner is there · coming today',
+  'f.call.closed': 'Shop closed today',
+  'f.call.later': 'Call back later',
+  'f.call.note.present': 'Called ahead: owner at the shop, visit confirmed.',
+  'f.call.note.closed': 'Called ahead: shop closed today.',
+  'f.call.note.later': 'Called ahead: asked to call back later.',
+  'f.note.title': 'Add a note',
+  'f.note.label': 'What should you remember about {name}?',
+  'f.note.ph': 'e.g. Cooler full at 9 am; owner wants 2-litre bottles for the weekend',
+  'f.note.speak': 'Speak the note',
+  'f.note.listening': 'Listening… tap to stop',
+  'f.note.noVoice': 'Voice input is not available in this browser. Type the note instead.',
+  'f.note.micBlocked': 'Microphone blocked. Type the note instead.',
+  'f.note.micFail': 'Could not hear that. Try again or type the note.',
+  'f.note.save': 'Save note',
+  'f.note.saved': 'Note saved',
+  'f.note.voice': 'voice',
+  'f.note.call': 'call',
+  'f.issue.title': 'Report a retailer issue',
+  'f.issue.label': 'What is {name} unhappy about?',
+  'f.issue.ph': "e.g. Free case from March scheme still not received",
+  'f.issue.category': 'Category',
+  'f.issue.auto': 'The category is guessed from the words you type. Tap another one if it is wrong.',
+  'f.issue.save': 'Save issue',
+  'f.issue.saved': 'Issue saved · {cat}',
+  'f.issue.badge': { one: '1 open issue', other: '{n} open issues' },
+  'f.issue.listTitle': 'Issues · {name}',
+  'f.issue.resolve': 'Mark resolved',
+  'f.issue.resolved': 'Resolved',
+  'f.issue.cat.scheme': 'Scheme settlement',
+  'f.issue.cat.quality': 'Product quality',
+  'f.issue.cat.delay': 'Delayed order',
+  'f.issue.cat.missing': 'Missing or damaged',
+  'f.issue.cat.billing': 'Pricing or billing',
+  'f.issue.cat.other': 'Other',
+  'f.terr.pill': "{name}'s outlet",
+  'f.terr.title': 'Outside your territory',
+  'f.terr.body': "{name} belongs to {rep} ({territory}).",
+  'f.terr.incentive': 'Cross-territory orders count {pct}% towards your incentive. The rest goes to the outlet\'s own rep.',
+  'f.terr.go': 'Book anyway at {pct}% credit',
+  'f.terr.back': 'Go back',
+  'f.soh.title': 'Estimated stock on hand',
+  'f.soh.sum': '~{n} cases',
+  'f.soh.none': 'No estimate',
+  'f.soh.delivered': '{n} delivered {date}',
+  'f.soh.counted': 'Counted',
+  'f.soh.conf.high': 'High confidence',
+  'f.soh.conf.medium': 'Medium',
+  'f.soh.conf.low': 'Low confidence',
+  'f.soh.method': 'Estimated, not counted: last delivery minus modelled sales since then. Confidence falls as the delivery gets older. {counted} SKUs use your shelf count instead.',
 };
 
 return { FIELD_EN };
@@ -3499,6 +3612,397 @@ function row(o, onRoute, today) {
 return { render };
 })();
 
+/* ==================== js/feature/store.js ==================== */
+modules['feature/store'] = (() => {
+// What the rep records during the demo, kept in this browser only: clock-in sessions,
+// outlet notes, retailer issues and which Landing alerts were already opened.
+// One localStorage key; "Reset demo" clears it (with the demo orders).
+//
+// Times of day (clock in/out, when a note was written) use the device clock. The date
+// always comes from config.demoDate, so the demo stays on Tue 28 Apr 2026.
+
+const KEY = 'gtapp.field.v1';
+const EMPTY = () => ({ clock: { sessions: [] }, notes: {}, issues: {}, seenAlerts: [] });
+let memory = EMPTY();
+let useMemory = false;
+
+function read() {
+  if (useMemory) return memory;
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    return parsed ? { ...EMPTY(), ...parsed } : EMPTY();
+  } catch {
+    return memory;
+  }
+}
+
+/** update((state) => { …mutate… }) → the saved state. */
+function update(fn) {
+  const state = read();
+  fn(state);
+  memory = state;
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { useMemory = true; }
+  return state;
+}
+
+function reset() {
+  memory = EMPTY();
+  useMemory = false;
+  try { localStorage.removeItem(KEY); } catch { /* nothing stored */ }
+}
+
+/** "09:12" from the device clock. */
+const timeNow = () => new Date().toTimeString().slice(0, 5);
+const nowMs = () => Date.now();
+
+// ---- clock in / out ----------------------------------------------------------
+
+/** → { state: 'out'|'in'|'closed', since, sessions } for today. */
+function clockState() {
+  const { clock } = read();
+  const open = clock.sessions.find((s) => !s.outAt);
+  if (open) return { state: 'in', open, sessions: clock.sessions };
+  return { state: clock.sessions.length ? 'closed' : 'out', sessions: clock.sessions };
+}
+
+const clockIn = () => update((s) => { s.clock.sessions.push({ inAt: nowMs(), inTime: timeNow(), outAt: null, outTime: null }); });
+const clockOut = () => update((s) => {
+  const open = s.clock.sessions.find((x) => !x.outAt);
+  if (open) { open.outAt = nowMs(); open.outTime = timeNow(); }
+});
+
+/** Minutes on duty today, counting an open session up to now. */
+const dutyMinutes = () => clockState().sessions
+  .reduce((n, x) => n + Math.max(0, Math.round(((x.outAt ?? nowMs()) - x.inAt) / 60000)), 0);
+
+// ---- notes and issues ------------------------------------------------------------
+
+const notesFor = (outletId) => read().notes[outletId] ?? [];
+const addNote = (outletId, text, via) => update((s) => {
+  (s.notes[outletId] ??= []).unshift({ at: nowMs(), time: timeNow(), text, via });
+});
+
+const issuesFor = (outletId) => read().issues[outletId] ?? [];
+const openIssues = (outletId) => issuesFor(outletId).filter((i) => i.status === 'open');
+const addIssue = (outletId, issue) => update((s) => {
+  (s.issues[outletId] ??= []).unshift({ id: `ISS-${nowMs().toString(36)}`, at: nowMs(), time: timeNow(), status: 'open', ...issue });
+});
+const resolveIssue = (outletId, id) => update((s) => {
+  const it = (s.issues[outletId] ?? []).find((x) => x.id === id);
+  if (it) { it.status = 'resolved'; it.resolvedTime = timeNow(); }
+});
+
+// ---- alerts ----------------------------------------------------------------------
+
+const seen = (id) => read().seenAlerts.includes(id);
+const markSeen = (id) => update((s) => { if (!s.seenAlerts.includes(id)) s.seenAlerts.push(id); });
+
+return { read, update, reset, timeNow, nowMs, clockState, clockIn, clockOut, dutyMinutes, notesFor, addNote, issuesFor, openIssues, addIssue, resolveIssue, seen, markSeen };
+})();
+
+/* ==================== js/feature/outlet-tools.js ==================== */
+modules['feature/outlet-tools'] = (() => {
+// Outlet details tools: call before the visit, add a note (typed or spoken), report a
+// retailer issue, see open issues, the other rep's territory, the last order's SKUs and the
+// estimated stock on hand. Notes and issues are saved in this browser (feature/store.js).
+
+const data = modules['data'];
+const fmt = modules['format'];
+const { t, lang } = modules['i18n'];
+const { html, icon, pill, openSheet, toast } = modules['ui'];
+const store = modules['feature/store'];
+
+// Dialling is off in the demo: the dataset has no phone numbers, and a made-up number
+// could belong to a real person. With real numbers in outlets[].phone, set this to true.
+const CALL_ENABLED = false;
+
+// ---- territory ------------------------------------------------------------------
+
+/** The other rep when this outlet isn't in the signed-in rep's territory, else null. */
+function otherRep(o) {
+  const rep = data.repFor(o.id);
+  return rep && rep.id !== data.myRepId() ? rep : null;
+}
+
+const territoryPill = (o) => {
+  const rep = otherRep(o);
+  return rep ? pill(t('f.terr.pill', { name: rep.name }), 'caution', 'flag') : '';
+};
+
+/** Asks before booking at another rep's outlet → true to go ahead. */
+async function confirmCrossTerritory(o) {
+  const rep = otherRep(o);
+  if (!rep) return true;
+  const pct = data.field().crossTerritory?.incentiveCreditPct ?? 50;
+  const key = await openSheet({
+    title: t('f.terr.title'),
+    body: html`<p class="sheet-lede">${t('f.terr.body', { name: o.name, rep: rep.name, territory: rep.territory })}</p>
+      <div class="warn-box">${icon('alert')}<p>${t('f.terr.incentive', { pct })}</p></div>
+      <p class="fine">${data.field().crossTerritory?.rule ?? ''}</p>`,
+    actions: [
+      { key: 'go', label: t('f.terr.go', { pct }), tone: 'primary' },
+      { key: 'back', label: t('f.terr.back'), tone: 'secondary' },
+    ],
+    dismissKey: 'back',
+  });
+  return key === 'go';
+}
+
+// ---- header actions ----------------------------------------------------------------
+
+const actionsRow = (o, directionsHref) => html`<div class="tools" role="group" aria-label="${t('f.tools.label')}">
+  <button type="button" class="tool" data-tool="call">${icon('phone')}<span>${t('f.tools.call')}</span></button>
+  <button type="button" class="tool" data-tool="note">${icon('mic')}<span>${t('f.tools.note')}</span></button>
+  <button type="button" class="tool" data-tool="issue">${icon('flag')}<span>${t('f.tools.issue')}</span></button>
+  <a class="tool" href="${directionsHref}" target="_blank" rel="noopener noreferrer">${icon('map')}<span>${t('outlet.directions')}</span></a>
+</div>`;
+
+function issuesBadge(o) {
+  const n = store.openIssues(o.id).length;
+  return n ? html`<button type="button" class="issue-badge" data-tool="issues">${icon('flag')}<span>${t('f.issue.badge', { n })}</span></button>` : '';
+}
+
+/** Wires the tool buttons inside `root`. `refresh(part)` redraws 'notes' or 'issues'. */
+function wire(root, o, refresh) {
+  root.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-tool]');
+    if (!btn) return;
+    const tool = btn.dataset.tool;
+    if (tool === 'call') await callSheet(o, refresh);
+    if (tool === 'note' && await noteSheet(o)) refresh('notes');
+    if (tool === 'issue' && await issueSheet(o)) refresh('issues');
+    if (tool === 'issues') { await issuesList(o); refresh('issues'); }
+  });
+}
+
+// ---- call ------------------------------------------------------------------------
+
+/** When the rep usually checks in here, from the last visits' check-in times. */
+function usualTime(o) {
+  const times = (data.visits(o.id)?.visits ?? []).filter((v) => v.done && v.checkIn).slice(-6).map((v) => v.checkIn).sort();
+  return times.length ? times[Math.floor(times.length / 2)] : null;
+}
+
+async function callSheet(o, refresh) {
+  const v = data.visits(o.id);
+  const usual = usualTime(o);
+  const owner = o.owner?.name ?? t('f.call.owner');
+  const key = await openSheet({
+    title: t('f.call.title', { name: o.name }),
+    body: html`<p class="call-num">${icon('phone')}<span>${CALL_ENABLED && o.phone ? o.phone : t('f.call.demoNumber')}</span></p>
+      <ul class="prep">
+        <li>${icon('store')}<span>${t('f.call.ask', { owner })}</span></li>
+        ${usual ? html`<li>${icon('clock')}<span>${t('f.call.usual', { time: usual })}</span></li>` : ''}
+        ${v?.nextVisitAfterToday ? html`<li>${icon('calendar')}<span>${t('f.call.next', { date: fmt.shortDate(v.nextVisitAfterToday) })}</span></li>` : ''}
+      </ul>
+      <p class="fine">${t('f.call.log')}</p>`,
+    actions: [
+      { key: 'dial', label: CALL_ENABLED && o.phone ? t('f.call.dial') : t('f.call.dialDemo'), tone: 'success' },
+      { key: 'present', label: t('f.call.present'), tone: 'secondary' },
+      { key: 'closed', label: t('f.call.closed'), tone: 'secondary' },
+      { key: 'later', label: t('f.call.later'), tone: 'secondary' },
+    ],
+    dismissKey: null,
+  });
+  if (key === 'dial') {
+    if (CALL_ENABLED && o.phone) location.href = `tel:${o.phone.replace(/\s/g, '')}`;
+    else toast(t('f.call.noNumber'), 'info');
+  } else if (key && key !== 'route-change') {
+    store.addNote(o.id, t(`f.call.note.${key}`), 'call');
+    toast(t('f.note.saved'));
+    refresh('notes');
+  }
+}
+
+// ---- notes (typed or spoken) ----------------------------------------------------------
+
+const Speech = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+const SPEECH_LANG = { en: 'en-IN', mr: 'mr-IN', hi: 'hi-IN' };
+
+async function noteSheet(o) {
+  let via = 'typed';
+  let rec = null;
+  let box = null;
+  const key = await openSheet({
+    title: t('f.note.title'),
+    body: html`<label class="field"><span class="field-label">${t('f.note.label', { name: o.name })}</span>
+        <textarea class="input textarea" rows="4" data-text placeholder="${t('f.note.ph')}"></textarea></label>
+      ${Speech
+        ? html`<button type="button" class="btn btn-secondary btn-block mic" data-mic aria-pressed="false">${icon('mic')}<span data-mic-label>${t('f.note.speak')}</span></button>`
+        : html`<p class="fine">${icon('info')} ${t('f.note.noVoice')}</p>`}`,
+    actions: [
+      { key: 'save', label: t('f.note.save'), tone: 'primary' },
+      { key: 'cancel', label: t('common.cancel'), tone: 'secondary' },
+    ],
+    dismissKey: 'cancel',
+    onOpen(sheet) {
+      box = sheet.querySelector('[data-text]');
+      box.focus();
+      const mic = sheet.querySelector('[data-mic]');
+      if (!mic) return;
+      mic.addEventListener('click', () => {
+        if (rec) { rec.stop(); return; }
+        rec = new Speech();
+        rec.lang = SPEECH_LANG[lang()] ?? 'en-IN';
+        rec.interimResults = true;
+        const before = box.value ? `${box.value.trim()} ` : '';
+        rec.onresult = (ev) => {
+          box.value = before + [...ev.results].map((r) => r[0].transcript).join(' ');
+          via = 'voice';
+        };
+        const done = () => { rec = null; mic.setAttribute('aria-pressed', 'false'); mic.classList.remove('is-on'); mic.querySelector('[data-mic-label]').textContent = t('f.note.speak'); };
+        rec.onend = done;
+        rec.onerror = (ev) => { done(); toast(ev.error === 'not-allowed' ? t('f.note.micBlocked') : t('f.note.micFail'), 'info'); };
+        rec.start();
+        mic.setAttribute('aria-pressed', 'true'); mic.classList.add('is-on');
+        mic.querySelector('[data-mic-label]').textContent = t('f.note.listening');
+      });
+    },
+  });
+  rec?.stop();
+  const text = box?.value.trim();
+  if (key !== 'save' || !text) return false;
+  store.addNote(o.id, text, via);
+  toast(t('f.note.saved'));
+  return true;
+}
+
+/** Notes recorded today (this browser) first, then the rep's notes from past visits. */
+function notesList(o, v, today) {
+  const mine = store.notesFor(o.id).map((n) => ({ date: today, time: n.time, text: n.text, via: n.via, fresh: true }));
+  const past = (v?.visits ?? []).filter((x) => x.note && x.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 3)
+    .map((x) => ({ date: x.date, text: x.note }));
+  return [...mine, ...past];
+}
+
+const notesHtml = (list) => html`<ul class="notes">${list.map((n) => html`<li class="${n.fresh ? 'is-fresh' : ''}">
+  <p class="note-date">${fmt.shortDate(n.date)}${n.time ? ` · ${n.time}` : ''}${n.via === 'voice' ? html` · ${icon('mic')} ${t('f.note.voice')}` : ''}${n.via === 'call' ? html` · ${icon('phone')} ${t('f.note.call')}` : ''}</p>
+  <p>${n.text}</p></li>`)}</ul>`;
+
+// ---- issues ------------------------------------------------------------------------
+
+/** Deterministic keyword classifier: the category with the most keyword hits, else "other".
+ *  Keywords include common Hinglish / Marathi spellings reps type. */
+const ISSUE_CATEGORIES = {
+  scheme: ['scheme', 'claim', 'free case', 'free cases', 'settle', 'settlement', 'credit note', 'offer', 'not received', 'incentive', 'shelf strip', 'purity', 'payout', 'scheme ka'],
+  quality: ['quality', 'taste', 'flat', 'no gas', 'gas', 'fizz', 'expired', 'expiry', 'expire', 'smell', 'fungus', 'dirty', 'cloudy', 'bad', 'kharab', 'kharaab', 'kharab maal', 'kachra'],
+  delay: ['late', 'delay', 'delayed', 'not delivered', 'no delivery', 'pending', 'did not come', "didn't come", 'not come', 'next day', 'waiting', 'nahi aaya', 'nahi aya', 'aala nahi', 'ushir', 'der'],
+  missing: ['missing', 'short', 'less', 'damaged', 'damage', 'broken', 'crushed', 'leak', 'leaking', 'torn', 'dent', 'kam', 'toota', 'phuta', 'futla'],
+  billing: ['bill', 'billing', 'invoice', 'price', 'rate', 'overcharged', 'charged', 'mrp', 'gst', 'amount', 'extra money', 'margin', 'paisa', 'paise', 'jyada', 'jast'],
+};
+
+function classifyIssue(text) {
+  const s = ` ${String(text).toLowerCase().replace(/[^a-z0-9ऀ-ॿ' ]+/g, ' ')} `;
+  let best = 'other'; let top = 0;
+  for (const [cat, words] of Object.entries(ISSUE_CATEGORIES)) {
+    const hits = words.reduce((n, w) => n + (s.includes(` ${w} `) || (w.includes(' ') && s.includes(w)) ? 1 : 0), 0);
+    if (hits > top) { best = cat; top = hits; }
+  }
+  return best;
+}
+
+const CATS = [...Object.keys(ISSUE_CATEGORIES), 'other'];
+
+async function issueSheet(o) {
+  let box = null;
+  let chosen = null;      // set when the rep taps a category (overrides the guess)
+  const key = await openSheet({
+    title: t('f.issue.title'),
+    body: html`<label class="field"><span class="field-label">${t('f.issue.label', { name: o.name })}</span>
+        <textarea class="input textarea" rows="4" data-text placeholder="${t('f.issue.ph')}"></textarea></label>
+      <p class="field-label">${t('f.issue.category')}</p>
+      <div class="cat-chips" role="group">${CATS.map((c) => html`<button type="button" class="chip" data-cat-pick="${c}" aria-pressed="${c === 'other'}">${t(`f.issue.cat.${c}`)}</button>`)}</div>
+      <p class="fine">${t('f.issue.auto')}</p>`,
+    actions: [
+      { key: 'save', label: t('f.issue.save'), tone: 'primary' },
+      { key: 'cancel', label: t('common.cancel'), tone: 'secondary' },
+    ],
+    dismissKey: 'cancel',
+    onOpen(sheet) {
+      box = sheet.querySelector('[data-text]');
+      const chips = [...sheet.querySelectorAll('[data-cat-pick]')];
+      const show = (c) => chips.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.catPick === c)));
+      box.addEventListener('input', () => { if (!chosen) show(classifyIssue(box.value)); });
+      chips.forEach((b) => b.addEventListener('click', () => { chosen = b.dataset.catPick; show(chosen); }));
+      box.focus();
+    },
+  });
+  const text = box?.value.trim();
+  if (key !== 'save' || !text) return false;
+  const category = chosen ?? classifyIssue(text);
+  store.addIssue(o.id, { text, category, auto: !chosen });
+  toast(t('f.issue.saved', { cat: t(`f.issue.cat.${category}`) }));
+  return true;
+}
+
+async function issuesList(o) {
+  const list = store.issuesFor(o.id);
+  await openSheet({
+    title: t('f.issue.listTitle', { name: o.name }),
+    body: html`<ul class="issue-list">${list.map((i) => html`<li class="${i.status === 'open' ? 'is-open' : ''}">
+      <p class="issue-meta">${pill(t(`f.issue.cat.${i.category}`), i.status === 'open' ? 'caution' : 'neutral')} <span class="muted">${i.time}${i.status === 'resolved' ? ` · ${t('f.issue.resolved')}` : ''}</span></p>
+      <p>${i.text}</p>
+      ${i.status === 'open' ? html`<button type="button" class="btn btn-ghost btn-compact" data-resolve="${i.id}">${icon('check')}<span>${t('f.issue.resolve')}</span></button>` : ''}
+    </li>`)}</ul>`,
+    actions: [{ key: 'close', label: t('common.close'), tone: 'secondary' }],
+    dismissKey: 'close',
+    onOpen(sheet) {
+      sheet.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-resolve]');
+        if (!b) return;
+        store.resolveIssue(o.id, b.dataset.resolve);
+        const li = b.closest('li');
+        li.classList.remove('is-open');
+        b.replaceWith(document.createTextNode(t('f.issue.resolved')));
+      });
+    },
+  });
+}
+
+// ---- last order SKUs and stock on hand ---------------------------------------------------
+
+/** The last order's lines: SKU, quantity, pack and value at today's rate. */
+function orderLinesHtml(order) {
+  const rows = order.lines.filter((l) => l.cases || l.freeCases).map((l) => {
+    const p = data.product(l.sku);
+    return { name: p?.name ?? l.sku, pack: p ? `${p.unitsPerCase} × ${p.pack.ml >= 1000 ? `${p.pack.ml / 1000} L` : `${p.pack.ml} ml`}` : '', cases: l.cases, free: l.freeCases, value: p ? l.cases * p.ptrPerCase : null, label: p?.caseLabel };
+  });
+  return html`<ul class="order-lines">${rows.map((r) => html`<li>
+    <span class="ol-name">${r.name}<span class="ol-pack">${r.pack}</span></span>
+    <span class="ol-qty num">${fmt.unitsText(r.cases, r.label)}${r.free ? html` <span class="muted">+${r.free}</span>` : ''}</span>
+    <span class="ol-val num">${r.value != null ? fmt.rupees(r.value) : ''}</span>
+  </li>`)}</ul>`;
+}
+
+const CONF = { high: 'ok', medium: 'info', low: 'caution' };
+
+function stockOnHandCard(o) {
+  const rows = data.onHand(o.id).slice().sort((a, b) => (b.repCountedCases ?? b.estimatedCasesOnHand) - (a.repCountedCases ?? a.estimatedCasesOnHand));
+  const total = rows.reduce((n, r) => n + (r.repCountedCases ?? r.estimatedCasesOnHand), 0);
+  const counted = rows.filter((r) => r.repCountedCases != null).length;
+  return html`<details class="card collapse" data-card="onhand">
+    <summary class="collapse-head">
+      <span class="card-title">${icon('box')}<span>${t('f.soh.title')}</span></span>
+      <span class="collapse-sum">${rows.length ? t('f.soh.sum', { n: fmt.num(Math.round(total)) }) : t('f.soh.none')}</span>
+      ${icon('chevron', 'collapse-chev')}
+    </summary>
+    <div class="collapse-body">
+      ${rows.length ? html`<ul class="soh">${rows.map((r) => {
+        const p = data.product(r.sku);
+        const val = r.repCountedCases ?? r.estimatedCasesOnHand;
+        return html`<li>
+          <span class="soh-name">${p?.name ?? r.sku}<span class="soh-meta">${t('f.soh.delivered', { n: r.lastDeliveredCases, date: fmt.shortDate(r.lastDeliveredOn) })}</span></span>
+          <span class="soh-val"><span class="num">~${fmt.num(Math.round(val * 10) / 10)}</span>${r.repCountedCases != null ? pill(t('f.soh.counted'), 'ok') : pill(t(`f.soh.conf.${r.confidence}`), CONF[r.confidence] ?? 'neutral')}</span>
+        </li>`;
+      })}</ul>` : ''}
+      <p class="fine">${t('f.soh.method', { counted })}</p>
+    </div>
+  </details>`;
+}
+
+return { otherRep, territoryPill, confirmCrossTerritory, actionsRow, issuesBadge, wire, notesList, notesHtml, ISSUE_CATEGORIES, classifyIssue, orderLinesHtml, stockOnHandCard };
+})();
+
 /* ==================== js/screens/outlet.js ==================== */
 modules['screens/outlet'] = (() => {
 // Outlet details: who the outlet is, what it ordered, what it owes, which schemes apply.
@@ -3511,6 +4015,7 @@ const { cart } = modules['cart'];
 const fmt = modules['format'];
 const { t, label } = modules['i18n'];
 const { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState } = modules['ui'];
+const tools = modules['feature/outlet-tools'];
 
 /**
  * Google Maps directions to the outlet (two-wheeler, as reps ride motorbikes). Uses exact
@@ -3546,17 +4051,16 @@ function render(root, { id }) {
     <div class="page">
       <header class="outlet-head">
         ${personaTag(o)}
-        <h1 class="display outlet-name">${o.name}</h1>
+        <div class="outlet-title"><h1 class="display outlet-name">${o.name}</h1><span data-part="issues">${tools.issuesBadge(o)}</span></div>
         <p class="outlet-addr">${address}${o.locationContext ? html` <span class="muted">· ${o.locationContext}</span>` : ''}</p>
         <div class="row-tags">
           ${tierBadge(o, { visits: true })}
           ${pill(typeLabel, 'neutral')}
           ${v?.todayOnRoute ? pill(t('outlet.stop', { n: v.routeOrder }), 'info', 'route') : pill(t('outlets.notOnRoute'), 'neutral')}
+          ${tools.territoryPill(o)}
         </div>
-        <div class="outlet-actions">
-          ${o.owner?.name ? html`<p class="outlet-owner">${o.owner.role ? label('role', o.owner.role) : t('outlet.owner')}: ${o.owner.name}</p>` : html`<span></span>`}
-          <a class="btn btn-secondary btn-compact" href="${directionsUrl(o)}" target="_blank" rel="noopener noreferrer" aria-label="${t('outlet.directionsLabel', { name: o.name })}">${icon('map')}<span>${t('outlet.directions')}</span></a>
-        </div>
+        ${o.owner?.name ? html`<p class="outlet-owner">${o.owner.role ? label('role', o.owner.role) : t('outlet.owner')}: ${o.owner.name}</p>` : ''}
+        ${tools.actionsRow(o, directionsUrl(o))}
       </header>
 
       ${slot('outlet-brief')}
@@ -3578,16 +4082,23 @@ function render(root, { id }) {
       </section>`)}
 
       ${lastOrderCard(all, v, today, savedToday.length > 0)}
+      ${tools.stockOnHandCard(o)}
       ${paymentCard(o, today)}
       ${schemesCard(o, all, today)}
       ${historyCard(all, today)}
       ${coolerCard(o, today)}
       ${bookingsCard(o, today)}
-      ${notesCard(v, today)}
+      <div data-part="notes">${notesCard(o, v, today)}</div>
     </div>
     <div class="bottom-bar">
       <a class="btn btn-primary btn-block" href="#/book/${o.id}">${bookLabel}</a>
     </div>`);
+
+  // Notes and issues redraw in place, so the rep keeps their scroll position.
+  tools.wire(view, o, (part) => {
+    const el = view.querySelector(`[data-part="${part}"]`);
+    if (el) mount(el, part === 'notes' ? notesCard(o, v, today) : tools.issuesBadge(o));
+  });
 }
 
 function notFound(view, id) {
@@ -3613,7 +4124,7 @@ function lastOrderCard(all, v, today, visitedToday) {
   return card('calendar', t('card.lastOrder'), html`<dl class="kv">
     ${last
       ? html`<div><dt>${t('kv.lastOrder')}</dt><dd>${fmt.shortDate(last.date)} <span class="muted">· ${fmt.relative(last.date, today)}</span></dd></div>
-        <div><dt>${t('kv.cases')}</dt><dd>${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}</dd></div>
+        <details class="kv-expand"><summary><span class="kv-dt">${t('kv.cases')}</span><span class="kv-dd">${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}${icon('chevron', 'collapse-chev')}</span></summary>${tools.orderLinesHtml(last)}</details>
         <div><dt>${t('kv.value')}</dt><dd>${fmt.rupees(last.netValue)}</dd></div>`
       : html`<div><dt>${t('kv.lastOrder')}</dt><dd class="muted">${t('kv.noOrders')}</dd></div>`}
     <div><dt>${t('kv.lastVisit')}</dt><dd>${lastVisit ? html`${fmt.shortDate(lastVisit.date)} <span class="muted">· ${fmt.relative(lastVisit.date, today)}${lastVisit.minutes ? ` · ${t('kv.minutes', { n: lastVisit.minutes })}` : ''}</span>` : html`<span class="muted">${t('kv.noVisits')}</span>`}</dd></div>
@@ -3752,11 +4263,11 @@ function bookingsCard(o, today) {
     <p class="fine">${upcoming.length > 3 ? `${t('bookings.next', { n: upcoming.length, date: fmt.shortDate(upcoming.at(-1).date), cases: fmt.casesText(total) })} ` : ''}${t('bookings.note')}</p>`);
 }
 
-function notesCard(v, today) {
-  const notes = (v?.visits ?? []).filter((x) => x.note && x.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 2);
-  return card('note', t('card.notes'), notes.length
-    ? html`<ul class="notes">${notes.map((n) => html`<li><p class="note-date">${fmt.shortDate(n.date)}</p><p>${n.note}</p></li>`)}</ul>`
-    : emptyState({ icon: 'note', title: t('notes.empty'), compact: true }));
+function notesCard(o, v, today) {
+  const notes = tools.notesList(o, v, today);
+  return html`<section class="card"><div class="card-head"><h2 class="card-title">${icon('note')}<span>${t('card.notes')}</span></h2>
+    <button type="button" class="btn btn-ghost btn-compact" data-tool="note">${icon('plus')}<span>${t('f.tools.addNote')}</span></button></div>
+    ${notes.length ? tools.notesHtml(notes) : emptyState({ icon: 'note', title: t('notes.empty'), compact: true })}</section>`;
 }
 
 return { directionsUrl, render };
@@ -4995,94 +5506,6 @@ function paymentPoint(o) {
 }
 
 return { install, pointsFor };
-})();
-
-/* ==================== js/feature/store.js ==================== */
-modules['feature/store'] = (() => {
-// What the rep records during the demo, kept in this browser only: clock-in sessions,
-// outlet notes, retailer issues and which Landing alerts were already opened.
-// One localStorage key; "Reset demo" clears it (with the demo orders).
-//
-// Times of day (clock in/out, when a note was written) use the device clock. The date
-// always comes from config.demoDate, so the demo stays on Tue 28 Apr 2026.
-
-const KEY = 'gtapp.field.v1';
-const EMPTY = () => ({ clock: { sessions: [] }, notes: {}, issues: {}, seenAlerts: [] });
-let memory = EMPTY();
-let useMemory = false;
-
-function read() {
-  if (useMemory) return memory;
-  try {
-    const parsed = JSON.parse(localStorage.getItem(KEY) ?? 'null');
-    return parsed ? { ...EMPTY(), ...parsed } : EMPTY();
-  } catch {
-    return memory;
-  }
-}
-
-/** update((state) => { …mutate… }) → the saved state. */
-function update(fn) {
-  const state = read();
-  fn(state);
-  memory = state;
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { useMemory = true; }
-  return state;
-}
-
-function reset() {
-  memory = EMPTY();
-  useMemory = false;
-  try { localStorage.removeItem(KEY); } catch { /* nothing stored */ }
-}
-
-/** "09:12" from the device clock. */
-const timeNow = () => new Date().toTimeString().slice(0, 5);
-const nowMs = () => Date.now();
-
-// ---- clock in / out ----------------------------------------------------------
-
-/** → { state: 'out'|'in'|'closed', since, sessions } for today. */
-function clockState() {
-  const { clock } = read();
-  const open = clock.sessions.find((s) => !s.outAt);
-  if (open) return { state: 'in', open, sessions: clock.sessions };
-  return { state: clock.sessions.length ? 'closed' : 'out', sessions: clock.sessions };
-}
-
-const clockIn = () => update((s) => { s.clock.sessions.push({ inAt: nowMs(), inTime: timeNow(), outAt: null, outTime: null }); });
-const clockOut = () => update((s) => {
-  const open = s.clock.sessions.find((x) => !x.outAt);
-  if (open) { open.outAt = nowMs(); open.outTime = timeNow(); }
-});
-
-/** Minutes on duty today, counting an open session up to now. */
-const dutyMinutes = () => clockState().sessions
-  .reduce((n, x) => n + Math.max(0, Math.round(((x.outAt ?? nowMs()) - x.inAt) / 60000)), 0);
-
-// ---- notes and issues ------------------------------------------------------------
-
-const notesFor = (outletId) => read().notes[outletId] ?? [];
-const addNote = (outletId, text, via) => update((s) => {
-  (s.notes[outletId] ??= []).unshift({ at: nowMs(), time: timeNow(), text, via });
-});
-
-const issuesFor = (outletId) => read().issues[outletId] ?? [];
-const openIssues = (outletId) => issuesFor(outletId).filter((i) => i.status === 'open');
-const addIssue = (outletId, issue) => update((s) => {
-  (s.issues[outletId] ??= []).unshift({ id: `ISS-${nowMs().toString(36)}`, at: nowMs(), time: timeNow(), status: 'open', ...issue });
-});
-const resolveIssue = (outletId, id) => update((s) => {
-  const it = (s.issues[outletId] ?? []).find((x) => x.id === id);
-  if (it) { it.status = 'resolved'; it.resolvedTime = timeNow(); }
-});
-
-// ---- alerts ----------------------------------------------------------------------
-
-const seen = (id) => read().seenAlerts.includes(id);
-const markSeen = (id) => update((s) => { if (!s.seenAlerts.includes(id)) s.seenAlerts.push(id); });
-
-return { read, update, reset, timeNow, nowMs, clockState, clockIn, clockOut, dutyMinutes, notesFor, addNote, issuesFor, openIssues, addIssue, resolveIssue, seen, markSeen };
 })();
 
 /* ==================== js/feature/landing.js ==================== */
