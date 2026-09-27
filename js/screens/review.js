@@ -1,4 +1,8 @@
-// Order review: lines, free cases, discounts, totals; edit or submit.
+// Order review: lines, totals and the scheme estimate; edit or submit.
+//
+// Schemes are informational (fa-data schemes.json → assumption): thresholds and benefits are
+// settled later by the distributor, never applied at booking. So the order is booked and
+// submitted at its full value, and scheme benefits are shown as an estimate beside it.
 
 import { app, router } from '../app.js';
 import * as data from '../data.js';
@@ -66,18 +70,24 @@ export function render(root, { id }) {
         <section class="card">
           <h2 class="card-title">${icon('wallet')}<span>${t('review.totals')}</span></h2>
           <dl class="kv totals">
-            <div><dt>${t('review.gross')}</dt><dd>${fmt.rupees(p.gross)}</dd></div>
-            ${p.discount ? html`<div><dt>${t('review.discounts')}</dt><dd>${fmt.rupees(-p.discount)}</dd></div>` : ''}
-            <div class="kv-total"><dt>${t('review.net')}</dt><dd>${fmt.rupees(p.net)}</dd></div>
-            <div><dt>${t('review.totalCases')}</dt><dd>${fmt.num(p.totalCases)}${p.freeCases ? html` <span class="muted">${t('review.paidFree', { paid: fmt.num(p.paidCases), free: fmt.num(p.freeCases) })}</span>` : ''}</dd></div>
+            <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(p.gross)}</dd></div>
+            <div><dt>${t('review.totalCases')}</dt><dd>${fmt.num(p.paidCases)}</dd></div>
           </dl>
+          ${p.discount || p.freeCases ? html`<div class="est-box">
+            <p class="est-title">${icon('tag')}<span>${t('review.estTitle')}</span></p>
+            <dl class="kv">
+              ${p.freeCases ? html`<div><dt>${t('review.estFree')}</dt><dd>${t('n.freeCase', { n: p.freeCases })}</dd></div>` : ''}
+              ${p.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(p.discount)}</dd></div>` : ''}
+            </dl>
+            <p class="fine">${t('review.estNote')}</p>
+          </div>` : ''}
         </section>
 
         ${slot('review-check')}
       </div>
       <div class="bottom-bar bottom-bar-split">
         <a class="btn btn-secondary" href="#/book/${o.id}">${t('review.editShort')}</a>
-        <button type="button" class="btn btn-primary" data-submit>${t('review.submit', { net: fmt.rupees(p.net) })}</button>
+        <button type="button" class="btn btn-primary" data-submit>${t('review.submit', { net: fmt.rupees(p.gross) })}</button>
       </div>`);
 
     let busy = false;
@@ -93,9 +103,10 @@ export function render(root, { id }) {
         outletId: o.id,
         lines: final.lines.map((l) => ({ sku: l.sku, cases: l.cases, freeCases: l.freeCases })),
         grossValue: final.gross,
-        discountValue: final.discount,
-        netValue: final.net,
+        discountValue: 0,
+        netValue: final.gross,          // booked value; schemes are settled later
         schemeIds: final.schemeIds,
+        schemeEstimate: { discount: final.discount, freeCases: final.freeCases, settledBy: 'distributor' },
       });
       cart.clear();
       toast(t('review.toast', { name: o.name }));

@@ -24,7 +24,7 @@ JS = ROOT / "js"
 OUTPUTS = [ROOT / "gt-app.html", ROOT / "index.html"]
 SHELL = ROOT / "scripts" / "shell.html"
 DATA_FILES = ["config", "outlets", "products", "schemes", "orders", "history", "visits",
-              "distributor_stock", "calendar", "peers", "current_stock"]
+              "distributor_stock", "calendar", "peers", "current_stock", "field"]
 
 IMPORT_NS = re.compile(r"""^import\s+\*\s+as\s+(\w+)\s+from\s+['"](.+?)['"];?\s*$""")
 IMPORT_NAMED = re.compile(r"""^import\s+\{([^}]*)\}\s+from\s+['"](.+?)['"];?\s*$""")

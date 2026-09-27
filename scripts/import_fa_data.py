@@ -146,6 +146,9 @@ for o in orders:
         hist[o["outletId"]][l["sku"]][i] += l["cases"]
 
 # ---- outlets -------------------------------------------------------------------
+# DEMO ADDITION: one beat of the territory belongs to a neighbouring rep, so the
+# cross-territory warning can be shown. Not in fa-data.
+NEIGHBOUR = {"id": "REP-02", "name": "Sagar Deshmukh", "subAreas": ["Someshwarwadi"]}
 COOLER = {"bottler": "bottler", "outlet-icebox": "ice-box", "outlet": "own-fridge", None: "none"}
 PAYMENT = {"credit": "credit", "cash": "cash"}
 power_cuts = {e["outletId"]: e for e in events if e["type"] == "power-cut" and e["endDate"] >= TODAY}
@@ -192,6 +195,7 @@ def outlet(o):
                    "lastPaymentDate": c["lastPaymentDate"], "paymentMode": PAYMENT.get(c["paymentMode"], c["paymentMode"]),
                    "paysCashAboveLimit": c["paysCashAboveLimit"], "requestedLimit": c["requestedLimit"]},
         "carryLimitCases": o["carryLimitCases"],
+        "repId": NEIGHBOUR["id"] if o["subArea"] in NEIGHBOUR["subAreas"] and not o["onTodaysRoute"] else "REP-01",
         "tags": [f"persona:{p['id']}", f"persona:{p['id']}|shop:{o['shopType']}"],
         "closures": closures(o),
         "bookings": bookings(o),
@@ -207,7 +211,8 @@ outlets = [outlet(o) for o in outlets_src]
 by_outlet = defaultdict(list)
 for v in visits_src["visits"]:
     row = {"date": v["date"], "planned": v["planned"], "done": v["completed"],
-           "minutes": v["durationMin"], "outcome": v["outcome"], "orderId": v["orderId"], "note": v["note"]}
+           "minutes": v["durationMin"], "outcome": v["outcome"], "orderId": v["orderId"], "note": v["note"],
+           "checkIn": (v.get("checkIn") or "")[11:16] or None}
     by_outlet[v["outletId"]].append({k: x for k, x in row.items() if x is not None})   # nulls dropped to save space
 visits = {o["outletId"]: {
     "cadenceDays": o["visitCadenceDays"], "todayOnRoute": o["onTodaysRoute"], "routeOrder": o["routeSequence"],
@@ -319,6 +324,74 @@ config = {
     "dataProvenance": cfg.get("dataProvenance"),
 }
 
+# ---- field.json: DEMO ADDITIONS (not in fa-data) ---------------------------------------
+# Everything below is synthetic and labelled so on screen. It covers what the prototype asks for
+# and the dataset doesn't carry: a district of reps, the pre-season target, newer-SKU evidence and
+# yesterday's distributor stock (to detect changes). Rohit's own leaderboard figures are NOT stored:
+# the app computes them from orders.json plus the orders placed in the demo.
+import random
+rng = random.Random(20260428)
+FOCUS = cfg["focusSkus"]
+PRE = {"from": "2026-03-01", "to": "2026-05-15"}
+PRE_LY = {"from": "2025-03-01", "to": "2025-05-15"}
+MINE = {o["outletId"] for o in outlets_src if not (o["subArea"] in NEIGHBOUR["subAreas"] and not o["onTodaysRoute"])}
+my_orders = [o for o in orders if o["outletId"] in MINE]
+focus_ly = sum(l["cases"] for o in my_orders if PRE_LY["from"] <= o["date"] <= PRE_LY["to"] for l in o["lines"] if l["sku"] in FOCUS)
+month_ly = sum(l["cases"] for o in my_orders if o["date"][:7] == "2025-04" for l in o["lines"])
+# Rohit's cases since 1 Mar, only to scale the synthetic reps so the board compares like with like.
+my_cases = sum(l["cases"] for o in my_orders if PRE["from"] <= o["date"] < TODAY for l in o["lines"])
+REP_NAMES = ["Sagar Deshmukh", "Pooja Kulkarni", "Amit Pawar", "Neha Bhosale", "Rahul Shinde", "Snehal Jadhav",
+             "Vikas More", "Kiran Gaikwad", "Ashwini Patil", "Tushar Chavan", "Manoj Salve"]
+TERRITORIES = ["Pune West · Pashan beat", "Aundh", "Baner", "Hadapsar", "Kharadi", "Viman Nagar", "Katraj",
+               "Sinhagad Road", "Pimpri", "Chinchwad", "Wakad"]
+leader = []
+for i, (name, terr) in enumerate(zip(REP_NAMES, TERRITORIES)):
+    outlets_n = rng.randint(150, 260)
+    leader.append({
+        "repId": f"REP-{i + 2:02d}", "name": name, "territory": terr, "outlets": outlets_n,
+        "preSeasonPct": rng.randint(52, 84), "productiveCallsPct": rng.randint(72, 92),
+        "activeOutletsPct": rng.randint(76, 95), "focusCoveragePct": rng.randint(84, 99),
+        "casesOrdered": round(my_cases * outlets_n / len(MINE) * rng.uniform(0.75, 1.2)),
+        "monthTargetPct": rng.randint(55, 92),
+    })
+new_skus = [
+    {"sku": "CLZ750", "label": "Newer pack", "pushFrom": "2026-03-01",
+     "offtake": {"region": "Nagpur", "units": 540, "unitLabel": "bottles", "weeks": 4, "synthetic": True,
+                 "text": "Sold to consumers in Nagpur's pilot kiranas in the first 4 weeks"}},
+    {"sku": "OR2250", "label": "Newer pack", "pushFrom": "2026-03-01",
+     "offtake": {"region": "Nashik", "units": 310, "unitLabel": "bottles", "weeks": 4, "synthetic": True,
+                 "text": "Sold to consumers in Nashik's pilot kiranas in the first 4 weeks"}},
+]
+field = {
+    "syntheticNote": "Demo additions for the prototype, not part of the Season Check dataset.",
+    "reps": [{"id": "REP-01", "name": cfg["rep"]["name"], "territory": cfg["rep"]["territory"]},
+             {"id": NEIGHBOUR["id"], "name": NEIGHBOUR["name"], "territory": "Pune West · Pashan beat",
+              "subAreas": NEIGHBOUR["subAreas"]}],
+    "crossTerritory": {"incentiveCreditPct": 50,
+                       "rule": "Orders booked at another rep's outlet count 50% towards your incentive; the other 50% goes to the outlet's own rep."},
+    "targets": {
+        "preSeason": {"label": "Pre-season placement", "measure": "Cases of the focus SKUs booked across your outlets",
+                      "skus": FOCUS, **PRE, "target": round(focus_ly * 1.10 / 10) * 10,
+                      "basis": f"Last year's same window at your outlets ({focus_ly:,} cases) + 10%"},
+        "month": {"label": "April volume", "measure": "All cases booked in April", "from": "2026-04-01", "to": "2026-04-30",
+                  "target": round(month_ly * 1.05 / 10) * 10, "basis": f"April 2025 at your outlets ({month_ly:,} cases) + 5%"},
+    },
+    "leaderboard": {"district": "Pune district", "period": PRE, "reps": leader,
+                    "definitions": {
+                        "preSeasonPct": "Focus-SKU cases booked since 1 Mar, as a share of the pre-season target",
+                        "productiveCallsPct": "Visits in the last 30 days that ended in an order",
+                        "activeOutletsPct": "Outlets that ordered at least once in the last 30 days",
+                        "focusCoveragePct": "Active outlets that bought at least one focus SKU in the last 30 days",
+                        "casesOrdered": "All cases booked since 1 Mar",
+                        "monthTargetPct": "April cases against the April target"}},
+    "newSkus": new_skus,
+    "stockYesterday": {"asOf": "2026-04-27", "items": [
+        {"sku": "CL250", "status": "rationed", "rationPerOutletCases": 4, "note": "Ration of 4 paid cases per outlet"},
+        {"sku": "MG600", "status": "out-of-stock", "note": "Out since 24 Apr"},
+        {"sku": "CL200G", "status": "rationed-against-empties", "note": "Crate float short through the peak"},
+        {"sku": "EN300C", "status": "low", "note": "Slow-moving; limited holding"}]},
+}
+
 # ---- write ----------------------------------------------------------------------------
 print("Writing data/ from fa-data/data/")
 dump("config", config, "Demo settings, from fa-data demo_config.json.")
@@ -337,5 +410,6 @@ dump("distributor_stock", {"asOf": stock_src["syncedAt"][:10], "syncedAt": stock
 dump("calendar", {"forecast": forecast, "climatology": climatology, "events": cal_events},
      "Dated events from events.json. Forecast derived from the heatwave event spanning the demo date.")
 dump("peers", {"minimumGroupSize": 8, "groups": groups}, "Peer groups from peers.json. Aggregated and anonymised.")
+dump("field", field, "DEMO ADDITIONS, synthetic: territory split, district reps, targets, newer-SKU evidence, yesterday's stock.")
 dump("current_stock", {"asOf": cs["asOf"], "method": cs["method"], "rows": cs["rows"]},
      "Estimated cases on hand per outlet and SKU on the demo date, from current_stock.json. Estimated, never measured.")

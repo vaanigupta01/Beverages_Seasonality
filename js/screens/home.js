@@ -34,6 +34,7 @@ export function render(root) {
         <p class="eyebrow">${fmt.date(today, { long: true })}</p>
         <p class="display hero-title">${t('home.hi', { name: firstName })}</p>
         <p class="hero-sub">${[name, label('repRole', cfg.rep?.role), cfg.distributor?.name].filter(Boolean).join(' · ')}</p>
+        ${slot('landing-clock', { tag: 'div' })}
       </header>
 
       <section class="card progress ${done ? 'is-done' : ''}" aria-label="${t('home.progress')}">

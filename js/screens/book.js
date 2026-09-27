@@ -58,7 +58,7 @@ function askSwitch(root, o, startHere) {
   const ask = async () => {
     const key = await openSheet({
       title: t('book.unsavedTitle'),
-      body: html`<p>${t('book.unsavedBody', { name: otherName, cases, value: p ? fmt.rupees(p.net) : '' })}</p>
+      body: html`<p>${t('book.unsavedBody', { name: otherName, cases, value: p ? fmt.rupees(p.gross) : '' })}</p>
         <p>${t('book.unsavedQ', { name: o.name })}</p>`,
       actions: [
         { key: 'keep', label: t('book.keep', { name: otherName }), tone: 'primary' },
@@ -151,10 +151,10 @@ function renderBooking(root, o) {
   function syncFooter() {
     const p = schemes.price(cart.lines(), o, today, pastAndDemo);
     footer.cases.textContent = fmt.casesText(p.paidCases);
-    footer.value.textContent = fmt.rupees(p.net);
+    footer.value.textContent = fmt.rupees(p.gross);   // booked value; schemes are settled later
     const extras = [];
-    if (p.freeCases) extras.push(`+${t('n.freeCase', { n: p.freeCases })}`);
-    if (p.discount) extras.push(t('book.off', { amt: fmt.rupees(p.discount) }));
+    if (p.freeCases) extras.push(t('book.estFree', { free: t('n.freeCase', { n: p.freeCases }) }));
+    if (p.discount) extras.push(t('book.estOff', { amt: fmt.rupees(p.discount) }));
     footer.extra.textContent = extras.length ? extras.join(' · ') : p.paidCases ? t('book.noScheme') : t('book.cartEmpty');
     footer.extra.classList.toggle('is-quiet', !extras.length);
     footer.review.disabled = p.paidCases === 0;

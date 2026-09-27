@@ -49,7 +49,7 @@ export const paidCases = (order) => order.lines.reduce((n, l) => n + (l.cases ||
 export const freeCases = (order) => order.lines.reduce((n, l) => n + (l.freeCases || 0), 0);
 
 /** Saves a demo order and returns it with its id (DEMO-<outlet no>-<counter>). */
-export function saveOrder({ outletId, lines, grossValue, discountValue, netValue, schemeIds }) {
+export function saveOrder({ outletId, lines, grossValue, discountValue, netValue, schemeIds, schemeEstimate = null }) {
   const list = read();
   const no = String(outletId).split('-').pop();
   const n = Math.max(0, ...list.filter((o) => o.outletId === outletId).map((o) => counter(o.id))) + 1;
@@ -62,7 +62,10 @@ export function saveOrder({ outletId, lines, grossValue, discountValue, netValue
     discountValue,
     netValue,
     schemeIds,
+    schemeEstimate,
     source: 'demo',
+    repId: data.myRepId(),
+    outletRepId: data.outlet(outletId)?.repId ?? data.myRepId(),
   };
   write([...list, order]);
   return order;

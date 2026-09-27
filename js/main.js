@@ -1,6 +1,6 @@
 // Boot, hash router, demo bar, language and "Reset demo".
 // Routes: #/login · #/home · #/outlets · #/outlet/OUT-01 · #/book/OUT-01 · #/review/OUT-01
-//         #/saved/DEMO-01-1 · #/scheme/SCH-SS26/OUT-01
+//         #/saved/DEMO-01-1 · #/scheme/SCH-SS26/OUT-01 · #/leaderboard
 
 import { app, session, nav, router } from './app.js';
 import * as data from './data.js';
@@ -19,10 +19,13 @@ import * as book from './screens/book.js';
 import * as review from './screens/review.js';
 import * as saved from './screens/saved.js';
 import * as scheme from './screens/scheme.js';
+import * as leaderboard from './screens/leaderboard.js';
 import * as talkingPoints from './feature/talking-points.js';
+import * as landing from './feature/landing.js';
+import * as store from './feature/store.js';
 
 const { t, label } = i18n;
-const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme };
+const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard };
 const screenEl = document.getElementById('screen');
 let cleanup = null;
 
@@ -84,6 +87,7 @@ async function confirmReset() {
   });
   if (key !== 'reset') return;
   orders.resetDemo();
+  store.reset();          // clock sessions, notes, issues, seen alerts
   cart.clear();
   session.signOut();
   redirect('#/login');
@@ -139,6 +143,7 @@ async function boot() {
   });
 
   talkingPoints.install();
+  landing.install();
 
   // Handles for feature code and the console.
   window.gtApp = { app, router, cart, data, orders, schemes, fmt, i18n, talkingPoints };

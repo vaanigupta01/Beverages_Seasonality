@@ -65,6 +65,15 @@ const ICONS = {
   lock: '<rect x="5.5" y="10.5" width="13" height="10" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/>',
   plus: '<path d="M12 5.5v13M5.5 12h13"/>',
   external: '<path d="M14 4.5h5.5V10M19.5 4.5L11 13M17 13.5v5a1 1 0 01-1 1H6a1 1 0 01-1-1v-10a1 1 0 011-1h5"/>',
+  phone: '<path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 005.5 5.5l1.5-2 4.5 1.5v3a2 2 0 01-2 2A16.5 16.5 0 014.5 5.5a2 2 0 012-2z"/>',
+  mic: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v2.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  trophy: '<path d="M8 4.5h8v5a4 4 0 01-8 0z"/><path d="M8 6H5a3 3 0 003 3.5M16 6h3a3 3 0 01-3 3.5M12 13.5v3.5M8.5 20.5h7M9.5 17h5v3.5h-5z"/>',
+  flag: '<path d="M6 21V4.5M6 5h11l-2 4 2 4H6"/>',
+  spark: '<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 16l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  trend: '<path d="M3.5 17l6-6 4 4 7-7.5"/><path d="M15 7.5h5.5V13"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
 };
 
 export const icon = (name, cls = '') =>
@@ -148,10 +157,11 @@ export function slot(name, { tag = 'section', attrs = {} } = {}) {
 let closeActive = null;
 
 /**
- * openSheet({ title, body, actions: [{ key, label, tone }], dismissKey }) → Promise<key>
+ * openSheet({ title, body, actions: [{ key, label, tone }], dismissKey, onOpen(sheetEl) }) → Promise<key>
+ * onOpen runs once the sheet is in the page (e.g. to focus a text box or wire a voice button).
  * Backdrop tap and Escape resolve with `dismissKey`. A route change resolves with 'route-change'.
  */
-export function openSheet({ title, body, actions, dismissKey = null }) {
+export function openSheet({ title, body, actions, dismissKey = null, onOpen = null }) {
   closeSheets();
   return new Promise((resolve) => {
     const prevFocus = document.activeElement;
@@ -196,7 +206,8 @@ export function openSheet({ title, body, actions, dismissKey = null }) {
     document.addEventListener('keydown', onKey);
     document.body.append(wrap);
     document.body.classList.add('has-sheet');
-    requestAnimationFrame(() => buttons()[0]?.focus());
+    if (onOpen) onOpen(wrap.querySelector('.sheet'));
+    else requestAnimationFrame(() => buttons()[0]?.focus());
   });
 }
 

@@ -7,7 +7,7 @@
 // - Opened without a server (gt-app.html double-clicked, or a preview snapshot): the copy embedded
 //   in the page by scripts/build_single.py, as <script type="application/json" id="data-<name>">.
 
-const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock'];
+const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock', 'field'];
 export const SERVED = location.protocol === 'http:' || location.protocol === 'https:';
 
 const db = {};
@@ -69,6 +69,7 @@ function validate() {
   need('distributor_stock', Array.isArray(stock?.items), 'items[]');
   need('peers', Array.isArray(db.peers?.groups), 'groups[]');
   need('current_stock', Array.isArray(db.current_stock?.rows), 'rows[]');
+  need('field', db.field?.targets?.preSeason && Array.isArray(db.field?.reps), 'targets.preSeason, reps[]');
 }
 
 function buildIndexes() {
@@ -129,6 +130,11 @@ export const peers = () => db.peers;
 
 /** Estimated cases on hand today, per SKU: [{ sku, estimatedCasesOnHand, confidence, repCountedCases? … }]. */
 export const onHand = (outletId) => idx.onHand.get(outletId) ?? [];
+
+/** Demo additions (synthetic, labelled on screen): reps, targets, leaderboard, newer SKUs, yesterday's stock. */
+export const field = () => db.field;
+export const myRepId = () => 'REP-01';
+export const repFor = (outletId) => db.field.reps.find((r) => r.id === (outlet(outletId)?.repId ?? 'REP-01')) ?? null;
 
 /** True while data/ still holds the stub (any file's meta.note starts with "STUB"). */
 export const isStub = () => Object.values(db).some((f) => String(f?.meta?.note ?? '').startsWith('STUB'));

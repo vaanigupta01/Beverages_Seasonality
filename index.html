@@ -545,6 +545,12 @@ pre { background: var(--neutral-bg); padding: var(--s3); border-radius: var(--r1
 .scheme-note.is-warn { background: var(--caution-bg); color: var(--caution-ink); }
 .scheme-note.is-off { background: var(--paper); color: var(--muted); }
 
+/* scheme estimate on review: visibly separate from what is billed */
+.est-box { margin-top: var(--s3); padding: var(--s3); border: 1px dashed #b7cbf3; border-radius: var(--r2); background: #f7faff; }
+.est-title { display: flex; align-items: center; gap: 6px; font-size: var(--t-sm); font-weight: 700; color: var(--info-ink); margin-bottom: var(--s2); }
+.est-title .icon { width: 16px; height: 16px; }
+.est-box .fine { margin-top: var(--s2); }
+
 /* ---------- saved ---------- */
 .saved-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: var(--s5) var(--s4) var(--s5); gap: var(--s2); }
 .saved-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--ok-bg); color: var(--ok-ink); }
@@ -739,6 +745,90 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 }
 :lang(mr) .card-title, :lang(hi) .card-title, :lang(mr) .section-title, :lang(hi) .section-title { font-size: 13px; font-weight: 700; }
 :lang(mr) .display, :lang(hi) .display, :lang(mr) .tp-title, :lang(hi) .tp-title, :lang(mr) .sheet-title, :lang(hi) .sheet-title { font-family: var(--font-body); font-weight: 700; letter-spacing: 0; }
+
+/* ====================================================================================
+   Field assistant features (Landing, leaderboard, alerts, outlet tools, booking hints)
+   ==================================================================================== */
+
+/* clock in / out, inside the Landing header */
+.clock { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s3); padding: 6px 6px 6px var(--s3); border-radius: var(--pill); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+.clock-text { flex: 1; min-width: 0; font-size: var(--t-sm); color: var(--ink-2); }
+.clock-text strong { color: var(--green); }
+.clock-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(19, 138, 79, 0.15); flex: none; }
+.clock.is-closed > .icon { color: var(--green); }
+.clock .btn-compact { min-height: 40px; }
+
+/* alert banners */
+.alerts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2); margin: 0 var(--s4) var(--s3); }
+.alert { display: flex; align-items: center; gap: var(--s3); width: 100%; min-height: 56px; padding: var(--s2) var(--s3); border: 1px solid var(--line); border-radius: var(--r2); background: var(--card); text-align: left; box-shadow: var(--shadow-card); }
+.alert-icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--info-bg); color: var(--info-ink); }
+.alert.tone-warn .alert-icon { background: var(--caution-bg); color: var(--caution-ink); }
+.alert.tone-ok .alert-icon { background: var(--ok-bg); color: var(--ok-ink); }
+.alert-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.alert-title { font-weight: 650; font-size: var(--t-sm); line-height: 1.35; }
+.alert-sub { font-size: var(--t-xs); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-chev { color: var(--muted); }
+
+/* pre-season target */
+.target-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
+.target-title { font-size: var(--t-lg); font-weight: 750; letter-spacing: -0.01em; margin-top: 2px; }
+.target-pct { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); line-height: 1; }
+.meter { position: relative; height: 10px; margin: var(--s3) 0; border-radius: var(--pill); background: var(--neutral-bg); overflow: hidden; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: var(--pill); background: linear-gradient(90deg, var(--accent), #3f86f5); }
+.meter.is-small { height: 6px; margin: 6px 0 0; }
+.target-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); }
+.target-stats dt { font-size: var(--t-xs); color: var(--muted); }
+.target-stats dd { font-size: var(--t-md); font-weight: 750; font-variant-numeric: tabular-nums; }
+.target-note { margin-top: var(--s3); font-size: var(--t-sm); font-weight: 600; color: var(--ink-2); }
+.target .fine { margin-top: 4px; }
+.target-secondary { display: flex; justify-content: space-between; gap: var(--s2); margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--line); font-size: var(--t-sm); color: var(--ink-2); }
+.target-secondary .num { font-weight: 650; color: var(--ink); }
+.rank-row { display: flex; align-items: center; gap: var(--s3); margin: var(--s3) calc(-1 * var(--s2)) calc(-1 * var(--s2)); padding: var(--s2); min-height: 52px; border-radius: var(--r2); background: var(--paper); color: inherit; text-decoration: none; }
+.rank-row:active { background: var(--press); }
+.rank-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--pill); background: #fff4de; color: #7a4a05; font-weight: 800; font-size: var(--t-sm); flex: none; }
+.rank-badge .icon { width: 16px; height: 16px; }
+.rank-text { flex: 1; min-width: 0; font-size: var(--t-sm); font-weight: 600; }
+
+/* assistant line */
+.assist { display: flex; gap: var(--s3); margin: 0 var(--s4) var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r3); background: linear-gradient(135deg, #0f2a5c, #1d4ea8); color: #fff; box-shadow: 0 8px 22px rgba(15, 42, 92, 0.22); }
+.assist-mark { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, 0.14); }
+.assist-text { display: grid; gap: 4px; font-size: var(--t-sm); min-width: 0; }
+.assist-link { display: inline-flex; align-items: center; gap: 2px; min-height: 36px; color: #cfe0ff; font-weight: 700; text-decoration: none; }
+.assist-link .icon { width: 16px; height: 16px; }
+
+/* sheets with details */
+.sheet-lede { color: var(--ink); font-size: var(--t-md); }
+.sheet-kv { margin-top: var(--s2); }
+.sheet-kv dd { max-width: 62%; }
+.say-box { margin-top: var(--s2); padding: var(--s3); border-radius: var(--r2); background: var(--info-bg); color: var(--info-ink); font-size: var(--t-sm); }
+.say-label { display: flex; align-items: center; gap: 6px; font-weight: 700; margin-bottom: 4px; }
+.say-label .icon { width: 16px; height: 16px; }
+.sheet-body .fine .icon { width: 14px; height: 14px; vertical-align: -2px; }
+
+/* leaderboard */
+.lb-hero { text-align: left; }
+.lb-rank { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 4px; }
+.lb-rank .muted { font-size: var(--t-md); font-weight: 500; letter-spacing: 0; }
+.lb-lede { margin-top: var(--s1); color: var(--ink-2); }
+.lb-row { display: flex; align-items: flex-start; gap: var(--s3); padding: var(--s3) var(--s4); }
+.lb-row.is-me { background: var(--accent-tint); }
+.lb-pos { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--neutral-bg); font-weight: 800; font-size: var(--t-sm); }
+.lb-row.is-me .lb-pos { background: var(--accent); color: #fff; }
+.lb-main { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.lb-name { font-weight: 700; }
+.lb-terr { font-size: var(--t-xs); color: var(--muted); }
+.lb-metrics { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; font-size: var(--t-xs); color: var(--ink-2); }
+.lb-metrics b { font-weight: 700; color: var(--ink); }
+.lb-metrics .is-best b { color: var(--green); }
+.lb-score { flex: none; display: flex; flex-direction: column; align-items: flex-end; }
+.lb-score .num { font-size: var(--t-lg); font-weight: 800; }
+.lb-score-l { font-size: var(--t-xs); color: var(--muted); }
+.lb-gap { text-align: center; color: var(--muted); padding: 2px 0; letter-spacing: 0.2em; }
+.defs > div { padding: 8px 0; border-top: 1px solid var(--line); }
+.defs > div:first-child { border-top: 0; padding-top: 0; }
+.defs dt { font-weight: 700; font-size: var(--t-sm); }
+.defs dd { font-size: var(--t-sm); color: var(--ink-2); }
+.card .fine { margin-top: var(--s3); }
 </style>
 </head>
 <body>
@@ -872,7 +962,7 @@ modules['data'] = (() => {
 // - Opened without a server (gt-app.html double-clicked, or a preview snapshot): the copy embedded
 //   in the page by scripts/build_single.py, as <script type="application/json" id="data-<name>">.
 
-const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock'];
+const FILES = ['config', 'outlets', 'products', 'schemes', 'orders', 'history', 'visits', 'distributor_stock', 'calendar', 'peers', 'current_stock', 'field'];
 const SERVED = location.protocol === 'http:' || location.protocol === 'https:';
 
 const db = {};
@@ -934,6 +1024,7 @@ function validate() {
   need('distributor_stock', Array.isArray(stock?.items), 'items[]');
   need('peers', Array.isArray(db.peers?.groups), 'groups[]');
   need('current_stock', Array.isArray(db.current_stock?.rows), 'rows[]');
+  need('field', db.field?.targets?.preSeason && Array.isArray(db.field?.reps), 'targets.preSeason, reps[]');
 }
 
 function buildIndexes() {
@@ -995,10 +1086,15 @@ const peers = () => db.peers;
 /** Estimated cases on hand today, per SKU: [{ sku, estimatedCasesOnHand, confidence, repCountedCases? … }]. */
 const onHand = (outletId) => idx.onHand.get(outletId) ?? [];
 
+/** Demo additions (synthetic, labelled on screen): reps, targets, leaderboard, newer SKUs, yesterday's stock. */
+const field = () => db.field;
+const myRepId = () => 'REP-01';
+const repFor = (outletId) => db.field.reps.find((r) => r.id === (outlet(outletId)?.repId ?? 'REP-01')) ?? null;
+
 /** True while data/ still holds the stub (any file's meta.note starts with "STUB"). */
 const isStub = () => Object.values(db).some((f) => String(f?.meta?.note ?? '').startsWith('STUB'));
 
-return { SERVED, DataError, hasEmbedded, loadData, config, demoDate, outlets, outlet, products, product, categories, schemes, pastOrders, history, historyWeeks, visits, route, stock, stockFor, calendar, peers, onHand, isStub };
+return { SERVED, DataError, hasEmbedded, loadData, config, demoDate, outlets, outlet, products, product, categories, schemes, pastOrders, history, historyWeeks, visits, route, stock, stockFor, calendar, peers, onHand, field, myRepId, repFor, isStub };
 })();
 
 /* ==================== js/cart.js ==================== */
@@ -1123,7 +1219,7 @@ const paidCases = (order) => order.lines.reduce((n, l) => n + (l.cases || 0), 0)
 const freeCases = (order) => order.lines.reduce((n, l) => n + (l.freeCases || 0), 0);
 
 /** Saves a demo order and returns it with its id (DEMO-<outlet no>-<counter>). */
-function saveOrder({ outletId, lines, grossValue, discountValue, netValue, schemeIds }) {
+function saveOrder({ outletId, lines, grossValue, discountValue, netValue, schemeIds, schemeEstimate = null }) {
   const list = read();
   const no = String(outletId).split('-').pop();
   const n = Math.max(0, ...list.filter((o) => o.outletId === outletId).map((o) => counter(o.id))) + 1;
@@ -1136,7 +1232,10 @@ function saveOrder({ outletId, lines, grossValue, discountValue, netValue, schem
     discountValue,
     netValue,
     schemeIds,
+    schemeEstimate,
     source: 'demo',
+    repId: data.myRepId(),
+    outletRepId: data.outlet(outletId)?.repId ?? data.myRepId(),
   };
   write([...list, order]);
   return order;
@@ -1151,12 +1250,113 @@ function resetDemo() {
 return { demoOrders, demoOrdersFor, demoOrdersOn, orderById, allOrdersFor, lastOrder, paidCases, freeCases, saveOrder, resetDemo };
 })();
 
+/* ==================== js/feature/strings-en.js ==================== */
+modules['feature/strings-en'] = (() => {
+// English text for the field-assistant features (keys start with "f."). Merged into
+// STRINGS.en by js/strings.js. Marathi and Hindi fall back to English until translated.
+
+const FIELD_EN = {
+  // clock in / out
+  'f.clock.in': 'Clock in',
+  'f.clock.out': 'Clock out',
+  'f.clock.again': 'Clock in again',
+  'f.clock.on': 'On duty',
+  'f.clock.since': 'since {time} · {dur}',
+  'f.clock.notYet': 'Not clocked in yet',
+  'f.clock.closed': 'Day closed · {from}–{to} · {dur}',
+  'f.clock.hm': '{h} h {m} min',
+  'f.clock.m': '{m} min',
+  'f.clock.inToast': 'Clocked in at {time}',
+  'f.clock.outToast': 'Clocked out · {dur} on duty',
+
+  // alerts
+  'f.alert.schemeNew': 'New scheme: {name} · active since {date}',
+  'f.alert.schemeSoon': 'Scheme starting {date}: {name}',
+  'f.alert.rationUp': '{name}: ration raised to {n} cases per outlet',
+  'f.alert.rationDown': '{name}: ration cut to {n} cases per outlet',
+  'f.alert.stock.out-of-stock': '{name} is out of stock at the distributor',
+  'f.alert.stock.rationed': '{name} is now rationed',
+  'f.alert.stock.rationed-against-empties': '{name}: crates only against empties',
+  'f.alert.stock.low': '{name} is running low at the distributor',
+  'f.alert.stock.available': '{name} is back in stock',
+  'f.sch.skus': 'Products',
+  'f.sch.allSkus': 'The whole order',
+  'f.sch.threshold': 'Threshold',
+  'f.sch.benefit': 'Benefit',
+  'f.sch.valid': 'Valid',
+  'f.sch.tiers': 'Outlet tiers',
+  'f.sch.allTiers': 'All tiers',
+  'f.sch.cooler': 'needs a company cooler',
+  'f.sch.thrFree': '{n} cases in one order{pooled}',
+  'f.sch.pooled': ', any mix',
+  'f.sch.thrPct': '{n} cases or more in one order',
+  'f.sch.thrFirst': 'First order within {days} days of registering',
+  'f.sch.benFree': '{n} free case per threshold',
+  'f.sch.benPct': '{pct}% off those lines',
+  'f.sch.say': 'Say it to the retailer',
+  'f.sch.sayText': '"{offer} The benefit comes through the distributor after the order, not on today\'s bill."',
+  'f.sch.informational': 'Not applied at booking. Settlement: {who}',
+  'f.sch.distributor': 'by the distributor',
+  'f.stock.status': 'Status',
+  'f.stock.ration': 'Ration',
+  'f.stock.perOutlet': '{n} paid cases per outlet',
+  'f.stock.note': 'Distributor note',
+  'f.stock.sync': 'From the distributor\'s morning sync at {time}. Reliable for in or out of stock, not a promise of quantity through the day.',
+  'f.stock.s.available': 'Available',
+  'f.stock.s.low': 'Limited · running low',
+  'f.stock.s.rationed': 'Limited · rationed',
+  'f.stock.s.rationed-against-empties': 'Limited · against empties',
+  'f.stock.s.out-of-stock': 'Out of stock',
+
+  // targets
+  'f.target.eyebrow': 'Priority target this season',
+  'f.target.achieved': 'Placed',
+  'f.target.target': 'Target',
+  'f.target.remaining': 'To go',
+  'f.target.daysLeft': 'Days left',
+  'f.target.pace': 'About {n} cases a day gets you there by {date}.',
+  'f.target.done': 'Target reached. Every extra case now builds your lead.',
+  'f.target.measure': '{measure} ({skus}). Target: {basis}.',
+  'f.rank.line': '#{rank} of {total} in {district} on pre-season placement',
+
+  // assistant line
+  'f.assist.label': 'Next step',
+  'f.assist.progress': '{n} of {total} route outlets ordered today, {focus} with focus SKUs.',
+  'f.assist.milestone': 'Pre-season is past {pct}%.',
+  'f.assist.next': 'Next on your route: {name} (stop {stop}).',
+  'f.assist.open': 'Open outlet',
+  'f.assist.allDone': 'Route done for today. Clock out when you finish.',
+
+  // leaderboard
+  'f.lb.title': 'Leaderboard',
+  'f.lb.yourPlace': 'Your place this pre-season',
+  'f.lb.of': 'of {n} reps',
+  'f.lb.gap': '{gap} points behind {name} on pre-season placement.',
+  'f.lb.top': 'You lead the district on pre-season placement.',
+  'f.lb.ranked': 'Ranked by pre-season placement',
+  'f.lb.you': '{name} (you)',
+  'f.lb.outlets': '{n} outlets',
+  'f.lb.defs': 'What the numbers mean',
+  'f.lb.note': 'Ranked on placement against each rep\'s own target, not raw cases, because territories differ. Your row updates as you book. Other reps\' figures are demo data.',
+  'f.lb.short.preSeasonPct': 'Pre-season',
+  'f.lb.short.productiveCallsPct': 'Productive calls',
+  'f.lb.short.activeOutletsPct': 'Active outlets',
+  'f.lb.short.focusCoveragePct': 'Focus SKU reach',
+  'f.lb.short.monthTargetPct': 'April target',
+  'f.lb.short.casesOrdered': 'Cases',
+};
+
+return { FIELD_EN };
+})();
+
 /* ==================== js/strings.js ==================== */
 modules['strings'] = (() => {
 // Interface text in English (en), Marathi (mr) and Hindi (hi). Placeholders: {name}.
 // An entry can be { one, other } for counts; `n` picks the form.
 // Trade words follow the research: case = पेटी, credit = उधार / उधारी, scheme = स्कीम, route = रूट.
 // Values under tier. ch. shop. cat. area. region. repRole. role. schOffer. schExtras. translate data values.
+
+const { FIELD_EN } = modules['feature/strings-en'];
 
 const STRINGS = {
   en: {
@@ -1197,7 +1397,7 @@ const STRINGS = {
     'demo.resetTitle': 'Reset the demo?',
     'demo.resetBody': 'This deletes the {orders} saved during this demo and signs you out.',
     'demo.resetBodyNone': 'No orders saved yet. This signs you out and starts the demo again.',
-    'demo.resetNote': 'Past orders in the data files are not touched.',
+    'demo.resetNote': 'It also clears today\'s clock-in, notes and issues recorded in this browser. Past orders in the data files are not touched.',
     'demo.resetDone': 'Demo reset. Saved orders cleared.',
     'fatal.served': "Couldn't load the demo data",
     'fatal.local': 'This page has no data inside it',
@@ -1374,7 +1574,7 @@ const STRINGS = {
     'review.title': 'Review order',
     'review.delivery': 'Delivery {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
-    'review.free': '+{n} free · {name}',
+    'review.free': '+{n} free expected · {name}',
     'review.edit': 'Edit order',
     'review.editShort': 'Edit',
     'review.schemes': 'Schemes on this order',
@@ -1385,6 +1585,13 @@ const STRINGS = {
     'review.totalCases': 'Total cases',
     'review.paidFree': '({paid} paid + {free} free)',
     'review.submit': 'Submit order · {net}',
+    'review.booked': 'Order value',
+    'review.estTitle': 'Scheme estimate · not applied now',
+    'review.estFree': 'Free cases expected',
+    'review.estOff': 'Estimated discount',
+    'review.estNote': 'Schemes are settled later by the distributor. The retailer is billed the order value; the benefit follows in the claim.',
+    'book.estFree': 'est. {free} later',
+    'book.estOff': 'est. {amt} off later',
     'review.saving': 'Saving…',
     'review.toast': 'Order saved for {name}',
     'review.nothing': 'Nothing to review yet',
@@ -2333,6 +2540,8 @@ const STRINGS = {
   },
 };
 
+Object.assign(STRINGS.en, FIELD_EN);
+
 return { STRINGS };
 })();
 
@@ -2820,6 +3029,15 @@ const ICONS = {
   lock: '<rect x="5.5" y="10.5" width="13" height="10" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/>',
   plus: '<path d="M12 5.5v13M5.5 12h13"/>',
   external: '<path d="M14 4.5h5.5V10M19.5 4.5L11 13M17 13.5v5a1 1 0 01-1 1H6a1 1 0 01-1-1v-10a1 1 0 011-1h5"/>',
+  phone: '<path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 005.5 5.5l1.5-2 4.5 1.5v3a2 2 0 01-2 2A16.5 16.5 0 014.5 5.5a2 2 0 012-2z"/>',
+  mic: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v2.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  trophy: '<path d="M8 4.5h8v5a4 4 0 01-8 0z"/><path d="M8 6H5a3 3 0 003 3.5M16 6h3a3 3 0 01-3 3.5M12 13.5v3.5M8.5 20.5h7M9.5 17h5v3.5h-5z"/>',
+  flag: '<path d="M6 21V4.5M6 5h11l-2 4 2 4H6"/>',
+  spark: '<path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 16l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  trend: '<path d="M3.5 17l6-6 4 4 7-7.5"/><path d="M15 7.5h5.5V13"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
 };
 
 const icon = (name, cls = '') =>
@@ -2903,10 +3121,11 @@ function slot(name, { tag = 'section', attrs = {} } = {}) {
 let closeActive = null;
 
 /**
- * openSheet({ title, body, actions: [{ key, label, tone }], dismissKey }) → Promise<key>
+ * openSheet({ title, body, actions: [{ key, label, tone }], dismissKey, onOpen(sheetEl) }) → Promise<key>
+ * onOpen runs once the sheet is in the page (e.g. to focus a text box or wire a voice button).
  * Backdrop tap and Escape resolve with `dismissKey`. A route change resolves with 'route-change'.
  */
-function openSheet({ title, body, actions, dismissKey = null }) {
+function openSheet({ title, body, actions, dismissKey = null, onOpen = null }) {
   closeSheets();
   return new Promise((resolve) => {
     const prevFocus = document.activeElement;
@@ -2951,7 +3170,8 @@ function openSheet({ title, body, actions, dismissKey = null }) {
     document.addEventListener('keydown', onKey);
     document.body.append(wrap);
     document.body.classList.add('has-sheet');
-    requestAnimationFrame(() => buttons()[0]?.focus());
+    if (onOpen) onOpen(wrap.querySelector('.sheet'));
+    else requestAnimationFrame(() => buttons()[0]?.focus());
   });
 }
 
@@ -3091,6 +3311,7 @@ function render(root) {
         <p class="eyebrow">${fmt.date(today, { long: true })}</p>
         <p class="display hero-title">${t('home.hi', { name: firstName })}</p>
         <p class="hero-sub">${[name, label('repRole', cfg.rep?.role), cfg.distributor?.name].filter(Boolean).join(' · ')}</p>
+        ${slot('landing-clock', { tag: 'div' })}
       </header>
 
       <section class="card progress ${done ? 'is-done' : ''}" aria-label="${t('home.progress')}">
@@ -3603,7 +3824,7 @@ function askSwitch(root, o, startHere) {
   const ask = async () => {
     const key = await openSheet({
       title: t('book.unsavedTitle'),
-      body: html`<p>${t('book.unsavedBody', { name: otherName, cases, value: p ? fmt.rupees(p.net) : '' })}</p>
+      body: html`<p>${t('book.unsavedBody', { name: otherName, cases, value: p ? fmt.rupees(p.gross) : '' })}</p>
         <p>${t('book.unsavedQ', { name: o.name })}</p>`,
       actions: [
         { key: 'keep', label: t('book.keep', { name: otherName }), tone: 'primary' },
@@ -3696,10 +3917,10 @@ function renderBooking(root, o) {
   function syncFooter() {
     const p = schemes.price(cart.lines(), o, today, pastAndDemo);
     footer.cases.textContent = fmt.casesText(p.paidCases);
-    footer.value.textContent = fmt.rupees(p.net);
+    footer.value.textContent = fmt.rupees(p.gross);   // booked value; schemes are settled later
     const extras = [];
-    if (p.freeCases) extras.push(`+${t('n.freeCase', { n: p.freeCases })}`);
-    if (p.discount) extras.push(t('book.off', { amt: fmt.rupees(p.discount) }));
+    if (p.freeCases) extras.push(t('book.estFree', { free: t('n.freeCase', { n: p.freeCases }) }));
+    if (p.discount) extras.push(t('book.estOff', { amt: fmt.rupees(p.discount) }));
     footer.extra.textContent = extras.length ? extras.join(' · ') : p.paidCases ? t('book.noScheme') : t('book.cartEmpty');
     footer.extra.classList.toggle('is-quiet', !extras.length);
     footer.review.disabled = p.paidCases === 0;
@@ -3849,7 +4070,11 @@ return { render };
 
 /* ==================== js/screens/review.js ==================== */
 modules['screens/review'] = (() => {
-// Order review: lines, free cases, discounts, totals; edit or submit.
+// Order review: lines, totals and the scheme estimate; edit or submit.
+//
+// Schemes are informational (fa-data schemes.json → assumption): thresholds and benefits are
+// settled later by the distributor, never applied at booking. So the order is booked and
+// submitted at its full value, and scheme benefits are shown as an estimate beside it.
 
 const { app, router } = modules['app'];
 const data = modules['data'];
@@ -3917,18 +4142,24 @@ function render(root, { id }) {
         <section class="card">
           <h2 class="card-title">${icon('wallet')}<span>${t('review.totals')}</span></h2>
           <dl class="kv totals">
-            <div><dt>${t('review.gross')}</dt><dd>${fmt.rupees(p.gross)}</dd></div>
-            ${p.discount ? html`<div><dt>${t('review.discounts')}</dt><dd>${fmt.rupees(-p.discount)}</dd></div>` : ''}
-            <div class="kv-total"><dt>${t('review.net')}</dt><dd>${fmt.rupees(p.net)}</dd></div>
-            <div><dt>${t('review.totalCases')}</dt><dd>${fmt.num(p.totalCases)}${p.freeCases ? html` <span class="muted">${t('review.paidFree', { paid: fmt.num(p.paidCases), free: fmt.num(p.freeCases) })}</span>` : ''}</dd></div>
+            <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(p.gross)}</dd></div>
+            <div><dt>${t('review.totalCases')}</dt><dd>${fmt.num(p.paidCases)}</dd></div>
           </dl>
+          ${p.discount || p.freeCases ? html`<div class="est-box">
+            <p class="est-title">${icon('tag')}<span>${t('review.estTitle')}</span></p>
+            <dl class="kv">
+              ${p.freeCases ? html`<div><dt>${t('review.estFree')}</dt><dd>${t('n.freeCase', { n: p.freeCases })}</dd></div>` : ''}
+              ${p.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(p.discount)}</dd></div>` : ''}
+            </dl>
+            <p class="fine">${t('review.estNote')}</p>
+          </div>` : ''}
         </section>
 
         ${slot('review-check')}
       </div>
       <div class="bottom-bar bottom-bar-split">
         <a class="btn btn-secondary" href="#/book/${o.id}">${t('review.editShort')}</a>
-        <button type="button" class="btn btn-primary" data-submit>${t('review.submit', { net: fmt.rupees(p.net) })}</button>
+        <button type="button" class="btn btn-primary" data-submit>${t('review.submit', { net: fmt.rupees(p.gross) })}</button>
       </div>`);
 
     let busy = false;
@@ -3944,9 +4175,10 @@ function render(root, { id }) {
         outletId: o.id,
         lines: final.lines.map((l) => ({ sku: l.sku, cases: l.cases, freeCases: l.freeCases })),
         grossValue: final.gross,
-        discountValue: final.discount,
-        netValue: final.net,
+        discountValue: 0,
+        netValue: final.gross,          // booked value; schemes are settled later
         schemeIds: final.schemeIds,
+        schemeEstimate: { discount: final.discount, freeCases: final.freeCases, settledBy: 'distributor' },
       });
       cart.clear();
       toast(t('review.toast', { name: o.name }));
@@ -4038,8 +4270,8 @@ function render(root, { id }) {
           <div><dt>${t('saved.order')}</dt><dd class="mono">${order.id}</dd></div>
           <div><dt>${t('saved.cases')}</dt><dd>${fmt.casesText(paid)}${free ? ` ${t('kv.plusFree', { n: free })}` : ''}</dd></div>
           <div><dt>${t('saved.lines')}</dt><dd>${fmt.num(order.lines.filter((l) => l.cases).length)}</dd></div>
-          ${order.discountValue ? html`<div><dt>${t('saved.discounts')}</dt><dd>${fmt.rupees(-order.discountValue)}</dd></div>` : ''}
-          <div class="kv-total"><dt>${t('saved.net')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
+          <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
+          ${order.schemeEstimate?.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(order.schemeEstimate.discount)}</dd></div>` : ''}
           <div><dt>${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} <span class="muted">· ${fmt.relative(delivery, today)}</span></dd></div>
         </dl>
       </section>
@@ -4194,6 +4426,181 @@ function historyCard(s, all) {
       </li>`;
     })}</ul>` : html`<p class="muted">${t('sd.historyEmpty')}</p>`}
   </section>`;
+}
+
+return { render };
+})();
+
+/* ==================== js/feature/metrics.js ==================== */
+modules['feature/metrics'] = (() => {
+// The rep's own numbers: pre-season placement, month progress, today's calls and the
+// leaderboard figures. Always computed from orders.json + visits.json + the orders placed
+// in the demo, so they move when the rep submits an order. Other reps' figures are the
+// synthetic ones in data/field.json (labelled on screen).
+
+const data = modules['data'];
+const orders = modules['orders'];
+const fmt = modules['format'];
+
+const LOOKBACK = 30;   // "last 30 days" for calls and coverage
+
+/** Outlets assigned to the signed-in rep. */
+const myOutlets = () => data.outlets().filter((o) => (o.repId ?? data.myRepId()) === data.myRepId());
+const isMine = (outletId) => (data.outlet(outletId)?.repId ?? data.myRepId()) === data.myRepId();
+
+/** Every order the rep gets credit for: past orders at their outlets, plus demo orders
+ *  (at another rep's outlet a demo order earns 50% credit, per field.crossTerritory). */
+function creditedOrders() {
+  const share = (data.field().crossTerritory?.incentiveCreditPct ?? 50) / 100;
+  const past = myOutlets().flatMap((o) => data.pastOrders(o.id)).map((o) => ({ order: o, weight: 1 }));
+  const demo = orders.demoOrders().map((o) => ({ order: o, weight: isMine(o.outletId) ? 1 : share }));
+  return [...past, ...demo];
+}
+
+const casesIn = (list, { from, to, skus = null }) => list
+  .filter(({ order }) => order.date >= from && order.date <= to)
+  .reduce((n, { order, weight }) => n + weight * order.lines
+    .filter((l) => !skus || skus.includes(l.sku))
+    .reduce((m, l) => m + (l.cases || 0), 0), 0);
+
+function progress(target, achieved, to) {
+  const today = data.demoDate();
+  const pct = target ? Math.round((achieved / target) * 100) : 0;
+  const daysLeft = Math.max(0, fmt.daysBetween(today, to));
+  const remaining = Math.max(0, Math.round(target - achieved));
+  return { target, achieved: Math.round(achieved), remaining, pct, daysLeft, perDay: daysLeft ? Math.ceil(remaining / daysLeft) : remaining };
+}
+
+/** Pre-season placement: focus-SKU cases booked across the rep's outlets in the window. */
+function preSeason() {
+  const t = data.field().targets.preSeason;
+  const to = t.to < data.demoDate() ? t.to : data.demoDate();
+  return { ...t, ...progress(t.target, casesIn(creditedOrders(), { from: t.from, to, skus: t.skus }), t.to) };
+}
+
+function month() {
+  const t = data.field().targets.month;
+  return { ...t, ...progress(t.target, casesIn(creditedOrders(), { from: t.from, to: data.demoDate() }), t.to) };
+}
+
+/** Today's route work: visits with an order, focus SKUs placed. */
+function today() {
+  const d = data.demoDate();
+  const route = data.route();
+  const todays = orders.demoOrders().filter((o) => o.date === d);
+  const visited = new Set(todays.map((o) => o.outletId));
+  const focus = data.config().focusSkus;
+  const withFocus = new Set(todays.filter((o) => o.lines.some((l) => focus.includes(l.sku) && l.cases)).map((o) => o.outletId));
+  const focusCases = todays.reduce((n, o) => n + o.lines.filter((l) => focus.includes(l.sku)).reduce((m, l) => m + l.cases, 0), 0);
+  const next = route.find((o) => !visited.has(o.id)) ?? null;
+  return { routeCount: route.length, visited: visited.size, productive: todays.length ? visited.size : 0, withFocus: withFocus.size, focusCases, next };
+}
+
+/** The leaderboard metrics for the signed-in rep (definitions in field.json). */
+function myMetrics() {
+  const d = data.demoDate();
+  const from = fmt.addDays(d, -LOOKBACK);
+  const mine = myOutlets();
+  const focus = data.config().focusSkus;
+  const all = creditedOrders();
+  const recent = all.filter(({ order }) => order.date >= from && order.date <= d);
+  const active = new Set(recent.map(({ order }) => order.outletId));
+  const withFocus = new Set(recent.filter(({ order }) => order.lines.some((l) => focus.includes(l.sku) && l.cases)).map(({ order }) => order.outletId));
+  let calls = 0; let productive = 0;
+  mine.forEach((o) => (data.visits(o.id)?.visits ?? []).forEach((v) => {
+    if (v.date >= from && v.date < d && v.done) { calls += 1; if (v.outcome === 'order') productive += 1; }
+  }));
+  const todayOrders = orders.demoOrders().filter((o) => o.date === d);
+  calls += new Set(todayOrders.map((o) => o.outletId)).size;
+  productive += new Set(todayOrders.map((o) => o.outletId)).size;
+  const pre = preSeason();
+  return {
+    repId: data.myRepId(), name: null, isMe: true, outlets: mine.length,
+    preSeasonPct: pre.pct,
+    productiveCallsPct: calls ? Math.round((productive / calls) * 100) : 0,
+    activeOutletsPct: Math.round((active.size / mine.length) * 100),
+    focusCoveragePct: active.size ? Math.round((withFocus.size / active.size) * 100) : 0,
+    casesOrdered: Math.round(casesIn(all, { from: pre.from, to: d })),
+    monthTargetPct: month().pct,
+  };
+}
+
+/** → { rows (ranked), me, rank, total, metric } ranked by pre-season placement %, the priority metric. */
+function leaderboard(name) {
+  const lb = data.field().leaderboard;
+  const me = { ...myMetrics(), name, territory: data.config().region.name };
+  const rows = [...lb.reps.map((r) => ({ ...r, isMe: false })), me]
+    .sort((a, b) => b.preSeasonPct - a.preSeasonPct || b.productiveCallsPct - a.productiveCallsPct);
+  rows.forEach((r, i) => { r.rank = i + 1; });
+  return { rows, me, rank: me.rank, total: rows.length, lb };
+}
+
+return { myOutlets, preSeason, month, today, myMetrics, leaderboard };
+})();
+
+/* ==================== js/screens/leaderboard.js ==================== */
+modules['screens/leaderboard'] = (() => {
+// Rep leaderboard: where the rep stands in the district this pre-season, on several
+// execution metrics rather than raw cases (portfolios differ). Ranked by pre-season
+// placement %, the priority target; no composite score is claimed.
+// The rep's own row is computed live (feature/metrics.js); the other reps are synthetic.
+
+const { session } = modules['app'];
+const data = modules['data'];
+const fmt = modules['format'];
+const { t } = modules['i18n'];
+const { html, mount, fresh, icon, appBar } = modules['ui'];
+const metrics = modules['feature/metrics'];
+
+const COLUMNS = [
+  { key: 'productiveCallsPct', pct: true },
+  { key: 'activeOutletsPct', pct: true },
+  { key: 'focusCoveragePct', pct: true },
+  { key: 'monthTargetPct', pct: true },
+  { key: 'casesOrdered', pct: false },
+];
+const NEARBY = 2;   // reps shown above and below the signed-in rep
+
+function render(root) {
+  const view = fresh(root);
+  const { rows, me, total, lb } = metrics.leaderboard(session.name());
+  const i = rows.indexOf(me);
+  const shown = rows.filter((r, k) => k < 3 || Math.abs(k - i) <= NEARBY);
+  const ahead = rows[i - 1];
+  const gap = ahead ? ahead.preSeasonPct - me.preSeasonPct : 0;
+  const best = Object.fromEntries(COLUMNS.map((c) => [c.key, Math.max(...rows.map((r) => r[c.key]))]));
+
+  mount(view, html`
+    ${appBar({ title: t('f.lb.title'), sub: `${lb.district} · ${fmt.dateRange(lb.period.from, lb.period.to, data.demoDate())}`, back: '#/home' })}
+    <div class="page">
+      <section class="card lb-hero">
+        <p class="eyebrow">${t('f.lb.yourPlace')}</p>
+        <p class="lb-rank"><span class="num">#${me.rank}</span> <span class="muted">${t('f.lb.of', { n: total })}</span></p>
+        <p class="lb-lede">${ahead ? t('f.lb.gap', { gap, name: ahead.name }) : t('f.lb.top')}</p>
+      </section>
+
+      <h2 class="section-title">${icon('trophy')}<span>${t('f.lb.ranked')}</span></h2>
+      <ol class="list lb-list">
+        ${shown.map((r, k) => html`${k > 0 && r.rank - shown[k - 1].rank > 1 ? html`<li class="lb-gap" aria-hidden="true">···</li>` : ''}
+        <li class="lb-row ${r.isMe ? 'is-me' : ''}">
+          <span class="lb-pos">${r.rank}</span>
+          <span class="lb-main">
+            <span class="lb-name">${r.isMe ? t('f.lb.you', { name: r.name }) : r.name}</span>
+            <span class="lb-terr">${r.territory} · ${t('f.lb.outlets', { n: r.outlets })}</span>
+            <span class="lb-metrics">${COLUMNS.map((c) => html`<span class="${r[c.key] === best[c.key] ? 'is-best' : ''}">${t(`f.lb.short.${c.key}`)} <b>${c.pct ? `${r[c.key]}%` : fmt.num(r[c.key])}</b></span>`)}</span>
+          </span>
+          <span class="lb-score"><span class="num">${r.preSeasonPct}%</span><span class="lb-score-l">${t('f.lb.short.preSeasonPct')}</span></span>
+        </li>`)}
+      </ol>
+
+      <section class="card">
+        <h2 class="card-title">${icon('info')}<span>${t('f.lb.defs')}</span></h2>
+        <dl class="defs">
+          ${['preSeasonPct', ...COLUMNS.map((c) => c.key)].map((k) => html`<div><dt>${t(`f.lb.short.${k}`)}</dt><dd>${lb.definitions[k]}</dd></div>`)}
+        </dl>
+        <p class="fine">${t('f.lb.note')}</p>
+      </section>
+    </div>`);
 }
 
 return { render };
@@ -4590,11 +4997,326 @@ function paymentPoint(o) {
 return { install, pointsFor };
 })();
 
+/* ==================== js/feature/store.js ==================== */
+modules['feature/store'] = (() => {
+// What the rep records during the demo, kept in this browser only: clock-in sessions,
+// outlet notes, retailer issues and which Landing alerts were already opened.
+// One localStorage key; "Reset demo" clears it (with the demo orders).
+//
+// Times of day (clock in/out, when a note was written) use the device clock. The date
+// always comes from config.demoDate, so the demo stays on Tue 28 Apr 2026.
+
+const KEY = 'gtapp.field.v1';
+const EMPTY = () => ({ clock: { sessions: [] }, notes: {}, issues: {}, seenAlerts: [] });
+let memory = EMPTY();
+let useMemory = false;
+
+function read() {
+  if (useMemory) return memory;
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    return parsed ? { ...EMPTY(), ...parsed } : EMPTY();
+  } catch {
+    return memory;
+  }
+}
+
+/** update((state) => { …mutate… }) → the saved state. */
+function update(fn) {
+  const state = read();
+  fn(state);
+  memory = state;
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { useMemory = true; }
+  return state;
+}
+
+function reset() {
+  memory = EMPTY();
+  useMemory = false;
+  try { localStorage.removeItem(KEY); } catch { /* nothing stored */ }
+}
+
+/** "09:12" from the device clock. */
+const timeNow = () => new Date().toTimeString().slice(0, 5);
+const nowMs = () => Date.now();
+
+// ---- clock in / out ----------------------------------------------------------
+
+/** → { state: 'out'|'in'|'closed', since, sessions } for today. */
+function clockState() {
+  const { clock } = read();
+  const open = clock.sessions.find((s) => !s.outAt);
+  if (open) return { state: 'in', open, sessions: clock.sessions };
+  return { state: clock.sessions.length ? 'closed' : 'out', sessions: clock.sessions };
+}
+
+const clockIn = () => update((s) => { s.clock.sessions.push({ inAt: nowMs(), inTime: timeNow(), outAt: null, outTime: null }); });
+const clockOut = () => update((s) => {
+  const open = s.clock.sessions.find((x) => !x.outAt);
+  if (open) { open.outAt = nowMs(); open.outTime = timeNow(); }
+});
+
+/** Minutes on duty today, counting an open session up to now. */
+const dutyMinutes = () => clockState().sessions
+  .reduce((n, x) => n + Math.max(0, Math.round(((x.outAt ?? nowMs()) - x.inAt) / 60000)), 0);
+
+// ---- notes and issues ------------------------------------------------------------
+
+const notesFor = (outletId) => read().notes[outletId] ?? [];
+const addNote = (outletId, text, via) => update((s) => {
+  (s.notes[outletId] ??= []).unshift({ at: nowMs(), time: timeNow(), text, via });
+});
+
+const issuesFor = (outletId) => read().issues[outletId] ?? [];
+const openIssues = (outletId) => issuesFor(outletId).filter((i) => i.status === 'open');
+const addIssue = (outletId, issue) => update((s) => {
+  (s.issues[outletId] ??= []).unshift({ id: `ISS-${nowMs().toString(36)}`, at: nowMs(), time: timeNow(), status: 'open', ...issue });
+});
+const resolveIssue = (outletId, id) => update((s) => {
+  const it = (s.issues[outletId] ?? []).find((x) => x.id === id);
+  if (it) { it.status = 'resolved'; it.resolvedTime = timeNow(); }
+});
+
+// ---- alerts ----------------------------------------------------------------------
+
+const seen = (id) => read().seenAlerts.includes(id);
+const markSeen = (id) => update((s) => { if (!s.seenAlerts.includes(id)) s.seenAlerts.push(id); });
+
+return { read, update, reset, timeNow, nowMs, clockState, clockIn, clockOut, dutyMinutes, notesFor, addNote, issuesFor, openIssues, addIssue, resolveIssue, seen, markSeen };
+})();
+
+/* ==================== js/feature/landing.js ==================== */
+modules['feature/landing'] = (() => {
+// Landing additions: clock in/out, scheme and stock alerts, pre-season placement progress
+// (the priority target around the season), the rep's leaderboard position and a next step.
+// Fills the `landing-clock` and `landing-top` slots. Everything is computed from the data,
+// the demo orders and what the rep recorded in this browser.
+
+const { app, session } = modules['app'];
+const data = modules['data'];
+const schemes = modules['schemes'];
+const fmt = modules['format'];
+const { t, label } = modules['i18n'];
+const { html, mount, icon, openSheet, toast } = modules['ui'];
+const store = modules['feature/store'];
+const metrics = modules['feature/metrics'];
+
+const NEW_SCHEME_DAYS = 30;   // a scheme is "new" for 30 days after it starts
+const SOON_DAYS = 7;          // …and announced 7 days before it starts
+const MAX_ALERTS = 2;         // never more than two banners at once
+
+function install() {
+  app.on('screen:rendered', ({ screen, root }) => {
+    if (screen !== 'home') return;
+    fillClock(root);
+    fillTop(root);
+  });
+}
+
+// ---- clock in / out ----------------------------------------------------------
+
+const hm = (mins) => (mins >= 60 ? t('f.clock.hm', { h: Math.floor(mins / 60), m: mins % 60 }) : t('f.clock.m', { m: mins }));
+
+function fillClock(root) {
+  const slot = root.querySelector('[data-slot="landing-clock"]');
+  if (!slot) return;
+  const draw = () => {
+    const st = store.clockState();
+    const mins = store.dutyMinutes();
+    if (st.state === 'in') {
+      mount(slot, html`<div class="clock is-in">
+        <span class="clock-dot" aria-hidden="true"></span>
+        <p class="clock-text"><strong>${t('f.clock.on')}</strong> · ${t('f.clock.since', { time: st.open.inTime, dur: hm(mins) })}</p>
+        <button type="button" class="btn btn-secondary btn-compact" data-clock="out">${icon('clock')}<span>${t('f.clock.out')}</span></button>
+      </div>`);
+    } else if (st.state === 'closed') {
+      const first = st.sessions[0]; const last = st.sessions.at(-1);
+      mount(slot, html`<div class="clock is-closed">
+        ${icon('check')}
+        <p class="clock-text">${t('f.clock.closed', { from: first.inTime, to: last.outTime, dur: hm(mins) })}</p>
+        <button type="button" class="btn btn-ghost btn-compact" data-clock="in">${t('f.clock.again')}</button>
+      </div>`);
+    } else {
+      mount(slot, html`<div class="clock is-out">
+        <p class="clock-text">${t('f.clock.notYet')}</p>
+        <button type="button" class="btn btn-success btn-compact" data-clock="in">${icon('clock')}<span>${t('f.clock.in')}</span></button>
+      </div>`);
+    }
+    slot.hidden = false;
+  };
+  draw();
+  slot.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-clock]');
+    if (!btn) return;
+    if (btn.dataset.clock === 'in') { store.clockIn(); toast(t('f.clock.inToast', { time: store.timeNow() })); }
+    else { store.clockOut(); toast(t('f.clock.outToast', { dur: hm(store.dutyMinutes()) }), 'clock'); }
+    draw();
+  });
+}
+
+// ---- alerts ------------------------------------------------------------------
+
+/** Schemes that started in the last 30 days or start within 7. */
+function schemeAlerts(today) {
+  return data.schemes()
+    .filter((s) => s.type !== 'program' && s.validFrom && s.validTo >= today)
+    .filter((s) => fmt.daysBetween(s.validFrom, today) <= NEW_SCHEME_DAYS && fmt.daysBetween(today, s.validFrom) <= SOON_DAYS)
+    .map((s) => ({
+      id: `scheme:${s.id}`, kind: 'scheme', tone: 'info', icon: 'tag', scheme: s,
+      title: s.validFrom > today
+        ? t('f.alert.schemeSoon', { name: s.name, date: fmt.shortDate(s.validFrom) })
+        : t('f.alert.schemeNew', { name: s.name, date: fmt.shortDate(s.validFrom) }),
+      sub: schemes.chipText(s),
+    }));
+}
+
+const statusRank = { 'out-of-stock': 0, rationed: 1, 'rationed-against-empties': 1, low: 2, available: 3 };
+
+/** Only real changes since yesterday's sync: a ration raised or cut, a SKU going out, low or back. */
+function stockAlerts() {
+  const f = data.field();
+  const before = new Map((f.stockYesterday?.items ?? []).map((x) => [x.sku, x]));
+  const out = [];
+  for (const now of data.stock().items) {
+    const st = now.sourceStatus ?? 'available';
+    const prev = before.get(now.sku);
+    const prevSt = prev?.status ?? 'available';
+    const name = data.product(now.sku)?.name ?? now.sku;
+    let title = null; let tone = 'warn';
+    if (st === prevSt && st === 'rationed' && prev.rationPerOutletCases !== now.maxCasesPerOutlet) {
+      const up = now.maxCasesPerOutlet > prev.rationPerOutletCases;
+      title = t(up ? 'f.alert.rationUp' : 'f.alert.rationDown', { name, n: now.maxCasesPerOutlet });
+      tone = up ? 'ok' : 'warn';
+    } else if (st !== prevSt) {
+      const better = statusRank[st] > statusRank[prevSt];
+      title = t(`f.alert.stock.${st}`, { name });
+      tone = better ? 'ok' : 'warn';
+    }
+    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone, icon: 'box', item: now, title, sub: now.note });
+  }
+  return out;
+}
+
+async function openAlert(a) {
+  store.markSeen(a.id);
+  if (a.kind === 'scheme') {
+    const s = a.scheme;
+    const r = s.rule ?? {};
+    const threshold = s.type === 'free-goods' ? t('f.sch.thrFree', { n: r.buyCases, pooled: r.pooled && s.skus.length > 1 ? t('f.sch.pooled') : '' })
+      : s.type === 'percent-off' ? t('f.sch.thrPct', { n: r.minCases }) : t('f.sch.thrFirst', { days: r.withinDaysOfRegistration });
+    const benefit = s.type === 'free-goods' ? t('f.sch.benFree', { n: r.freeCases }) : t('f.sch.benPct', { pct: r.percent });
+    const tiers = Array.isArray(s.eligibleTiers) ? s.eligibleTiers.map((x) => label('tier', x)).join(', ') : t('f.sch.allTiers');
+    await openSheet({
+      title: s.name,
+      body: html`<p class="sheet-lede">${schemes.offerText(s)}</p>
+        <dl class="kv sheet-kv">
+          <div><dt>${t('f.sch.skus')}</dt><dd>${Array.isArray(s.skus) ? schemes.listNames(s.skus) : t('f.sch.allSkus')}</dd></div>
+          <div><dt>${t('f.sch.threshold')}</dt><dd>${threshold}</dd></div>
+          <div><dt>${t('f.sch.benefit')}</dt><dd>${benefit}</dd></div>
+          <div><dt>${t('f.sch.valid')}</dt><dd>${fmt.dateRange(s.validFrom, s.validTo, data.demoDate())}</dd></div>
+          <div><dt>${t('f.sch.tiers')}</dt><dd>${tiers}${s.requiresBottlerCooler ? ` · ${t('f.sch.cooler')}` : ''}</dd></div>
+        </dl>
+        <div class="say-box"><p class="say-label">${icon('chat')}<span>${t('f.sch.say')}</span></p>
+          <p>${t('f.sch.sayText', { offer: schemes.offerText(s) })}</p></div>
+        <p class="fine">${icon('info')} ${t('f.sch.informational', { who: s.payout ?? t('f.sch.distributor') })}</p>`,
+      actions: [{ key: 'close', label: t('common.close'), tone: 'secondary' }],
+      dismissKey: 'close',
+    });
+  } else {
+    const it = a.item;
+    const p = data.product(it.sku);
+    await openSheet({
+      title: p?.name ?? it.sku,
+      body: html`<p class="sheet-lede">${a.title}</p>
+        <dl class="kv sheet-kv">
+          <div><dt>${t('f.stock.status')}</dt><dd>${t(`f.stock.s.${it.sourceStatus ?? 'available'}`)}</dd></div>
+          ${it.maxCasesPerOutlet ? html`<div><dt>${t('f.stock.ration')}</dt><dd>${t('f.stock.perOutlet', { n: it.maxCasesPerOutlet })}</dd></div>` : ''}
+          ${it.note ? html`<div><dt>${t('f.stock.note')}</dt><dd>${it.note}</dd></div>` : ''}
+        </dl>
+        <p class="fine">${t('f.stock.sync', { time: String(data.stock().syncedAt ?? '').slice(11, 16) })}</p>`,
+      actions: [{ key: 'close', label: t('common.close'), tone: 'secondary' }],
+      dismissKey: 'close',
+    });
+  }
+}
+
+// ---- landing-top ---------------------------------------------------------------
+
+function fillTop(root) {
+  const slot = root.querySelector('[data-slot="landing-top"]');
+  if (!slot) return;
+  const today = data.demoDate();
+  const alerts = [...stockAlerts(), ...schemeAlerts(today)].filter((a) => !store.seen(a.id)).slice(0, MAX_ALERTS);
+  const pre = metrics.preSeason();
+  const mon = metrics.month();
+  const day = metrics.today();
+  const board = metrics.leaderboard(session.name());
+  const milestone = Math.floor(pre.pct / 10) * 10;
+
+  mount(slot, html`
+    ${alerts.length ? html`<div class="alerts">${alerts.map((a, i) => html`<button type="button" class="alert tone-${a.tone}" data-alert="${i}">
+      <span class="alert-icon">${icon(a.icon)}</span>
+      <span class="alert-text"><span class="alert-title">${a.title}</span>${a.sub ? html`<span class="alert-sub">${a.sub}</span>` : ''}</span>
+      ${icon('chevron', 'alert-chev')}
+    </button>`)}</div>` : ''}
+
+    <section class="card target" aria-labelledby="target-title">
+      <div class="target-head">
+        <div>
+          <p class="eyebrow">${t('f.target.eyebrow')}</p>
+          <h2 class="target-title" id="target-title">${pre.label}</h2>
+        </div>
+        <p class="target-pct"><span class="num">${pre.pct}%</span></p>
+      </div>
+      <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(100, pre.pct)}" aria-label="${pre.label}">
+        <span class="meter-fill" style="width:${Math.min(100, pre.pct)}%"></span>
+      </div>
+      <dl class="target-stats">
+        <div><dt>${t('f.target.achieved')}</dt><dd>${fmt.num(pre.achieved)}</dd></div>
+        <div><dt>${t('f.target.target')}</dt><dd>${fmt.num(pre.target)}</dd></div>
+        <div><dt>${t('f.target.remaining')}</dt><dd>${fmt.num(pre.remaining)}</dd></div>
+        <div><dt>${t('f.target.daysLeft')}</dt><dd>${fmt.num(pre.daysLeft)}</dd></div>
+      </dl>
+      <p class="target-note">${pre.remaining
+        ? t('f.target.pace', { n: fmt.num(pre.perDay), date: fmt.shortDate(pre.to) })
+        : t('f.target.done')}</p>
+      <p class="fine">${t('f.target.measure', { measure: pre.measure, skus: pre.skus.map((s) => data.product(s)?.name ?? s).join(', '), basis: pre.basis })}</p>
+      <div class="target-secondary">
+        <span>${mon.label}</span><span class="num">${fmt.num(mon.achieved)} / ${fmt.num(mon.target)} · ${mon.pct}%</span>
+      </div>
+      <a class="rank-row" href="#/leaderboard">
+        <span class="rank-badge">${icon('trophy')}<span>#${board.rank}</span></span>
+        <span class="rank-text">${t('f.rank.line', { rank: board.rank, total: board.total, district: board.lb.district })}</span>
+        ${icon('chevron', 'row-chev')}
+      </a>
+    </section>
+
+    <section class="assist" aria-label="${t('f.assist.label')}">
+      <span class="assist-mark">${icon('spark')}</span>
+      <div class="assist-text">
+        ${day.visited ? html`<p><strong>${t('f.assist.progress', { n: day.visited, total: day.routeCount, focus: day.withFocus })}</strong>${milestone >= 50 && pre.pct < 100 ? ` ${t('f.assist.milestone', { pct: milestone })}` : ''}</p>` : ''}
+        ${day.next
+          ? html`<p>${t('f.assist.next', { name: day.next.name, stop: data.visits(day.next.id)?.routeOrder ?? '' })}</p>
+            <a class="assist-link" href="#/outlet/${day.next.id}">${t('f.assist.open')} ${icon('chevron')}</a>`
+          : html`<p>${t('f.assist.allDone')}</p>`}
+      </div>
+    </section>`);
+  slot.hidden = false;
+
+  slot.querySelectorAll('[data-alert]').forEach((btn) => btn.addEventListener('click', async () => {
+    await openAlert(alerts[Number(btn.dataset.alert)]);
+    btn.remove();
+  }));
+}
+
+return { install };
+})();
+
 /* ==================== js/main.js ==================== */
 modules['main'] = (() => {
 // Boot, hash router, demo bar, language and "Reset demo".
 // Routes: #/login · #/home · #/outlets · #/outlet/OUT-01 · #/book/OUT-01 · #/review/OUT-01
-//         #/saved/DEMO-01-1 · #/scheme/SCH-SS26/OUT-01
+//         #/saved/DEMO-01-1 · #/scheme/SCH-SS26/OUT-01 · #/leaderboard
 
 const { app, session, nav, router } = modules['app'];
 const data = modules['data'];
@@ -4613,10 +5335,13 @@ const book = modules['screens/book'];
 const review = modules['screens/review'];
 const saved = modules['screens/saved'];
 const scheme = modules['screens/scheme'];
+const leaderboard = modules['screens/leaderboard'];
 const talkingPoints = modules['feature/talking-points'];
+const landing = modules['feature/landing'];
+const store = modules['feature/store'];
 
 const { t, label } = i18n;
-const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme };
+const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard };
 const screenEl = document.getElementById('screen');
 let cleanup = null;
 
@@ -4678,6 +5403,7 @@ async function confirmReset() {
   });
   if (key !== 'reset') return;
   orders.resetDemo();
+  store.reset();          // clock sessions, notes, issues, seen alerts
   cart.clear();
   session.signOut();
   redirect('#/login');
@@ -4733,6 +5459,7 @@ async function boot() {
   });
 
   talkingPoints.install();
+  landing.install();
 
   // Handles for feature code and the console.
   window.gtApp = { app, router, cart, data, orders, schemes, fmt, i18n, talkingPoints };

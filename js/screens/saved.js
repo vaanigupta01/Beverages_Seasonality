@@ -40,8 +40,8 @@ export function render(root, { id }) {
           <div><dt>${t('saved.order')}</dt><dd class="mono">${order.id}</dd></div>
           <div><dt>${t('saved.cases')}</dt><dd>${fmt.casesText(paid)}${free ? ` ${t('kv.plusFree', { n: free })}` : ''}</dd></div>
           <div><dt>${t('saved.lines')}</dt><dd>${fmt.num(order.lines.filter((l) => l.cases).length)}</dd></div>
-          ${order.discountValue ? html`<div><dt>${t('saved.discounts')}</dt><dd>${fmt.rupees(-order.discountValue)}</dd></div>` : ''}
-          <div class="kv-total"><dt>${t('saved.net')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
+          <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
+          ${order.schemeEstimate?.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(order.schemeEstimate.discount)}</dd></div>` : ''}
           <div><dt>${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} <span class="muted">· ${fmt.relative(delivery, today)}</span></dd></div>
         </dl>
       </section>

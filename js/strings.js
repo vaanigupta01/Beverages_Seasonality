@@ -3,6 +3,8 @@
 // Trade words follow the research: case = पेटी, credit = उधार / उधारी, scheme = स्कीम, route = रूट.
 // Values under tier. ch. shop. cat. area. region. repRole. role. schOffer. schExtras. translate data values.
 
+import { FIELD_EN } from './feature/strings-en.js';
+
 export const STRINGS = {
   en: {
     'common.back': 'Back',
@@ -42,7 +44,7 @@ export const STRINGS = {
     'demo.resetTitle': 'Reset the demo?',
     'demo.resetBody': 'This deletes the {orders} saved during this demo and signs you out.',
     'demo.resetBodyNone': 'No orders saved yet. This signs you out and starts the demo again.',
-    'demo.resetNote': 'Past orders in the data files are not touched.',
+    'demo.resetNote': 'It also clears today\'s clock-in, notes and issues recorded in this browser. Past orders in the data files are not touched.',
     'demo.resetDone': 'Demo reset. Saved orders cleared.',
     'fatal.served': "Couldn't load the demo data",
     'fatal.local': 'This page has no data inside it',
@@ -219,7 +221,7 @@ export const STRINGS = {
     'review.title': 'Review order',
     'review.delivery': 'Delivery {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
-    'review.free': '+{n} free · {name}',
+    'review.free': '+{n} free expected · {name}',
     'review.edit': 'Edit order',
     'review.editShort': 'Edit',
     'review.schemes': 'Schemes on this order',
@@ -230,6 +232,13 @@ export const STRINGS = {
     'review.totalCases': 'Total cases',
     'review.paidFree': '({paid} paid + {free} free)',
     'review.submit': 'Submit order · {net}',
+    'review.booked': 'Order value',
+    'review.estTitle': 'Scheme estimate · not applied now',
+    'review.estFree': 'Free cases expected',
+    'review.estOff': 'Estimated discount',
+    'review.estNote': 'Schemes are settled later by the distributor. The retailer is billed the order value; the benefit follows in the claim.',
+    'book.estFree': 'est. {free} later',
+    'book.estOff': 'est. {amt} off later',
     'review.saving': 'Saving…',
     'review.toast': 'Order saved for {name}',
     'review.nothing': 'Nothing to review yet',
@@ -1177,3 +1186,5 @@ export const STRINGS = {
     'schExtras.PRG-PURITY': 'नए कूलर सिर्फ़ डायमंड, गोल्ड और सिल्वर दुकानों को मिलते हैं',
   },
 };
+
+Object.assign(STRINGS.en, FIELD_EN);
