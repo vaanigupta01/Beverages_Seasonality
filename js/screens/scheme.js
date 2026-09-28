@@ -9,7 +9,7 @@ import * as schemes from '../schemes.js';
 import * as fmt from '../format.js';
 import { t, label, lang } from '../i18n.js';
 import { schemeArt } from '../feature/scheme-art.js';
-import { html, mount, fresh, icon, appBar, emptyState } from '../ui.js';
+import { html, mount, fresh, icon, appBar, emptyState, tiles } from '../ui.js';
 
 export function render(root, { id, sub }) {
   const view = fresh(root);
@@ -47,18 +47,19 @@ export function render(root, { id, sub }) {
       <details class="card collapse fold">
         <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-blue">${icon('info')}</span><span>${t('sd.details')}</span></span>
           <span class="collapse-sum">${s.validTo ? t('common.till', { date: fmt.shortDate(s.validTo) }) : t('common.ongoing')}</span>${icon('chevron', 'collapse-chev')}</summary>
-        <div class="collapse-body"><dl class="kv sd-kv">
-          <div><dt>${t('sd.type')}</dt><dd>${t(`sd.type.${s.type}`)}</dd></div>
-          <div><dt>${t('sd.valid')}</dt><dd>${s.validFrom && s.validTo
-            ? html`${fmt.dateRange(s.validFrom, s.validTo, today)} <span class="muted">· ${t('sd.daysLeft', { n: Math.max(0, fmt.daysBetween(today, s.validTo)) })}</span>`
-            : t('common.ongoing')}</dd></div>
-          <div><dt>${t('sd.who')}</dt><dd>${whoCanGet(s)}</dd></div>
-          ${s.capUsesPerMonth ? html`<div><dt>${t('sd.limit')}</dt><dd>${t('sd.limitVal', { cap: s.capUsesPerMonth })}</dd></div>` : ''}
-          ${o && st?.cap ? html`<div class="${st.used >= st.cap ? 'is-warn' : ''}"><dt>${t('sd.used', { month })}</dt><dd>${t('sd.usedVal', { used: st.used, cap: st.cap })}</dd></div>` : ''}
-          ${s.type === 'free-goods' ? html`<div><dt>${t('sd.freeAs')}</dt><dd>${freeAs(r)}</dd></div>` : ''}
-          <div><dt>${t('sd.paid')}</dt><dd>${lang() === 'en' && s.payout && s.type !== 'program' ? s.payout : t(`sd.pay.${s.type}`)}</dd></div>
-          ${s.extras ? html`<div><dt>${t('sd.also')}</dt><dd>${schemes.extrasText(s)}</dd></div>` : ''}
-        </dl></div>
+        <div class="collapse-body">
+          ${tiles([
+            { icon: 'calendar', label: t('sd.valid'), value: s.validTo ? t('common.till', { date: fmt.shortDate(s.validTo) }) : t('common.ongoing'), sub: s.validTo ? t('sd.daysLeft', { n: Math.max(0, fmt.daysBetween(today, s.validTo)) }) : '', tone: 'blue' },
+            { icon: 'store', label: t('sd.who'), value: whoShort(s) },
+            s.capUsesPerMonth ? { icon: 'box', label: t('sd.limit'), value: t('n.freeCase', { n: s.capUsesPerMonth }), sub: t('sd.perShop') } : null,
+            o && st?.cap ? { icon: 'check', label: t('sd.used', { month }), value: t('sd.usedVal', { used: st.used, cap: st.cap }), tone: st.used >= st.cap ? 'warn' : '' } : null,
+          ])}
+          <ul class="sd-notes">
+            ${s.type === 'free-goods' ? html`<li>${icon('tag')}<span><b>${t('sd.freeAs')}:</b> ${freeAs(r)}</span></li>` : ''}
+            <li>${icon('wallet')}<span><b>${t('sd.paid')}:</b> ${lang() === 'en' && s.payout && s.type !== 'program' ? s.payout : t(`sd.pay.${s.type}`)}</span></li>
+            ${s.extras ? html`<li>${icon('plus')}<span><b>${t('sd.also')}:</b> ${schemes.extrasText(s)}</span></li>` : ''}
+          </ul>
+        </div>
       </details>
 
       ${Array.isArray(s.skus) ? productsCard(s) : ''}
@@ -66,7 +67,7 @@ export function render(root, { id, sub }) {
       ${o ? historyCard(s, all) : ''}
     </div>
     ${o ? html`<div class="bottom-bar">${st.kind === 'applicable' && s.type !== 'program'
-      ? html`<a class="btn btn-primary btn-block" href="#/book/${o.id}">${t('sd.book')}</a>`
+      ? html`<a class="btn btn-primary btn-block" href="#/book/${o.id}" data-focus-scheme="${s.id}" data-focus-outlet="${o.id}">${t('sd.book')}</a>`
       : html`<a class="btn btn-secondary btn-block" href="#/outlet/${o.id}">${t('sd.backOutlet')}</a>`}</div>` : ''}`);
 }
 
@@ -85,6 +86,13 @@ function statusBanner(st, o, s, today, month) {
       <p class="sd-status-body">${text[1]}</p>
     </div>
   </div>`;
+}
+
+/** Who can get it, short enough for a tile: "Diamond, Gold, Silver" or "All shops". */
+function whoShort(s) {
+  if (s.type === 'first-order') return t('sd.firstShort', { days: s.rule?.withinDaysOfRegistration ?? 90 });
+  const tiers = Array.isArray(s.eligibleTiers) ? s.eligibleTiers.map((x) => label('tier', x)).join(', ') : t('sd.allOutlets');
+  return s.requiresBottlerCooler ? `${tiers} · ${t('sd.coolerShort')}` : tiers;
 }
 
 function whoCanGet(s) {
@@ -116,25 +124,28 @@ function auditCard(o, today) {
   const a = o.cooler.lastAudit;
   return html`<section class="card">
     <h2 class="card-title">${icon('cooler')}<span>${t('sd.audit')}</span></h2>
-    ${a ? html`<dl class="kv">
-      <div><dt>${t('cooler.lastAudit')}</dt><dd>${fmt.shortDate(a.date)} <span class="muted">· ${fmt.relative(a.date, today)}</span></dd></div>
-      <div class="${a.pure ? '' : 'is-warn'}"><dt>${t('cooler.onlyOurs')}</dt><dd>${a.pure ? t('cooler.yes') : t('cooler.otherBrands')}</dd></div>
-      <div><dt>${t('cooler.fillTemp')}</dt><dd>${a.fillPct}% · ${a.tempC}°C</dd></div>
-    </dl>` : html`<p class="muted">${t('cooler.noAudit')}</p>`}
+    ${a ? tiles([
+      { icon: 'calendar', label: t('cooler.lastAudit'), value: fmt.shortDate(a.date), sub: fmt.relative(a.date, today) },
+      { icon: 'check', label: t('cooler.onlyOurs'), value: a.pure ? t('cooler.yes') : t('cooler.otherBrands'), tone: a.pure ? '' : 'warn' },
+      { icon: 'cooler', label: t('cooler.fillTemp'), value: `${a.fillPct}% · ${a.tempC}°C` },
+    ]) : html`<p class="muted">${t('cooler.noAudit')}</p>`}
   </section>`;
 }
 
 function historyCard(s, all) {
-  const used = all.filter((x) => Array.isArray(x.schemeIds) && x.schemeIds.includes(s.id)).slice(0, 5);
+  const used = all.filter((x) => Array.isArray(x.schemeIds) && x.schemeIds.includes(s.id));
+  const freeOf = (x) => x.lines.filter((l) => schemes.coversSku(s, l.sku)).reduce((n, l) => n + (l.freeCases || 0), 0);
+  const free = used.reduce((n, x) => n + freeOf(x), 0);
   return html`<section class="card">
     <h2 class="card-title">${icon('history')}<span>${t('sd.history')}</span></h2>
-    ${used.length ? html`<ul class="mini-list">${used.map((x) => {
-      const free = x.lines.filter((l) => schemes.coversSku(s, l.sku)).reduce((n, l) => n + (l.freeCases || 0), 0);
-      return html`<li>
-        <span>${fmt.shortDate(x.date)}</span>
-        <span>${fmt.casesText(orders.paidCases(x))}</span>
-        <span class="num">${s.type === 'free-goods' ? `+${t('n.freeCase', { n: free })}` : t('sd.historyApplied')}</span>
-      </li>`;
-    })}</ul>` : html`<p class="muted">${t('sd.historyEmpty')}</p>`}
+    ${used.length ? html`${tiles([
+      { icon: 'check', label: t('sd.timesUsed'), value: fmt.num(used.length), tone: 'blue' },
+      s.type === 'free-goods' ? { icon: 'box', label: t('sd.freeGot'), value: t('n.freeCase', { n: free }) } : { icon: 'calendar', label: t('sd.lastUsed'), value: fmt.shortDate(used[0].date) },
+    ])}
+    <ul class="recent sd-recent">${used.slice(0, 4).map((x) => html`<li>
+      <span class="recent-d">${fmt.shortDate(x.date)}</span>
+      <span>${fmt.casesText(orders.paidCases(x))}</span>
+      <b class="num">${s.type === 'free-goods' ? `+${t('n.freeCase', { n: freeOf(x) })}` : t('sd.historyApplied')}</b>
+    </li>`)}</ul>` : html`<p class="muted">${t('sd.historyEmpty')}</p>`}
   </section>`;
 }

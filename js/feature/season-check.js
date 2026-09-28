@@ -18,6 +18,7 @@ import * as season from './season-engine.js';
 import * as metrics from './metrics.js';
 import * as store from './store.js';
 import { isOrderable } from './sku-info.js';
+import * as schemesLib from '../schemes.js';
 
 const WHAT_IF = { forecastMaxC: 43 };        // the labelled heat-wave what-if from the algorithm doc
 const COVER_WARN_DAYS = () => data.config().seasonCheck?.guardrails?.safeCapMaxDaysCover ?? 21;
@@ -37,6 +38,11 @@ let offCart = null;                          // the live-cart subscription of th
 const offered = new Map();                   // outlet → opportunities already offered for this cart
 
 export function install() {
+  // "Book with this scheme": remember the scheme for that shop until the order is placed.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest?.('[data-focus-scheme]');
+    if (a) setFocus(a.dataset.focusOutlet, a.dataset.focusScheme);
+  });
   cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });   // a new cart starts fresh
   app.on('screen:rendered', ({ screen, outletId, root }) => {
     offCart?.();
@@ -62,6 +68,65 @@ const CRATE = raw(`<svg class="so-art" viewBox="0 0 48 48" aria-hidden="true">
 </svg>`);
 
 const opts = () => (whatIf ? { whatIf: WHAT_IF } : {});
+
+// ---- The scheme the rep chose to book with -------------------------------------------------------
+
+const FOCUS_KEY = 'gtapp.focusScheme.v1';    // { outletId, schemeId }, per sign-in (sessionStorage)
+function setFocus(outletId, schemeId) {
+  try { if (schemeId) sessionStorage.setItem(FOCUS_KEY, JSON.stringify({ outletId, schemeId })); else sessionStorage.removeItem(FOCUS_KEY); } catch { /* not kept */ }
+}
+function focusScheme(o) {
+  let f = null;
+  try { f = JSON.parse(sessionStorage.getItem(FOCUS_KEY) ?? 'null'); } catch { /* none */ }
+  if (!f || f.outletId !== o.id) return null;
+  const s = data.schemes().find((x) => x.id === f.schemeId);
+  if (!s || !Array.isArray(s.skus) || !['free-goods', 'percent-off'].includes(s.type)) return null;
+  const today = data.demoDate();
+  return schemesLib.isActive(s, today) && schemesLib.statusFor(s, o, today, orders.allOrdersFor(o.id)).kind === 'applicable' ? s : null;
+}
+
+/** How far the cart is from the chosen scheme, and the packs that close the gap (within any
+ *  distributor limit): the scheme packs already in the cart first. */
+function schemeGap(s, lines) {
+  const have = s.skus.reduce((a, k) => a + (lines[k] ?? 0), 0);
+  const step = s.rule.buyCases ?? s.rule.minCases ?? 1;
+  const need = s.type === 'free-goods' ? Math.max(step, Math.ceil(have / step) * step) : step;
+  const short = Math.max(0, need - have);
+  const room = (k) => {
+    const st = data.stockFor(k);
+    if (!isOrderable(k)) return 0;
+    return st?.status === 'rationed' && st.maxCasesPerOutlet ? Math.max(0, st.maxCasesPerOutlet - (lines[k] ?? 0)) : Infinity;
+  };
+  const order = [...s.skus].sort((a, b) => ((lines[b] ?? 0) > 0) - ((lines[a] ?? 0) > 0));
+  const set = {};
+  let left = short;
+  order.forEach((k) => { if (left <= 0) return; const n = Math.min(left, room(k)); if (n > 0) { set[k] = (lines[k] ?? 0) + n; left -= n; } });
+  return { have, need, short, set: short && !left ? set : null };
+}
+
+const joinNames = (skus) => { const n = skus.map(name); return n.length > 1 ? `${n.slice(0, -1).join(', ')} ${t('common.and')} ${n.at(-1)}` : n[0] ?? ''; };
+
+function focusFinding(s, lines) {
+  const g = schemeGap(s, lines);
+  if (!g.short || !g.set) return null;
+  const packs = Object.keys(g.set);
+  const text = s.type === 'free-goods'
+    ? t('f.fs.free', { n: g.short, packs: joinNames(packs), free: s.rule.freeCases, name: s.name })
+    : t('f.fs.pct', { n: g.short, packs: joinNames(packs), pct: s.rule.percent, name: s.name });
+  return { rule: 'threshold', focus: true, level: 'nudge', audience: 'both', text, action: { set: g.set }, add: g.short };
+}
+
+function focusStrip(s, lines) {
+  const g = schemeGap(s, lines);
+  const pct = Math.min(100, Math.round((g.have / g.need) * 100));
+  return html`<div class="fs-strip ${g.short ? '' : 'is-met'}">
+    <span class="fs-ico">${icon(g.short ? 'tag' : 'check')}</span>
+    <div class="fs-text"><p><b>${schemesLib.chipText(s)}</b> <span class="muted">· ${s.name}</span></p>
+      <div class="fs-track"><span style="width:${pct}%"></span></div>
+      <p class="fs-count">${g.short ? t('f.fs.count', { have: g.have, need: g.need }) : t('f.fs.met')}</p></div>
+    ${g.short && g.set ? html`<button type="button" class="btn btn-compact fs-add" data-fs-add>${t('f.act.add', { n: g.short })}</button>` : ''}
+  </div>`;
+}
 /** "Cola 250 ml" from "Cola 250 ml PET": the pack type adds little on a phone screen. */
 const name = (sku) => String(data.product(sku)?.name ?? sku).replace(/\s+(PET|Tetra)$/i, '').replace(/\s+returnable glass$/i, ' glass');
 const until = (N) => fmt.shortDate(N.cover.until);
@@ -222,6 +287,7 @@ function findingsFor(o, lines) {
 
 const actionLabel = (f) => {
   if (!f.action?.set) return '';
+  if (f.add) return t('f.act.add', { n: f.add });
   if (f.rule === 'distributor') return t('f.act.swap');
   if (f.rule === 'shelf-life' || f.rule === 'overstock') return t('f.act.trim');
   const [[sku, n]] = Object.entries(f.action.set);
@@ -267,6 +333,7 @@ function booking(root, o) {
     const target = N.totals.realisable;
     const missing = N.display ? packsOf(N).filter(([sku, s]) => s.realisable > (lines[sku] ?? 0)) : [];
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
+    const focus = focusScheme(o);
     mount(slot, html`<section class="so-live" aria-live="polite">
       ${N.display && target ? html`<div class="so-live-head">
         <span class="so-icon is-small is-art">${CRATE}</span>
@@ -275,10 +342,12 @@ function booking(root, o) {
           <p class="so-live-count">${t('f.so.inCart', { have, target })}</p></div>
         ${missing.length ? html`<button type="button" class="btn btn-primary btn-compact" data-addall>${t('f.so.addAll')}</button>` : html`<span class="so-done">${icon('check')}</span>`}
       </div>` : ''}
+      ${focus ? focusStrip(focus, lines) : ''}
       ${all.length ? tipsHtml(all) : have ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
     </section>`);
     slot.hidden = false;
     slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(all[Number(b.dataset.act)].action)));
+    slot.querySelector('[data-fs-add]')?.addEventListener('click', () => applyAction({ set: schemeGap(focus, cart.lines()).set }));
     slot.querySelector('[data-addall]')?.addEventListener('click', () => missing.forEach(([sku, s]) => cart.set(sku, s.realisable)));
     // Per-pack: "Suggested 5 · Add" under each suggested SKU.
     root.querySelectorAll('[data-slot="sku-hint"]').forEach((h) => {
@@ -343,7 +412,10 @@ function review(root, o) {
   const { C, all } = findingsFor(o, lines);
   if (!C.need.display) { slot.hidden = true; return; }
   const tog = boughtTogether(o, lines);
-  const list = [...all.filter((f) => f.level !== 'info' || typeOf(f) === 'scheme'), ...(tog ? [tog] : [])];
+  const focus = focusScheme(o);
+  const ff = focus ? focusFinding(focus, lines) : null;
+  const base = all.filter((f) => f.level !== 'info' || typeOf(f) === 'scheme').filter((f) => !(ff && f.rule === 'threshold' && f.text.includes(focus.name)));
+  const list = [...(ff ? [ff] : []), ...base, ...(tog ? [tog] : [])];
   mount(slot, list.length
     ? html`<section class="card rc"><h2 class="card-title">${icon('check')}<span>${t('f.rc.title')}</span></h2>${tipsHtml(list, { limit: 3 })}</section>`
     : html`<p class="strip-ok">${icon('check')}<span>${t('f.rc.ok', { date: until(C.need) })}</span></p>`);
@@ -360,7 +432,8 @@ function review(root, o) {
     shown.add(key);
     offered.set(o.id, shown);
     const [[sku, n]] = Object.entries(offer.action.set);
-    const add = Math.max(1, n - (lines[sku] ?? 0));
+    const add = offer.add ?? Math.max(1, n - (lines[sku] ?? 0));
+    const multi = Object.keys(offer.action.set).length > 1;
     const isScheme = offer.rule === 'threshold';
     const first = session.name().split(' ')[0];
     openSheet({
@@ -368,7 +441,7 @@ function review(root, o) {
       body: html`<div class="offer-art ${isScheme ? '' : 'is-reco'}" aria-hidden="true">${icon(isScheme ? 'tag' : 'box')}</div>
         <p class="offer-kind">${t(`f.type.${typeOf(offer)}`)}</p>
         <p class="offer-text">${offer.text}</p>`,
-      actions: [{ key: 'add', label: t('f.offer.add', { n: add, name: name(sku) }), tone: 'primary' }, { key: 'close', label: t('f.offer.skip'), tone: 'secondary' }],
+      actions: [{ key: 'add', label: multi ? t('f.offer.addCases', { n: add }) : t('f.offer.add', { n: add, name: name(sku) }), tone: 'primary' }, { key: 'close', label: t('f.offer.skip'), tone: 'secondary' }],
       dismissKey: 'close',
     }).then((k) => { if (k === 'add') applyAction(offer.action); });
   }
@@ -379,6 +452,7 @@ function review(root, o) {
 function afterSubmit(root, o) {
   const slot = root.querySelector('[data-slot="saved-outlook"]');
   if (!slot) return;
+  if (focusScheme(o)) setFocus(o.id, null);   // the order is placed: the chosen scheme is done
   const wins = metrics.milestones().filter((w) => !store.seen(`ms:${w.id}`));
   wins.forEach((w) => store.markSeen(`ms:${w.id}`));
   const gain = metrics.targetToday();

@@ -124,13 +124,10 @@ const TIER_ICON = {
 export const tierBadge = (outlet, { visits = false } = {}) =>
   html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t(visits === 'short' ? 'n.visitsShort' : 'n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
 
-/** The kind of shop and how long it has bought from us: "Cautious Kirana · customer since 2017". */
+/** The kind of shop, e.g. "Cautious Kirana". */
 export function personaTag(outlet) {
   const kind = outlet.segment?.label ?? outlet.persona?.label;
-  const since = outlet.registeredOn ? outlet.registeredOn.slice(0, 4) : null;
-  if (!kind && !since) return '';
-  const isNew = outlet.registeredOn && outlet.registeredOn >= '2026-01-01';
-  return html`<span class="persona-tag">${kind ? String(kind).replace(/^The /, '') : ''}${since ? html`<span class="persona-since"> · ${isNew ? t('f.kind.new') : t('f.kind.since', { year: since })}</span>` : ''}</span>`;
+  return kind ? html`<span class="persona-tag">${String(kind).replace(/^The /, '')}</span>` : '';
 }
 
 /**
@@ -241,3 +238,8 @@ export function toast(message, iconName = 'check') {
     toastTimer = setTimeout(() => { el.hidden = true; }, 220);
   }, 3200);
 }
+
+/** Compact fact tiles: a small label with an icon, then the value with its note on the same line. */
+export const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
+  <span class="tile-l">${icon(i.icon)}${i.label}</span><span class="tile-row"><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}</span>
+</div>`)}</div>`;

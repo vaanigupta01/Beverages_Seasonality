@@ -7,7 +7,7 @@ import * as schemes from '../schemes.js';
 import { cart } from '../cart.js';
 import * as fmt from '../format.js';
 import { t, label } from '../i18n.js';
-import { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState } from '../ui.js';
+import { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState, tiles } from '../ui.js';
 import * as tools from '../feature/outlet-tools.js';
 import { directionsUrl } from '../feature/outlet-tools.js';
 import { schemeArt } from '../feature/scheme-art.js';
@@ -109,10 +109,6 @@ const fold = (iconName, tone, title, summary, body, { open = false, cls = '', wa
     <div class="collapse-body">${body}</div>
   </details>`;
 
-/** Small icon tiles for a fold's facts: label on top, the value large, an optional note. */
-const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
-  <span class="tile-l">${icon(i.icon)}${i.label}</span><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}
-</div>`)}</div>`;
 
 function lastOrderCard(all, v, today, visitedToday) {
   const last = all[0];

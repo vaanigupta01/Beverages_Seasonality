@@ -35,14 +35,15 @@ const THEMES = {
   rect('#6b1d3a', '#d9480f')),
 };
 
-// Stock photos (Unsplash, free licence, no brand marks), loaded online. Each sits above its
+// Stock photos (Unsplash, free licence, no brand marks): bold, ad-style colour, loaded online. Each sits above its
 // illustration, so the card still looks right if the photo can't load (e.g. offline).
 const PHOTO_IDS = {
-  cola: 'uCtJy7YavP8',      // glass of fizzy soda with ice
-  mango: 'jKADJEdhk1U',     // tall glass of mango juice
-  water: '7xTp5vlbbSY',     // glass of water in blue light
-  cooler: 'SvhXD3kPSTY',    // drinks in a shop fridge
-  shop: 'bAKYjjvAQIE',      // a kirana shop in Kamshet, Maharashtra
+  cola: 'YavhkwhRBoU',      // fizz bubbles on a bold red background
+  mango: 'pxqxJECu-No',     // juice glass on a tropical orange backdrop
+  water: 'glmqeNTUEfE',     // electric-blue water splash
+  cooler: 'hinE560H5_E',    // neon "drinks" sign
+  shop: 'xLNJprcCSpg',      // colourful balloons against a bright blue sky
+  festival: 'xisPXJqwQkA',  // glowing festival lamps
 };
 const photo = (theme) => (PHOTO_IDS[theme] ? `url("https://unsplash.com/photos/${PHOTO_IDS[theme]}/download?w=720"), ` : '');
 
@@ -59,5 +60,5 @@ function themeOf(s) {
 
 export function schemeArt(s) {
   const theme = themeOf(s);
-  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.84) 0%, rgba(8, 14, 30, 0.5) 55%, rgba(8, 14, 30, 0.1) 100%), ${photo(theme)}${THEMES[theme]};`;
+  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.72) 0%, rgba(8, 14, 30, 0.32) 55%, rgba(8, 14, 30, 0) 100%), ${photo(theme)}${THEMES[theme]};`;
 }

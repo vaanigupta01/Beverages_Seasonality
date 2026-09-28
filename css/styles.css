@@ -1335,36 +1335,8 @@ details.lb-row .lb-score { margin-left: auto; }
 .sheet { max-width: 390px; }
 .toast { max-width: min(358px, calc(100vw - 32px)); }
 .push { width: min(370px, calc(100vw - 20px)); }
-.pill, .row-tags .pill, .profile .row-tags .pill { background: transparent; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); font-weight: 600; letter-spacing: 0.01em; }
 .pill .icon { width: 12px; height: 12px; }
-.pill-neutral { color: var(--ink-2); }
-.pill-info { color: var(--accent); }
-.pill-ok { color: var(--green); }
-.pill-caution { color: #a4580a; }
-.pill-thin { color: var(--thin-ink); }
-.pill-tier { color: var(--ink); border-color: var(--line-strong); }
-.pill-enrolled { background: transparent; color: var(--green); }
-.icon-btn, .icon-btn.is-call, .icon-btn.is-map, .icon-btn.is-issue { background: var(--card); border: 1px solid var(--line-strong); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 28, 46, 0.06); }
-.icon-btn.is-call { background: var(--ink); border-color: var(--ink); color: #fff; }
 .icon-btn .icon { width: 17px; height: 17px; stroke-width: 2; }
-.fold-ico, .ic-blue, .ic-green, .ic-purple, .ic-teal, .ic-pink, .ic-amber { background: transparent; width: 22px; height: 22px; }
-.ic-blue { color: var(--accent); } .ic-green { color: var(--green); } .ic-purple { color: var(--thin-ink); } .ic-teal { color: #0a7f73; } .ic-pink { color: #b0275a; } .ic-amber { color: #b36b00; }
-.so-tagline { background: transparent !important; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
-.so-pack { border-color: var(--line-strong); }
-.so-pack b, .so-pack.is-focus b { background: none; color: var(--ink); min-width: 0; padding: 0 6px 0 0; font-size: var(--t-sm); }
-.so-pack.is-focus { background: #fff; border-color: #e3b33a; }
-.so-pack.is-focus::before { content: "★"; color: #c78a00; font-size: 10px; margin-right: -2px; }
-.tip, .tip.typ-warning, .tip.typ-scheme, .tip.typ-reco, .tip.lvl-block { background: var(--card); border: 1px solid var(--line); }
-.tip-ico, .tip.typ-warning .tip-ico, .tip.typ-scheme .tip-ico, .tip.typ-reco .tip-ico, .tip.lvl-block .tip-ico, .tip.typ-info .tip-ico { background: transparent; width: 22px; }
-.tip.lvl-block { border-color: #f1b8b1; }
-.tip-act { background: var(--ink) !important; }
-.issue-cap { background: transparent; }
-.sku-sug { background: transparent; border: 1px dashed #b7cbf3; }
-.sku-sug.is-met { background: transparent; border-color: #9fd6b6; }
-.sug-add { background: var(--ink); }
-.chip { border-color: var(--line-strong); }
-.chip[aria-pressed="true"], .chip-suggested[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
-.chip-suggested { color: var(--ink); }
 
 /* hero chips smaller; premium section eyebrows */
 .hchip { min-height: 32px; padding: 0 11px; font-size: 12px; }
@@ -1436,7 +1408,6 @@ details.lb-row .lb-score { margin-left: auto; }
 .sku-name { font-size: var(--t-sm); display: block; }
 .focus-mark { color: #c78a00; font-size: 11px; margin-right: 4px; }
 .sku-name .new-tag { margin-left: 6px; vertical-align: 1px; }
-.new-tag { font-size: 10px; padding: 0 6px; border-radius: 4px; background: none; border: 1px solid #cbb8f2; }
 .sku-pack { font-size: 11.5px; margin-top: 1px; }
 .sku-rate { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; margin-top: 3px; font-size: 12px; color: var(--muted); }
 .sku-rate strong { font-size: var(--t-sm); color: var(--ink); }
@@ -1446,18 +1417,19 @@ details.lb-row .lb-score { margin-left: auto; }
 .stock-mini.is-limited { color: #a4580a; }
 .stock-mini.is-out { color: var(--danger-ink); }
 .sku-status { display: none; }
-.sku-more { display: inline-grid; place-items: center; width: 26px; height: 26px; min-height: 0; margin-left: auto; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--ink-2); background: var(--card); }
+.sku-more { display: inline-grid; place-items: center; width: 26px; height: 26px; min-height: 0; margin-left: auto; padding: 0; border: 0; border-radius: 50%; color: var(--accent); background: var(--accent-tint); }
 .sku-more .icon { width: 14px; height: 14px; transform: rotate(90deg); transition: transform 150ms ease; }
 .sku-more[aria-expanded="true"] .icon { transform: rotate(-90deg); }
 .step { width: 36px; height: 38px; font-size: 20px; }
 .qty { width: 38px; height: 38px; font-size: var(--t-md); }
 .stepper { border-radius: 11px; }
-.sku.has-qty { border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
-.sku.has-qty .qty { color: var(--ink); background: #fff7d6; }
+.sku.has-qty { border: 1px solid transparent; background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(120deg, #1d5bd8, #7c4dff 55%, #ff5a8a) border-box; box-shadow: 0 8px 22px -10px rgba(92, 64, 230, 0.45); }
+.sku.has-qty .stepper { border-color: transparent; background: linear-gradient(120deg, #eef3ff, #f4eeff); }
+.sku.has-qty .qty { color: #fff; background: linear-gradient(135deg, #1d5bd8, #7c4dff); border-radius: 9px; }
 .sku-chips { margin-top: 6px; }
-.scheme-chip.is-add { min-height: 34px; padding: 2px 4px 2px 10px; background: transparent; border: 1px solid #d8c8f5; color: #5a2fbf; }
-.scheme-chip.is-add .chip-plus { min-width: 30px; height: 26px; background: #5a2fbf; }
-.scheme-chip.is-used { background: transparent; border: 1px dashed var(--line-strong); }
+.scheme-chip.is-add { min-height: 34px; padding: 2px 4px 2px 10px; }
+.scheme-chip.is-add .chip-plus { min-width: 30px; height: 26px; }
+.new-tag { font-size: 10px; padding: 0 6px; border-radius: 6px; }
 
 /* login v2 */
 .login2 { min-height: calc(100dvh - var(--demo-h)); display: flex; flex-direction: column; background: var(--paper); }
@@ -1493,3 +1465,34 @@ details.lb-row .lb-score { margin-left: auto; }
 .outlet-row .persona-tag { margin: 3px 0 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #a4580a; }
 .outlet-row .pill-tier { white-space: nowrap; }
 .list-count { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+
+/* the scheme picked with "Book with this scheme": live progress on New order */
+.fs-strip { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 10px 10px 12px; border-radius: 14px; background: linear-gradient(120deg, #f3edff, #ffeef5); }
+.fs-ico { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #7c4dff, #ff5a8a); color: #fff; }
+.fs-ico .icon { width: 16px; height: 16px; }
+.fs-text { flex: 1; min-width: 0; }
+.fs-text p { margin: 0; font-size: 12.5px; line-height: 1.35; }
+.fs-track { height: 6px; margin: 5px 0 3px; border-radius: 99px; background: rgba(124, 77, 255, 0.16); overflow: hidden; }
+.fs-track span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #7c4dff, #ff5a8a); }
+.fs-count { font-size: 11px !important; color: #5a2fbf; font-weight: 650; }
+.fs-add { flex: none; background: #5a2fbf; color: #fff; border: 0; }
+.fs-strip.is-met { background: #eaf7ef; }
+.fs-strip.is-met .fs-ico { background: #1b9a5a; }
+.fs-strip.is-met .fs-count { color: var(--green); }
+.fs-strip.is-met .fs-track span { background: #1b9a5a; }
+
+/* compact tiles: two lines (label, then value + note) */
+.tiles { gap: 6px; }
+.tile { gap: 2px; padding: 7px 9px; border-radius: 10px; }
+.tile-l { font-size: 10.5px; gap: 4px; }
+.tile-l .icon { width: 12px; height: 12px; }
+.tile-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 5px; min-width: 0; }
+.tile-v { font-size: var(--t-sm); font-weight: 750; }
+.tile-s { font-size: 10.5px; color: var(--muted); }
+
+/* scheme details: small notes under the tiles */
+.sd-notes { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.sd-notes li { display: flex; gap: 7px; align-items: flex-start; font-size: 12px; line-height: 1.4; color: var(--ink-2); }
+.sd-notes .icon { width: 13px; height: 13px; flex: none; margin-top: 2px; color: var(--accent); }
+.sd-notes b { color: var(--ink); font-weight: 650; }
+.sd-recent { margin-top: 8px; }

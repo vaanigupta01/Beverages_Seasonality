@@ -211,7 +211,7 @@ export const FIELD_EN = {
 
   // Smart order (the recommendation)
   'f.so.eyebrow': 'Suggested order',
-  'f.so.till': 'till {date}',
+  'f.so.till': 'enough till {date}',
   'f.so.cases': 'cases',
   'f.so.sub': 'Enough till {date}',
   'f.so.subClosing': 'Shop closes soon. Order little or nothing.',
@@ -283,6 +283,13 @@ export const FIELD_EN = {
   'f.offer.titleScheme': 'Hi {name}! Don\'t leave this offer behind',
   'f.offer.titleReco': 'Hi {name}! One more thing that sells',
   'f.offer.add': 'Add {n} {name}',
+  'f.offer.addCases': 'Add {n} cases',
+
+  // The scheme picked with "Book with this scheme"
+  'f.fs.count': '{have} of {need} scheme cases in cart',
+  'f.fs.met': 'Scheme reached',
+  'f.fs.free': 'Add {n} more of {packs} to get {free} free case ({name}).',
+  'f.fs.pct': 'Add {n} more of {packs} to get {pct}% off ({name}).',
   'f.offer.skip': 'Not now',
 
   // After submit
