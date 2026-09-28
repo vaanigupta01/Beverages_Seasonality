@@ -1,4 +1,6 @@
-// Landing page: the rep's day — who (the signed-in name), when, today's route and progress.
+// Landing: the rep's day at a glance. A branded header (greeting, clock in/out, rank, summer
+// target), the alerts that need attention, today's progress, the next outlet and the route.
+// The header extras and alerts are filled by feature/landing.js (slots landing-hero, landing-top).
 
 import { session } from '../app.js';
 import * as data from '../data.js';
@@ -6,11 +8,11 @@ import * as orders from '../orders.js';
 import { cart } from '../cart.js';
 import * as fmt from '../format.js';
 import { t, label } from '../i18n.js';
-import { html, mount, fresh, icon, appBar, pill, tierBadge, slot, emptyState } from '../ui.js';
+import { html, mount, fresh, icon, langButton, pill, tierBadge, slot, emptyState } from '../ui.js';
+import { quickActions } from '../feature/outlet-tools.js';
 
 export function render(root) {
   const view = fresh(root);
-  const cfg = data.config();
   const today = data.demoDate();
   const route = data.route();
   const rows = route.map((o) => ({ outlet: o, saved: orders.demoOrdersOn(o.id, today) }));
@@ -19,75 +21,69 @@ export function render(root) {
   const bookedCases = todays.reduce((n, o) => n + orders.paidCases(o), 0);
   const bookedValue = todays.reduce((n, o) => n + o.netValue, 0);
   const done = route.length > 0 && visited === route.length;
-  const name = session.name();
-  const firstName = name.split(' ')[0];
-  const region = label('region', cfg.region.name);
-  const shownOf = cfg.rep?.routeOutletsToday > route.length ? cfg.rep.routeOutletsToday : null;
+  const firstName = session.name().split(' ')[0];
 
   mount(view, html`
-    ${appBar({
-      title: t('home.title'),
-      action: html`<a class="app-bar-action" href="#/outlets">${icon('store')}<span>${t('home.allOutlets')}</span></a>`,
-    })}
-    <div class="page">
-      <header class="hero">
-        <p class="eyebrow">${fmt.date(today, { long: true })}</p>
-        <p class="display hero-title">${t('home.hi', { name: firstName })}</p>
-        <p class="hero-sub">${[name, label('repRole', cfg.rep?.role), cfg.distributor?.name].filter(Boolean).join(' · ')}</p>
-        ${slot('landing-clock', { tag: 'div' })}
-      </header>
-
-      <section class="card progress ${done ? 'is-done' : ''}" aria-label="${t('home.progress')}">
-        <div class="progress-head">
-          <p class="progress-title"><strong>${t('home.today', { outlets: t('n.outlet', { n: route.length }) })}</strong> · ${t('home.visited', { n: visited })}</p>
-          ${done ? pill(t('home.routeDone'), 'ok', 'check') : ''}
+    <header class="hero-top">
+      <div class="hero-bar">
+        <p class="hero-date">${icon('calendar')}<span>${fmt.date(today, { weekday: true, year: false })}</span></p>
+        <div class="hero-bar-acts">
+          <a class="hero-icon" href="#/outlets" aria-label="${t('home.allOutlets')}">${icon('store')}</a>
+          ${langButton()}
         </div>
-        <div class="progress-track" role="progressbar" aria-label="${t('home.progress')}" aria-valuemin="0" aria-valuemax="${route.length}" aria-valuenow="${visited}">
-          ${rows.map((r) => html`<span class="progress-seg ${r.saved.length ? 'is-on' : ''}"></span>`)}
-        </div>
-        <dl class="stats">
-          <div><dt>${t('home.orders')}</dt><dd>${fmt.num(todays.length)}</dd></div>
-          <div><dt>${t('home.cases')}</dt><dd>${fmt.num(bookedCases)}</dd></div>
-          <div><dt>${t('home.value')}</dt><dd>${fmt.rupees(bookedValue)}</dd></div>
-        </dl>
-        ${shownOf ? html`<p class="fine">${t('home.shownOf', { shown: route.length, total: shownOf })}</p>` : ''}
-      </section>
+      </div>
+      <h1 class="hero-hi">${t('home.hi', { name: firstName })}</h1>
+      ${slot('landing-hero', { tag: 'div' })}
+    </header>
 
+    <div class="page page-home">
       ${slot('landing-top')}
 
-      <h2 class="section-title">${icon('route')}<span>${t('home.route', { region })}</span></h2>
+      <section class="day card ${done ? 'is-done' : ''}" aria-label="${t('home.progress')}">
+        <div class="day-head">
+          <p class="day-title">${icon('route')}<span>${t('f.home.route', { n: route.length })}</span></p>
+          <p class="day-count"><strong>${visited}</strong>/${route.length} ${t('f.home.done')}</p>
+        </div>
+        <div class="day-track" role="progressbar" aria-valuemin="0" aria-valuemax="${route.length}" aria-valuenow="${visited}">
+          <span style="width:${route.length ? Math.round((visited / route.length) * 100) : 0}%"></span>
+        </div>
+        <dl class="day-stats">
+          <div><dt>${icon('note')}${t('home.orders')}</dt><dd>${fmt.num(todays.length)}</dd></div>
+          <div><dt>${icon('box')}${t('home.cases')}</dt><dd>${fmt.num(bookedCases)}</dd></div>
+          <div><dt>${icon('wallet')}${t('home.value')}</dt><dd>${fmt.rupees(bookedValue)}</dd></div>
+        </dl>
+      </section>
+
+      ${slot('landing-next')}
+
+      <h2 class="section-title">${t('f.home.stops')}</h2>
       ${route.length
         ? html`<ol class="list route-list">${rows.map(routeRow)}</ol>`
         : emptyState({ icon: 'route', title: t('home.noRoute'), body: t('home.noRouteBody') })}
-
-      <a class="btn btn-secondary page-end" href="#/outlets">${icon('store')}<span>${t('home.seeAll')}</span></a>
     </div>`);
 }
 
 function routeRow({ outlet, saved }) {
   const stop = data.visits(outlet.id)?.routeOrder;
   const inProgress = cart.outletId === outlet.id && !cart.isEmpty();
-  let status;
+  let status = '';
   if (saved.length) {
     const cases = fmt.casesText(saved.reduce((n, o) => n + orders.paidCases(o), 0));
-    const value = fmt.rupees(saved.reduce((n, o) => n + o.netValue, 0));
-    status = pill(saved.length > 1 ? t('status.savedN', { n: saved.length, cases, value }) : t('status.saved', { cases, value }), 'ok', 'check');
+    status = pill(t('f.home.ordered', { cases }), 'ok', 'check');
   } else if (inProgress) {
     status = pill(t('status.inProgress', { cases: fmt.casesText(cart.totalCases()) }), 'caution', 'note');
-  } else {
-    status = pill(t('status.toVisit'), 'neutral');
   }
 
-  return html`<li>
+  return html`<li class="row-wrap">
     <a class="row route-row ${saved.length ? 'is-done' : ''}" href="#/outlet/${outlet.id}">
       <span class="route-stop" aria-hidden="true">${saved.length ? icon('check') : stop}</span>
       <span class="row-main">
         <span class="row-title">${outlet.name}</span>
         <span class="row-meta">${label('area', outlet.area)} · ${label('ch', outlet.channel)}</span>
-        <span class="row-tags">${tierBadge(outlet)}${status}</span>
-        ${slot('route-badge', { tag: 'div', attrs: { 'data-outlet-id': outlet.id } })}
+        <span class="row-tags">${tierBadge(outlet)}${status}
+          ${slot('route-badge', { tag: 'span', attrs: { 'data-outlet-id': outlet.id } })}</span>
       </span>
-      ${icon('chevron', 'row-chev')}
     </a>
+    ${quickActions(outlet)}
   </li>`;
 }

@@ -112,8 +112,17 @@ export function langSwitch() {
 export const pill = (text, tone = 'neutral', iconName = null) =>
   html`<span class="pill pill-${tone}">${iconName ? icon(iconName) : ''}<span>${text}</span></span>`;
 
+// Tier marks: a cut diamond for Diamond, medals for Gold/Silver/Bronze, a plain disc for Iron.
+const TIER_ICON = {
+  Diamond: '<svg class="tier-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9be7ff"/><stop offset=".55" stop-color="#3fa8f5"/><stop offset="1" stop-color="#6b5cf0"/></linearGradient></defs><path d="M7 3.5h10l4 5.5-9 11.5L3 9z" fill="url(#dg)"/><path d="M3 9h18M7 3.5L9.5 9 12 20.5 14.5 9 17 3.5M9.5 9L12 3.5 14.5 9" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1"/></svg>',
+  Gold: '<svg class="tier-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#f4c542" stroke="#c9961a" stroke-width="1.5"/><path d="M12 7.2l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.8l-3 1.5.6-3.3-2.4-2.3 3.3-.5z" fill="#fff6d6"/></svg>',
+  Silver: '<svg class="tier-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#d7dde6" stroke="#9aa5b4" stroke-width="1.5"/><path d="M12 7.2l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.8l-3 1.5.6-3.3-2.4-2.3 3.3-.5z" fill="#fff"/></svg>',
+  Bronze: '<svg class="tier-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#d9925a" stroke="#a5602d" stroke-width="1.5"/><path d="M12 7.2l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.8l-3 1.5.6-3.3-2.4-2.3 3.3-.5z" fill="#fde6d2"/></svg>',
+  Iron: '<svg class="tier-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="#8a94a3" stroke="#5c6573" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" fill="#c3c9d2"/></svg>',
+};
+
 export const tierBadge = (outlet, { visits = false } = {}) =>
-  html`<span class="pill pill-tier" data-tier="${outlet.tier}"><span class="tier-gem" aria-hidden="true"></span><span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t('n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
+  html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t('n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
 
 /** Muted demo aid so the panel can pick outlets on purpose. */
 export function personaTag(outlet) {

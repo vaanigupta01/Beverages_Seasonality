@@ -64,10 +64,9 @@ export function detailHtml(p, outlet) {
   return html`<div class="sku-detail" data-detail hidden>
     <dl class="sku-facts">
       <div><dt>${t('f.sku.shelf')}</dt><dd>${t('f.sku.shelfDays', { n: p.shelfLifeDays })}</dd></div>
-      <div><dt>${t('f.sku.dist')}</dt><dd>${statusTag(p.sku)}</dd></div>
       ${p.focus ? html`<div><dt>${t('f.sku.focus')}</dt><dd>${t('f.sku.focusYes')}</dd></div>` : ''}
     </dl>
-    <p class="fine">${s.note ? `${s.note} ` : ''}${t('f.sku.syncNote')}</p>
+    ${s.note ? html`<p class="sku-note">${icon('truck')}<span>${s.note}</span></p>` : ''}
     ${alt ? html`<p class="alt-line">${icon('info')}<span>${t('f.sku.alt', { name: alt.name })}</span></p>` : ''}
     ${ev ? html`<div class="evidence">
       <p class="evidence-title">${icon('trend')}<span>${t('f.sku.evTitle')}</span></p>

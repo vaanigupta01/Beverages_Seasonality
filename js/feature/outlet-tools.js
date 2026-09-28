@@ -43,18 +43,51 @@ export async function confirmCrossTerritory(o) {
   return key === 'go';
 }
 
-// ---- header actions ----------------------------------------------------------------
+// ---- quick actions (lists and the outlet profile) ---------------------------------------
 
-export const actionsRow = (o, directionsHref) => html`<div class="tools" role="group" aria-label="${t('f.tools.label')}">
-  <button type="button" class="tool" data-tool="call">${icon('phone')}<span>${t('f.tools.call')}</span></button>
-  <button type="button" class="tool" data-tool="note">${icon('mic')}<span>${t('f.tools.note')}</span></button>
-  <button type="button" class="tool" data-tool="issue">${icon('flag')}<span>${t('f.tools.issue')}</span></button>
-  <a class="tool" href="${directionsHref}" target="_blank" rel="noopener noreferrer">${icon('map')}<span>${t('outlet.directions')}</span></a>
+/**
+ * Google Maps directions to the outlet (two-wheeler, as reps ride motorbikes). Uses exact
+ * coordinates when the data has outlets[].geo { lat, lng }; otherwise the address.
+ */
+export function directionsUrl(o) {
+  const region = data.config().region ?? {};
+  const address = o.area && !String(o.address ?? '').includes(o.area) ? `${o.address}, ${o.area}` : o.address;
+  const destination = o.geo?.lat != null && o.geo?.lng != null
+    ? `${o.geo.lat},${o.geo.lng}`
+    : [address, region.city, region.state].filter(Boolean).join(', ');
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}&travelmode=two-wheeler`;
+}
+
+/** Round Call and Directions buttons for an outlet card. */
+export const quickActions = (o) => html`<div class="row-acts">
+  <button type="button" class="icon-btn is-call" data-call="${o.id}" aria-label="${t('f.tools.callName', { name: o.name })}">${icon('phone')}</button>
+  <a class="icon-btn is-map" href="${directionsUrl(o)}" target="_blank" rel="noopener noreferrer" aria-label="${t('outlet.directionsLabel', { name: o.name })}">${icon('map')}</a>
 </div>`;
 
+/** One listener for every [data-call] button in the app. */
+export function install() {
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-call]');
+    if (!btn) return;
+    e.preventDefault();
+    const o = data.outlet(btn.dataset.call);
+    if (o) callSheet(o, () => document.dispatchEvent(new CustomEvent('gt:notes', { detail: o.id })));
+  });
+}
+
+// ---- header actions ----------------------------------------------------------------
+
+const catsOf = (i) => i.categories ?? (i.category ? [i.category] : ['other']);
+
+/** Open-issues capsule for the profile strip: count + the main category; opens the list. */
 export function issuesBadge(o) {
-  const n = store.openIssues(o.id).length;
-  return n ? html`<button type="button" class="issue-badge" data-tool="issues">${icon('flag')}<span>${t('f.issue.badge', { n })}</span></button>` : '';
+  const open = store.openIssues(o.id);
+  if (!open.length) return '';
+  const cat = catsOf(open[0])[0];
+  return html`<button type="button" class="issue-cap" data-tool="issues">
+    <span class="issue-cap-n">${open.length}</span>
+    <span>${t(`f.issue.cat.${cat}`)}</span>${icon('chevron')}
+  </button>`;
 }
 
 /** Wires the tool buttons inside `root`. `refresh(part)` redraws 'notes' or 'issues'. */
@@ -65,9 +98,12 @@ export function wire(root, o, refresh) {
     const tool = btn.dataset.tool;
     if (tool === 'call') await callSheet(o, refresh);
     if (tool === 'note' && await noteSheet(o)) refresh('notes');
+    if (tool === 'mic' && await noteSheet(o, { listen: true })) refresh('notes');
     if (tool === 'issue' && await issueSheet(o)) refresh('issues');
     if (tool === 'issues') { await issuesList(o); refresh('issues'); }
   });
+  // A call logged from a list card elsewhere refreshes the notes if this outlet is open.
+  document.addEventListener('gt:notes', (e) => { if (e.detail === o.id) refresh('notes'); });
 }
 
 // ---- call ------------------------------------------------------------------------
@@ -78,7 +114,7 @@ function usualTime(o) {
   return times.length ? times[Math.floor(times.length / 2)] : null;
 }
 
-async function callSheet(o, refresh) {
+export async function callSheet(o, refresh) {
   const v = data.visits(o.id);
   const usual = usualTime(o);
   const owner = o.owner?.name ?? t('f.call.owner');
@@ -114,17 +150,16 @@ async function callSheet(o, refresh) {
 const Speech = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
 const SPEECH_LANG = { en: 'en-IN', mr: 'mr-IN', hi: 'hi-IN' };
 
-async function noteSheet(o) {
-  let via = 'typed';
+async function noteSheet(o, { listen = false } = {}) {
+  let via = listen ? 'voice' : 'typed';
   let rec = null;
   let box = null;
   const key = await openSheet({
-    title: t('f.note.title'),
-    body: html`<label class="field"><span class="field-label">${t('f.note.label', { name: o.name })}</span>
-        <textarea class="input textarea" rows="4" data-text placeholder="${t('f.note.ph')}"></textarea></label>
+    title: listen ? t('f.note.titleVoice') : t('f.note.title'),
+    body: html`<textarea class="input textarea" rows="3" data-text aria-label="${t('f.note.title')}" placeholder="${t('f.note.ph')}"></textarea>
       ${Speech
-        ? html`<button type="button" class="btn btn-secondary btn-block mic" data-mic aria-pressed="false">${icon('mic')}<span data-mic-label>${t('f.note.speak')}</span></button>`
-        : html`<p class="fine">${icon('info')} ${t('f.note.noVoice')}</p>`}`,
+        ? html`<button type="button" class="mic-btn" data-mic aria-pressed="false">${icon('mic')}<span data-mic-label>${t('f.note.speak')}</span></button>`
+        : html`<p class="fine">${t('f.note.noVoice')}</p>`}`,
     actions: [
       { key: 'save', label: t('f.note.save'), tone: 'primary' },
       { key: 'cancel', label: t('common.cancel'), tone: 'secondary' },
@@ -132,26 +167,25 @@ async function noteSheet(o) {
     dismissKey: 'cancel',
     onOpen(sheet) {
       box = sheet.querySelector('[data-text]');
-      box.focus();
       const mic = sheet.querySelector('[data-mic]');
-      if (!mic) return;
-      mic.addEventListener('click', () => {
-        if (rec) { rec.stop(); return; }
+      const label = () => mic.querySelector('[data-mic-label]');
+      const stop = () => { rec = null; mic.setAttribute('aria-pressed', 'false'); mic.classList.remove('is-on'); label().textContent = t('f.note.speak'); };
+      const start = () => {
         rec = new Speech();
         rec.lang = SPEECH_LANG[lang()] ?? 'en-IN';
         rec.interimResults = true;
         const before = box.value ? `${box.value.trim()} ` : '';
-        rec.onresult = (ev) => {
-          box.value = before + [...ev.results].map((r) => r[0].transcript).join(' ');
-          via = 'voice';
-        };
-        const done = () => { rec = null; mic.setAttribute('aria-pressed', 'false'); mic.classList.remove('is-on'); mic.querySelector('[data-mic-label]').textContent = t('f.note.speak'); };
-        rec.onend = done;
-        rec.onerror = (ev) => { done(); toast(ev.error === 'not-allowed' ? t('f.note.micBlocked') : t('f.note.micFail'), 'info'); };
-        rec.start();
+        rec.onresult = (ev) => { box.value = before + [...ev.results].map((r) => r[0].transcript).join(' '); via = 'voice'; };
+        rec.onend = stop;
+        rec.onerror = (ev) => { stop(); toast(ev.error === 'not-allowed' ? t('f.note.micBlocked') : t('f.note.micFail'), 'info'); };
+        try { rec.start(); } catch { stop(); return; }
         mic.setAttribute('aria-pressed', 'true'); mic.classList.add('is-on');
-        mic.querySelector('[data-mic-label]').textContent = t('f.note.listening');
-      });
+        label().textContent = t('f.note.listening');
+      };
+      if (mic) mic.addEventListener('click', () => (rec ? rec.stop() : start()));
+      // The Mic button in the header starts listening straight away; Note opens the keyboard.
+      if (listen && mic) start();
+      else box.focus();
     },
   });
   rec?.stop();
@@ -186,6 +220,13 @@ export const ISSUE_CATEGORIES = {
   billing: ['bill', 'billing', 'invoice', 'price', 'rate', 'overcharged', 'charged', 'mrp', 'gst', 'amount', 'extra money', 'margin', 'paisa', 'paise', 'jyada', 'jast'],
 };
 
+/** Every category whose words appear in the text (at least "other"). */
+export function classifyAll(text) {
+  const s = ` ${String(text).toLowerCase().replace(/[^a-z0-9\u0900-\u097f' ]+/g, ' ')} `;
+  const hits = Object.entries(ISSUE_CATEGORIES).filter(([, words]) => words.some((w) => s.includes(` ${w} `) || (w.includes(' ') && s.includes(w)))).map(([c]) => c);
+  return hits.length ? hits : ['other'];
+}
+
 export function classifyIssue(text) {
   const s = ` ${String(text).toLowerCase().replace(/[^a-z0-9ऀ-ॿ' ]+/g, ' ')} `;
   let best = 'other'; let top = 0;
@@ -198,16 +239,17 @@ export function classifyIssue(text) {
 
 const CATS = [...Object.keys(ISSUE_CATEGORIES), 'other'];
 
+const CAT_ICON = { scheme: 'tag', quality: 'alert', delay: 'truck', missing: 'box', billing: 'wallet', other: 'info' };
+
 async function issueSheet(o) {
   let box = null;
-  let chosen = null;      // set when the rep taps a category (overrides the guess)
+  let picked = new Set();        // categories the rep tapped (several allowed)
+  let touched = false;           // once the rep taps, the auto-guess stops changing the choice
   const key = await openSheet({
     title: t('f.issue.title'),
-    body: html`<label class="field"><span class="field-label">${t('f.issue.label', { name: o.name })}</span>
-        <textarea class="input textarea" rows="4" data-text placeholder="${t('f.issue.ph')}"></textarea></label>
+    body: html`<textarea class="input textarea" rows="3" data-text aria-label="${t('f.issue.title')}" placeholder="${t('f.issue.ph')}"></textarea>
       <p class="field-label">${t('f.issue.category')}</p>
-      <div class="cat-chips" role="group">${CATS.map((c) => html`<button type="button" class="chip" data-cat-pick="${c}" aria-pressed="${c === 'other'}">${t(`f.issue.cat.${c}`)}</button>`)}</div>
-      <p class="fine">${t('f.issue.auto')}</p>`,
+      <div class="cat-chips" role="group">${CATS.map((c) => html`<button type="button" class="chip cat-chip" data-cat-pick="${c}" aria-pressed="false">${icon(CAT_ICON[c])}<span>${t(`f.issue.cat.${c}`)}</span></button>`)}</div>`,
     actions: [
       { key: 'save', label: t('f.issue.save'), tone: 'primary' },
       { key: 'cancel', label: t('common.cancel'), tone: 'secondary' },
@@ -216,42 +258,47 @@ async function issueSheet(o) {
     onOpen(sheet) {
       box = sheet.querySelector('[data-text]');
       const chips = [...sheet.querySelectorAll('[data-cat-pick]')];
-      const show = (c) => chips.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.catPick === c)));
-      box.addEventListener('input', () => { if (!chosen) show(classifyIssue(box.value)); });
-      chips.forEach((b) => b.addEventListener('click', () => { chosen = b.dataset.catPick; show(chosen); }));
+      const show = () => chips.forEach((b) => b.setAttribute('aria-pressed', String(picked.has(b.dataset.catPick))));
+      box.addEventListener('input', () => { if (!touched) { picked = new Set(classifyAll(box.value)); show(); } });
+      chips.forEach((b) => b.addEventListener('click', () => {
+        touched = true;
+        const c = b.dataset.catPick;
+        if (picked.has(c)) picked.delete(c); else picked.add(c);
+        show();
+      }));
       box.focus();
     },
   });
   const text = box?.value.trim();
   if (key !== 'save' || !text) return false;
-  const category = chosen ?? classifyIssue(text);
-  store.addIssue(o.id, { text, category, auto: !chosen });
-  toast(t('f.issue.saved', { cat: t(`f.issue.cat.${category}`) }));
+  const categories = picked.size ? [...picked] : classifyAll(text);
+  store.addIssue(o.id, { text, categories, auto: !touched });
+  toast(t('f.issue.saved', { cat: categories.map((c) => t(`f.issue.cat.${c}`)).join(', ') }));
   return true;
 }
 
 async function issuesList(o) {
   const list = store.issuesFor(o.id);
   await openSheet({
-    title: t('f.issue.listTitle', { name: o.name }),
+    title: t('f.issue.listTitle'),
     body: html`<ul class="issue-list">${list.map((i) => html`<li class="${i.status === 'open' ? 'is-open' : ''}">
-      <p class="issue-meta">${pill(t(`f.issue.cat.${i.category}`), i.status === 'open' ? 'caution' : 'neutral')} <span class="muted">${i.time}${i.status === 'resolved' ? ` · ${t('f.issue.resolved')}` : ''}</span></p>
-      <p>${i.text}</p>
-      ${i.status === 'open' ? html`<button type="button" class="btn btn-ghost btn-compact" data-resolve="${i.id}">${icon('check')}<span>${t('f.issue.resolve')}</span></button>` : ''}
+      <div class="issue-cats">${catsOf(i).map((c) => html`<span class="issue-cat">${icon(CAT_ICON[c])}${t(`f.issue.cat.${c}`)}</span>`)}</div>
+      <p class="issue-text">${i.text}</p>
+      <p class="issue-meta">${i.date ? fmt.shortDate(i.date) : t('f.issue.today', { time: i.time })}${i.status === 'resolved' ? html` · <span class="ok-text">${icon('check')}${t('f.issue.resolved')}</span>` : ''}
+        ${i.status === 'open' ? html`<button type="button" class="link-btn" data-resolve="${i.id}">${t('f.issue.resolve')}</button>` : ''}</p>
     </li>`)}</ul>`,
-    actions: [{ key: 'close', label: t('common.close'), tone: 'secondary' }],
+    actions: [{ key: 'add', label: t('f.issue.add'), tone: 'secondary' }, { key: 'close', label: t('common.close'), tone: 'primary' }],
     dismissKey: 'close',
     onOpen(sheet) {
       sheet.addEventListener('click', (e) => {
         const b = e.target.closest('[data-resolve]');
         if (!b) return;
         store.resolveIssue(o.id, b.dataset.resolve);
-        const li = b.closest('li');
-        li.classList.remove('is-open');
-        b.replaceWith(document.createTextNode(t('f.issue.resolved')));
+        b.closest('li').classList.remove('is-open');
+        b.replaceWith(document.createTextNode(`· ${t('f.issue.resolved')}`));
       });
     },
-  });
+  }).then((k) => (k === 'add' ? issueSheet(o) : null));
 }
 
 // ---- last order SKUs and stock on hand ---------------------------------------------------
@@ -275,9 +322,9 @@ export function stockOnHandCard(o) {
   const rows = data.onHand(o.id).slice().sort((a, b) => (b.repCountedCases ?? b.estimatedCasesOnHand) - (a.repCountedCases ?? a.estimatedCasesOnHand));
   const total = rows.reduce((n, r) => n + (r.repCountedCases ?? r.estimatedCasesOnHand), 0);
   const counted = rows.filter((r) => r.repCountedCases != null).length;
-  return html`<details class="card collapse" data-card="onhand">
+  return html`<details class="card collapse fold" data-card="onhand">
     <summary class="collapse-head">
-      <span class="card-title">${icon('box')}<span>${t('f.soh.title')}</span></span>
+      <span class="card-title"><span class="fold-ico ic-teal">${icon('box')}</span><span>${t('f.soh.title')}</span></span>
       <span class="collapse-sum">${rows.length ? t('f.soh.sum', { n: fmt.num(Math.round(total)) }) : t('f.soh.none')}</span>
       ${icon('chevron', 'collapse-chev')}
     </summary>

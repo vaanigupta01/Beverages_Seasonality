@@ -89,15 +89,20 @@ function listHtml(P, { all = false } = {}) {
     </details>` : ''}`;
 }
 
+/** One point: the headline shows; tap to open the detail and where it comes from. */
 function itemHtml(p, extra = false) {
   return html`<li class="tp-item tone-${p.tone} ${extra ? 'tp-extra' : ''}">
-    <span class="tp-icon">${icon(p.icon)}</span>
-    <div class="tp-text">
-      <p class="tp-cat">${t(`tp.cat.${p.cat}`)}</p>
-      <p class="tp-point">${p.title}</p>
-      ${p.body ? html`<p class="tp-detail">${p.body}</p>` : ''}
-      <p class="tp-src">${p.source}${p.href ? html` · <a href="${p.href}">${t('tp.seeScheme')}</a>` : ''}</p>
-    </div>
+    <details class="tp-fold">
+      <summary>
+        <span class="tp-icon">${icon(p.icon)}</span>
+        <span class="tp-text"><span class="tp-cat">${t(`tp.cat.${p.cat}`)}</span><span class="tp-point">${p.title}</span></span>
+        ${icon('chevron', 'collapse-chev')}
+      </summary>
+      <div class="tp-body">
+        ${p.body ? html`<p class="tp-detail">${p.body}</p>` : ''}
+        <p class="tp-src">${p.source}${p.href ? html` · <a href="${p.href}">${t('tp.seeScheme')}</a>` : ''}</p>
+      </div>
+    </details>
   </li>`;
 }
 

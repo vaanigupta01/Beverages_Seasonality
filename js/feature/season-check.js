@@ -1,13 +1,13 @@
-// Season Check on screen: the order assistant. The numbers all come from season-engine.js
-// (need() and check()); this file decides where they show and adds three app-level checks
-// the engine leaves to the screens: stock cover vs shelf life, a "bought together" idea at
-// review, and next week's outlook after submit.
+// Smart order on screen. The numbers all come from season-engine.js (need() and check());
+// this file decides where they show and says them in short, plain words. It adds three
+// app-level checks the engine leaves to the screens: stock cover vs shelf life, "shops nearby
+// also take", and next week's outlook after submit.
 //
 // Slots: outlet-season (Outlet details), booking-season + sku-hint (Order booking),
 // review-check (Order review), saved-outlook (after submit), route-badge (Landing).
 // Every cart change re-runs check(), so the advice follows the basket live.
 
-import { app, router } from '../app.js';
+import { app, router, session } from '../app.js';
 import * as data from '../data.js';
 import * as orders from '../orders.js';
 import { cart } from '../cart.js';
@@ -15,23 +15,29 @@ import * as fmt from '../format.js';
 import { t } from '../i18n.js';
 import { html, mount, icon, openSheet, pill } from '../ui.js';
 import * as season from './season-engine.js';
+import * as metrics from './metrics.js';
+import * as store from './store.js';
 import { isOrderable } from './sku-info.js';
 
 const WHAT_IF = { forecastMaxC: 43 };        // the labelled heat-wave what-if from the algorithm doc
 const COVER_WARN_DAYS = () => data.config().seasonCheck?.guardrails?.safeCapMaxDaysCover ?? 21;
-const TOGETHER = { weeks: 12, minOrders: 20, minShare: 0.4 };   // "bought together" at review
-const TYPE = {                               // what kind of advice each engine rule is
+const TOGETHER = { weeks: 12, minOrders: 20, minShare: 0.4 };   // "shops nearby also take" at review
+const TIPS_SHOWN = 2;                        // booking: tips shown before "more tips"
+const TYPE = {                               // what kind of advice each rule is
   block: 'warning', warn: 'warning',
   threshold: 'scheme', 'cap-reached': 'scheme', 'not-eligible': 'scheme', 'first-order': 'scheme',
-  'pace-gap': 'reco', 'missing-regular': 'reco', 'suggested-order': 'reco', together: 'reco',
+  'pace-gap': 'reco', 'missing-regular': 'reco', together: 'reco',
 };
+const TYPE_ICON = { warning: 'alert', scheme: 'tag', reco: 'plus', info: 'info' };
+const QUIET = new Set(['suggested-order', 'event-ahead', 'thin-history', 'heat', 'deload']);   // shown in the Smart order card instead
 const typeOf = (f) => TYPE[f.rule] ?? (f.level === 'block' || f.level === 'warn' ? 'warning' : 'info');
 
 let whatIf = false;                          // what-if heat wave, per session
 let offCart = null;                          // the live-cart subscription of the current screen
-const offered = new Set();                   // outlets where the offer pop-up already showed
+const offered = new Set();                   // outlets where the review pop-up already showed for this cart
 
 export function install() {
+  cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });
   app.on('screen:rendered', ({ screen, outletId, root }) => {
     offCart?.();
     offCart = null;
@@ -41,37 +47,78 @@ export function install() {
     if (screen === 'outlet') outletCard(root, o);
     if (screen === 'book') booking(root, o);
     if (screen === 'review') review(root, o);
-    if (screen === 'saved') outlook(root, o);
+    if (screen === 'saved') afterSubmit(root, o);
   });
 }
 
 const opts = () => (whatIf ? { whatIf: WHAT_IF } : {});
-const name = (sku) => data.product(sku)?.name ?? sku;
+/** "Cola 250 ml" from "Cola 250 ml PET": the pack type adds little on a phone screen. */
+const name = (sku) => String(data.product(sku)?.name ?? sku).replace(/\s+(PET|Tetra)$/i, '').replace(/\s+returnable glass$/i, ' glass');
 const until = (N) => fmt.shortDate(N.cover.until);
 const applyAction = (a) => Object.entries(a?.set ?? {}).forEach(([sku, n]) => cart.set(sku, n));
+const cases = (n) => fmt.casesText(n);
 
 /** Packs worth showing: suggested or realisable, biggest first. */
 const packsOf = (N) => Object.entries(N.skus)
   .filter(([, s]) => s.suggested > 0 || s.realisable > 0)
   .sort((a, b) => b[1].realisable - a[1].realisable || b[1].expected - a[1].expected);
 
-// ---- Outlet details: the suggestion -------------------------------------------------------
+// ---- plain words -----------------------------------------------------------------------------
 
-function gateText(g, N) {
-  switch (g.rule) {
-    case 'closing-soon': return t('f.sc.gate.closing', { range: fmt.dateRange(g.from, g.to, N.cover.today), n: g.sellingDays });
-    case 'deload': return t('f.sc.gate.deload');
-    case 'distributor': return g.swap
-      ? t('f.sc.gate.swap', { from: name(g.sku), max: g.max, to: name(g.swap.to), n: g.swap.cases })
-      : t(g.status === 'out' ? 'f.sc.gate.out' : 'f.sc.gate.ration', { name: name(g.sku), max: g.max });
-    case 'cooler': return t('f.sc.gate.cooler', { cap: Math.floor(g.capacity250) });
-    case 'credit': return g.action === 'trimmed' ? t('f.sc.gate.creditTrim', { room: fmt.rupees(g.room) }) : t('f.sc.gate.creditFlag', { over: fmt.rupees(g.over) });
-    case 'safe-cap': return t('f.sc.gate.cap', { best: g.best, cap: g.cap });
-    case 'on-hand': return t('f.sc.gate.onHand', { cases: fmt.casesText(g.cases) });
-    case 'ordered-today': return t('f.sc.gate.today', { cases: fmt.casesText(g.cases) });
-    default: return '';
+/** Short reasons, each with an icon, for the Smart order card. */
+function reasons(N) {
+  const out = [];
+  const rate = Object.values(N.skus).reduce((a, s) => a + (s.rate ?? 0), 0);
+  if (N.mode === 'forward' && rate) out.push({ icon: 'history', text: t('f.so.r.rate', { n: Math.round(rate) }) });
+  if (N.mode === 'bookings') out.push({ icon: 'calendar', text: t('f.so.r.bookings', { n: (data.outlet(N.outletId)?.bookings ?? []).filter((b) => b.date >= N.cover.delivery && b.date <= N.cover.until).length }) });
+  if (N.mode === 'peers') out.push({ icon: 'store', text: t('f.so.r.peers', { n: N.peers?.outlets ?? '' }) });
+  const r = N.season.ratio;
+  out.push({ icon: 'trend', text: t(r > 1.05 ? 'f.so.r.seasonUp' : r < 0.95 ? 'f.so.r.seasonDown' : 'f.so.r.seasonPeak') });
+  if (N.weather.maxC != null) out.push({ icon: 'sun', text: t(N.weather.anomaly >= 3 ? 'f.so.r.hot' : 'f.so.r.normal', { c: Math.round(N.weather.maxC) }) });
+  if (N.events.length) out.push({ icon: 'calendar', text: [...new Set(N.events.map((e) => e.name))].slice(0, 2).join(', ') });
+  N.gates.forEach((g) => {
+    if (g.rule === 'on-hand') out.push({ icon: 'box', text: t('f.so.r.onHand', { cases: cases(g.cases) }), tone: 'ok' });
+    if (g.rule === 'closing-soon') out.push({ icon: 'calendarX', text: t('f.so.r.closing', { date: fmt.shortDate(g.from), n: g.sellingDays }), tone: 'warn' });
+    if (g.rule === 'deload') out.push({ icon: 'info', text: t('f.so.r.rain'), tone: 'warn' });
+    if (g.rule === 'distributor') out.push({ icon: 'truck', text: g.swap ? t('f.so.r.swap', { from: name(g.sku), to: name(g.swap.to) }) : t(g.status === 'out' ? 'f.so.r.out' : 'f.so.r.ration', { name: name(g.sku), n: g.max }), tone: 'warn' });
+    if (g.rule === 'cooler') out.push({ icon: 'cooler', text: t('f.so.r.cooler'), tone: 'warn' });
+    if (g.rule === 'credit') out.push({ icon: 'wallet', text: g.action === 'trimmed' ? t('f.so.r.creditTrim') : t('f.so.r.creditCash', { amt: fmt.rupees(g.over) }), tone: 'warn' });
+    if (g.rule === 'safe-cap') out.push({ icon: 'alert', text: t('f.so.r.cap', { n: g.cap }), tone: 'warn' });
+    if (g.rule === 'ordered-today') out.push({ icon: 'check', text: t('f.so.r.today', { cases: cases(g.cases) }), tone: 'ok' });
+  });
+  if (N.newOutlet) out.push({ icon: 'store', text: t('f.so.r.newOutlet', { date: fmt.shortDate(N.cover.nextVisit) }) });
+  return out;
+}
+
+/** The engine's finding, in a few plain words. Falls back to the engine's own text. */
+function simple(f, N, lines) {
+  const set = Object.entries(f.action?.set ?? {});
+  const have = (sku) => lines[sku] ?? 0;
+  const scheme = (f.text.match(/\(([^)]+)\)\.?$/) ?? [])[1] ?? f.text.split(':')[0];
+  switch (f.rule) {
+    case 'distributor': {
+      const alt = set.find(([sku]) => sku !== f.sku);
+      const max = f.action?.set?.[f.sku] ?? 0;
+      if (!max) return alt ? t('f.tip.outSwap', { name: name(f.sku), alt: name(alt[0]), n: alt[1] - have(alt[0]) }) : t('f.tip.out', { name: name(f.sku) });
+      return alt ? t('f.tip.ration', { n: max, name: name(f.sku), move: have(f.sku) - max, alt: name(alt[0]) }) : t('f.tip.rationOnly', { n: max, name: name(f.sku) });
+    }
+    case 'pace-gap': { const [[sku, n]] = set; return t('f.tip.pace', { n: n - have(sku), name: name(sku), date: until(N) }); }
+    case 'missing-regular': return t('f.tip.regular', { name: name(f.sku) });
+    case 'threshold': {
+      const [[sku, n]] = set.length ? set : [[null, 0]];
+      const pct = (f.text.match(/(\d+)% off/) ?? [])[1];
+      return sku ? t(pct ? 'f.tip.thresholdPct' : 'f.tip.thresholdFree', { n: n - have(sku), name: name(sku), pct, scheme }) : f.text;
+    }
+    case 'cap-reached': return t('f.tip.cap', { scheme: f.text.split(':')[0] });
+    case 'larger-than-usual': return t('f.tip.larger', { n: Object.values(lines).reduce((a, b) => a + b, 0), need: Math.round(N.totals.expected) });
+    case 'cooler': return t('f.tip.cooler', { n: Math.floor(season.coolerCap(data.outlet(N.outletId), N.cover.sellingDays || N.cover.days)) });
+    case 'no-cooler': return t('f.tip.noCooler');
+    case 'closing-soon': return t('f.tip.closing', { n: (N.gates.find((g) => g.rule === 'closing-soon') ?? {}).sellingDays ?? 0 });
+    default: return f.text;
   }
 }
+
+// ---- Outlet details: the suggestion -------------------------------------------------------------
 
 function outletCard(root, o) {
   const slot = root.querySelector('[data-slot="outlet-season"]');
@@ -79,40 +126,34 @@ function outletCard(root, o) {
   const draw = () => {
     const N = season.need(o.id, opts());
     if (!N.display) {
-      mount(slot, html`<section class="sc sc-quiet"><div class="sc-head">${icon('spark')}<div><p class="sc-eyebrow">${t('f.sc.eyebrow')}</p><p class="sc-title">${t('f.sc.silentTitle')}</p></div></div>
-        <p class="sc-sub">${t('f.sc.silentBody')}</p></section>`);
+      mount(slot, html`<section class="so so-quiet"><div class="so-head"><span class="so-icon">${icon('store')}</span>
+        <div><p class="so-eyebrow">${t('f.so.eyebrow')}</p><p class="so-line">${t('f.so.silent')}</p></div></div></section>`);
       slot.hidden = false;
       return;
     }
-    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0 || s.suggested > 0).slice(0, 5) : [];
-    const gates = N.gates.map((g) => gateText(g, N)).filter(Boolean);
-    const lessThanUsual = N.mode === 'closing' || N.gates.some((g) => g.rule === 'deload');
-    mount(slot, html`<section class="sc" aria-labelledby="sc-title">
-      <div class="sc-head">
-        <span class="sc-mark">${icon('spark')}</span>
-        <div>
-          <p class="sc-eyebrow">${t('f.sc.eyebrow')}${N.mode === 'peers' ? html` · <span class="sc-est">${t('f.sc.estimate')}</span>` : ''}${whatIf ? html` · <span class="sc-whatif">${t('f.sc.whatIfOn')}</span>` : ''}</p>
-          <h2 class="sc-title" id="sc-title">${N.totals.realisable
-            ? t('f.sc.orderAbout', { n: N.totals.realisable, date: until(N) })
-            : t(lessThanUsual ? 'f.sc.orderNothingClosing' : 'f.sc.orderNothing', { date: until(N) })}</h2>
-          <p class="sc-sub">${t(`f.sc.mode.${N.mode}`, { days: N.cover.days, selling: N.cover.sellingDays, expected: N.totals.expected, next: fmt.shortDate(N.cover.nextVisit) })}</p>
+    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0).slice(0, 6) : [];
+    const why = reasons(N);
+    const tags = why.filter((r) => r.tone);
+    const sub = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : t('f.so.sub', { date: until(N) });
+    mount(slot, html`<section class="so" aria-labelledby="so-title">
+      <div class="so-head">
+        <span class="so-icon">${icon('box')}</span>
+        <div class="so-text">
+          <p class="so-eyebrow">${t('f.so.eyebrow')}${N.mode === 'peers' ? html`<span class="so-tag">${t('f.so.guess')}</span>` : ''}${whatIf ? html`<span class="so-tag is-hot">43°C</span>` : ''}</p>
+          <h2 class="so-big" id="so-title">${N.totals.realisable}<small> ${t('f.so.cases')}</small></h2>
+          <p class="so-sub">${sub}</p>
         </div>
       </div>
-      ${packs.length ? html`<ul class="sc-packs">${packs.map(([sku, s]) => html`<li>
-        <span class="sc-pack">${name(sku)}${data.product(sku)?.focus ? html` <span class="focus-dot" title="${t('f.sku.focus')}">★</span>` : ''}</span>
-        <span class="sc-qty num">${s.realisable}${s.suggested !== s.realisable ? html`<span class="sc-was"> / ${s.suggested}</span>` : ''}</span>
-      </li>`)}</ul>` : ''}
-      ${gates.length ? html`<ul class="sc-gates">${gates.map((g) => html`<li>${icon('info')}<span>${g}</span></li>`)}</ul>` : ''}
-      <details class="sc-why"><summary>${t('f.sc.why')}${icon('chevron', 'collapse-chev')}</summary>
-        <ul>${N.explain.map((x) => html`<li>${x}</li>`)}</ul>
-        ${N.events.length ? html`<p class="fine">${t('f.sc.events', { list: N.events.slice(0, 3).map((e) => `${e.name} ×${e.factor}`).join(', ') })}</p>` : ''}
-        <p class="fine">${t('f.sc.method')}</p>
-        <button type="button" class="btn btn-ghost btn-compact" data-whatif>${icon('sun')}<span>${whatIf ? t('f.sc.whatIfOff') : t('f.sc.whatIf', { c: WHAT_IF.forecastMaxC })}</span></button>
+      ${packs.length ? html`<div class="so-packs">${packs.map(([sku, s]) => html`<span class="so-pack ${data.product(sku)?.focus ? 'is-focus' : ''}">${name(sku)}<b>${s.realisable}</b></span>`)}</div>` : ''}
+      ${tags.length ? html`<div class="so-tags">${tags.map((r) => html`<span class="so-tagline tone-${r.tone}">${icon(r.icon)}${r.text}</span>`)}</div>` : ''}
+      <details class="so-why"><summary>${icon('info')}<span>${t('f.so.why')}</span>${icon('chevron', 'collapse-chev')}</summary>
+        <ul>${why.filter((r) => !r.tone).map((r) => html`<li>${icon(r.icon)}<span>${r.text}</span></li>`)}</ul>
+        <button type="button" class="link-btn so-whatif" data-whatif>${icon('sun')}<span>${whatIf ? t('f.so.whatIfOff') : t('f.so.whatIf')}</span></button>
       </details>
-      ${N.totals.realisable ? html`<button type="button" class="btn btn-primary btn-block sc-cta" data-use>${t('f.sc.use', { n: N.totals.realisable })}</button>` : ''}
+      ${N.totals.realisable ? html`<button type="button" class="btn btn-primary btn-block so-cta" data-use>${t('f.so.use', { n: N.totals.realisable })}</button>` : ''}
     </section>`);
     slot.hidden = false;
-    slot.querySelector('[data-whatif]')?.addEventListener('click', () => { whatIf = !whatIf; draw(); slot.querySelector('.sc-why')?.setAttribute('open', ''); });
+    slot.querySelector('[data-whatif]')?.addEventListener('click', () => { whatIf = !whatIf; draw(); slot.querySelector('.so-why')?.setAttribute('open', ''); });
     slot.querySelector('[data-use]')?.addEventListener('click', () => {
       if (cart.outletId !== o.id || cart.isEmpty()) {
         if (cart.outletId !== o.id) cart.start(o.id);
@@ -124,7 +165,7 @@ function outletCard(root, o) {
   draw();
 }
 
-// ---- Order booking: live findings, per-pack hints, "Suggested" filter -----------------------
+// ---- Order booking: live tips, "Suggested" filter, per-pack add -----------------------------------
 
 /** App-level check: cart + stock on hand vs the pack's selling rate and shelf life. */
 function coverFindings(o, N, lines) {
@@ -138,9 +179,9 @@ function coverFindings(o, N, lines) {
     const perDay = s.expected / days;
     const cover = Math.round((n + (onHand[sku] ?? 0)) / perDay);
     if (cover > p.shelfLifeDays) {
-      out.push({ rule: 'shelf-life', level: 'warn', sku, text: t('f.sc.shelf', { name: p.name, days: cover, life: p.shelfLifeDays }), action: { set: { [sku]: Math.max(0, Math.round(perDay * COVER_WARN_DAYS() - (onHand[sku] ?? 0))) } } });
+      out.push({ rule: 'shelf-life', level: 'warn', sku, text: t('f.tip.shelf', { name: name(sku), days: cover, life: p.shelfLifeDays }), action: { set: { [sku]: Math.max(0, Math.round(perDay * COVER_WARN_DAYS() - (onHand[sku] ?? 0))) } } });
     } else if (cover > Math.max(COVER_WARN_DAYS(), N.cover.days * 2)) {
-      out.push({ rule: 'overstock', level: 'warn', sku, text: t('f.sc.cover', { name: p.name, days: cover, max: COVER_WARN_DAYS() }), action: { set: { [sku]: Math.max(0, Math.round(perDay * N.cover.days - (onHand[sku] ?? 0))) } } });
+      out.push({ rule: 'overstock', level: 'warn', sku, text: t('f.tip.cover', { name: name(sku), days: cover }), action: { set: { [sku]: Math.max(0, Math.round(perDay * N.cover.days - (onHand[sku] ?? 0))) } } });
     }
   });
   return out;
@@ -148,35 +189,37 @@ function coverFindings(o, N, lines) {
 
 function findingsFor(o, lines) {
   const C = season.check(o.id, lines, opts());
-  const extra = C.need.display ? coverFindings(o, C.need, lines) : [];
+  const N = C.need;
+  const extra = N.display ? coverFindings(o, N, lines) : [];
   const order = { block: 0, warn: 1, nudge: 2, info: 3 };
-  const all = [...C.findings, ...extra.map((f) => ({ audience: 'both', ...f }))].sort((a, b) => order[a.level] - order[b.level]);
+  const all = [...C.findings.filter((f) => !QUIET.has(f.rule)).map((f) => ({ ...f, text: simple(f, N, lines) })), ...extra.map((f) => ({ audience: 'both', ...f }))]
+    .sort((a, b) => order[a.level] - order[b.level]);
   return { C, all };
 }
 
 const actionLabel = (f) => {
   if (!f.action?.set) return '';
-  if (f.rule === 'suggested-order') return t('f.sc.act.fill');
-  if (f.rule === 'distributor') return t('f.sc.act.swap');
-  if (f.rule === 'shelf-life' || f.rule === 'overstock') return t('f.sc.act.trim');
+  if (f.rule === 'distributor') return t('f.act.swap');
+  if (f.rule === 'shelf-life' || f.rule === 'overstock') return t('f.act.trim');
   const [[sku, n]] = Object.entries(f.action.set);
   const diff = n - (cart.get(sku) ?? 0);
-  return diff > 0 ? t('f.sc.act.add', { n: diff }) : t('f.sc.act.set', { n });
+  return diff > 0 ? t('f.act.add', { n: diff }) : t('f.act.set', { n });
 };
 
-const findingHtml = (f, i) => html`<li class="fd lvl-${f.level} typ-${typeOf(f)}">
-  <span class="fd-tag">${t(`f.sc.type.${typeOf(f)}`)}</span>
-  <p class="fd-text">${f.text}</p>
-  ${f.action?.set ? html`<button type="button" class="btn btn-secondary btn-compact fd-act" data-act="${i}">${actionLabel(f)}</button>` : ''}
+const tipHtml = (f, i) => html`<li class="tip typ-${typeOf(f)} lvl-${f.level}">
+  <span class="tip-ico">${icon(TYPE_ICON[typeOf(f)])}</span>
+  <span class="tip-body"><span class="tip-tag">${t(`f.type.${typeOf(f)}`)}</span><span class="tip-text">${f.text}</span></span>
+  ${f.action?.set ? html`<button type="button" class="tip-act" data-act="${i}">${actionLabel(f)}</button>` : ''}
 </li>`;
 
-function listHtml(list, { limit = 3, repTitle = true } = {}) {
+function tipsHtml(list, { limit = TIPS_SHOWN } = {}) {
   const both = list.filter((f) => f.audience !== 'rep');
   const rep = list.filter((f) => f.audience === 'rep');
-  const shown = both.slice(0, limit);
-  return html`${shown.length ? html`<ul class="fd-list">${shown.map((f) => findingHtml(f, list.indexOf(f)))}</ul>` : ''}
-    ${rep.length ? html`<details class="tp-rep fd-rep"${repTitle ? '' : ' open'}><summary>${icon('lock')}<span class="tp-rep-title">${t('tp.forYou')}</span><span class="tp-rep-note">${t('tp.forYouNote')}</span>${icon('chevron', 'collapse-chev')}</summary>
-      <ul class="fd-list">${rep.map((f) => findingHtml(f, list.indexOf(f)))}</ul></details>` : ''}`;
+  const first = both.slice(0, limit);
+  const rest = both.slice(limit);
+  return html`${first.length ? html`<ul class="tips">${first.map((f) => tipHtml(f, list.indexOf(f)))}</ul>` : ''}
+    ${rest.length ? html`<details class="tips-more"><summary>${t('f.tips.more', { n: rest.length })}${icon('chevron', 'collapse-chev')}</summary><ul class="tips">${rest.map((f) => tipHtml(f, list.indexOf(f)))}</ul></details>` : ''}
+    ${rep.length ? html`<details class="tips-more is-rep"><summary>${icon('lock')}<span>${t('tp.forYou')} · ${rep.length}</span>${icon('chevron', 'collapse-chev')}</summary><ul class="tips">${rep.map((f) => tipHtml(f, list.indexOf(f)))}</ul></details>` : ''}`;
 }
 
 function booking(root, o) {
@@ -185,11 +228,11 @@ function booking(root, o) {
   const N0 = season.need(o.id, opts());
   const suggested = N0.display ? packsOf(N0).filter(([, s]) => s.realisable > 0) : [];
 
-  // "Suggested" chip: the packs the assistant would order, first in the list.
+  // "Suggested" chip: only the packs Smart order would order. Chosen first when the cart is empty.
   const chips = root.querySelector('.chips');
   if (chips && suggested.length && !chips.querySelector('[data-cat="suggested"]')) {
     suggested.forEach(([sku]) => { const li = root.querySelector(`.sku[data-sku="${sku}"]`); if (li) li.dataset.tags = `${li.dataset.tags ?? ''} suggested`.trim(); });
-    chips.children[0].insertAdjacentHTML('afterend', String(html`<button type="button" class="chip chip-suggested" data-cat="suggested" aria-pressed="false">${icon('spark')}<span>${t('f.sc.chip')}</span><span class="chip-count">${suggested.length}</span></button>`));
+    chips.children[0].insertAdjacentHTML('afterend', String(html`<button type="button" class="chip chip-suggested" data-cat="suggested" aria-pressed="false">${icon('box')}<span>${t('f.so.chip')}</span><span class="chip-count">${suggested.length}</span></button>`));
     if (cart.isEmpty()) chips.querySelector('[data-cat="suggested"]').click();
   }
 
@@ -199,32 +242,39 @@ function booking(root, o) {
     const N = C.need;
     const have = Object.values(lines).reduce((a, b) => a + b, 0);
     const target = N.totals.realisable;
+    const missing = N.display ? packsOf(N).filter(([sku, s]) => s.realisable > (lines[sku] ?? 0)) : [];
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
-    mount(slot, html`<section class="sc sc-live" aria-live="polite">
-      ${N.display && target ? html`<div class="sc-progress">
-        <p><strong>${t('f.sc.cartOf', { have, target })}</strong> <span class="muted">· ${t('f.sc.toDate', { date: until(N) })}</span></p>
-        <div class="meter is-small"><span class="meter-fill ${have > target * 1.5 ? 'is-over' : ''}" style="width:${pct}%"></span></div>
+    mount(slot, html`<section class="so-live" aria-live="polite">
+      ${N.display && target ? html`<div class="so-live-head">
+        <span class="so-icon is-small">${icon('box')}</span>
+        <div class="so-live-text"><p><b>${t('f.so.liveTitle', { n: target })}</b> <span class="muted">· ${t('f.so.sub', { date: until(N) })}</span></p>
+          <div class="meter is-small"><span class="meter-fill ${have > target * 1.5 ? 'is-over' : ''}" style="width:${pct}%"></span></div>
+          <p class="so-live-count">${t('f.so.inCart', { have, target })}</p></div>
+        ${missing.length ? html`<button type="button" class="btn btn-primary btn-compact" data-addall>${t('f.so.addAll')}</button>` : html`<span class="so-done">${icon('check')}</span>`}
       </div>` : ''}
-      ${all.length ? listHtml(all) : html`<p class="sc-ok">${icon('check')}<span>${t('f.sc.allGood')}</span></p>`}
+      ${all.length ? tipsHtml(all) : have ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
     </section>`);
     slot.hidden = false;
     slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(all[Number(b.dataset.act)].action)));
-    // Per-pack hints under each SKU.
+    slot.querySelector('[data-addall]')?.addEventListener('click', () => missing.forEach(([sku, s]) => cart.set(sku, s.realisable)));
+    // Per-pack: "Suggested 5 · Add" under each suggested SKU.
     root.querySelectorAll('[data-slot="sku-hint"]').forEach((h) => {
       const sku = h.dataset.sku;
       const s = N.display ? N.skus[sku] : null;
-      if (!s || !(s.realisable > 0 || s.suggested > 0)) { h.hidden = true; return; }
+      if (!s || !(s.realisable > 0)) { h.hidden = true; return; }
       const inCart = lines[sku] ?? 0;
-      const tags = (s.gates ?? []).filter((g) => ['distributor', 'cooler', 'on-hand', 'credit', 'safe-cap'].includes(g));
-      mount(h, html`<p class="sku-sug ${inCart >= s.realisable && s.realisable ? 'is-met' : ''}">${icon('spark')}<span>${t('f.sc.skuHint', { n: s.realisable, date: until(N) })}${tags.length ? html` <span class="muted">· ${tags.map((g) => t(`f.sc.tag.${g}`, { n: s.onHand ?? 0 })).join(', ')}</span>` : ''}</span></p>`);
+      const met = inCart >= s.realisable;
+      mount(h, html`<div class="sku-sug ${met ? 'is-met' : ''}">${icon(met ? 'check' : 'box')}<span>${t('f.so.skuHint', { n: s.realisable })}${s.onHand ? html` <span class="muted">· ${t('f.so.skuShelf', { n: s.onHand })}</span>` : ''}</span>
+        ${met ? '' : html`<button type="button" class="sug-add" data-sug="${sku}" data-n="${s.realisable}">${t('f.act.add', { n: s.realisable - inCart })}</button>`}</div>`);
       h.hidden = false;
+      h.querySelector('[data-sug]')?.addEventListener('click', (e) => cart.set(sku, Number(e.currentTarget.dataset.n)));
     });
   };
   draw();
   offCart = cart.subscribe(() => draw());
 }
 
-// ---- Order review: opportunities and warnings, plus the offer pop-up --------------------------
+// ---- Order review: tips and the opportunity pop-up ------------------------------------------------
 
 const togetherMemo = new Map();
 /** The pack most often bought with this basket at nearby outlets (last 12 weeks), not in the cart. */
@@ -250,14 +300,18 @@ function boughtTogether(o, lines) {
       const p = data.product(sku);
       const share = n / withA.length;
       if (share < TOGETHER.minShare || !isOrderable(sku) || (school && ['Sparkling', 'Energy'].includes(p?.category))) return;
-      if (!best || share > best.share) best = { sku, with: a, share, orders: withA.length };
+      if (!best || share > best.share) best = { sku, with: a, share };
     });
   });
   if (!best) return null;
   return { rule: 'together', level: 'nudge', audience: 'both', sku: best.sku,
-    text: t('f.sc.together', { name: name(best.sku), pct: Math.round(best.share * 100), with: name(best.with), area: o.area }),
+    text: t('f.tip.together', { name: name(best.sku), with: name(best.with), pct: Math.round(best.share * 100) }),
     action: { set: { [best.sku]: 1 } } };
 }
+
+/** The best thing to offer at review, most valuable first: a scheme close by, then a pack the
+ *  outlet will run out of, then a regular that's missing, then what nearby shops also take. */
+const OFFER_ORDER = ['threshold', 'pace-gap', 'missing-regular', 'together'];
 
 function review(root, o) {
   const slot = root.querySelector('[data-slot="review-check"]');
@@ -267,43 +321,48 @@ function review(root, o) {
   if (!C.need.display) { slot.hidden = true; return; }
   const tog = boughtTogether(o, lines);
   const list = [...all.filter((f) => f.level !== 'info' || typeOf(f) === 'scheme'), ...(tog ? [tog] : [])];
-  if (!list.length) {
-    mount(slot, html`<section class="card rc"><p class="sc-ok">${icon('check')}<span>${t('f.sc.reviewOk', { date: until(C.need) })}</span></p></section>`);
-    slot.hidden = false;
-    return;
-  }
-  mount(slot, html`<section class="card rc">
-    <h2 class="card-title">${icon('spark')}<span>${t('f.sc.reviewTitle')}</span></h2>
-    ${listHtml(list, { limit: 5 })}
-    <p class="fine">${t('f.sc.reviewNote')}</p>
-  </section>`);
+  mount(slot, list.length
+    ? html`<section class="card rc"><h2 class="card-title">${icon('check')}<span>${t('f.rc.title')}</span></h2>${tipsHtml(list, { limit: 3 })}</section>`
+    : html`<p class="strip-ok">${icon('check')}<span>${t('f.rc.ok', { date: until(C.need) })}</span></p>`);
   slot.hidden = false;
   slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(list[Number(b.dataset.act)].action)));
 
-  // The offer pop-up: once per outlet visit, for a scheme the order is 1–2 cases short of.
-  const offer = list.find((f) => f.rule === 'threshold' && f.action?.set);
+  // One pop-up per cart, for the best opportunity (never for warnings).
+  const offer = OFFER_ORDER.map((r) => list.find((f) => f.rule === r && f.action?.set)).find(Boolean);
   if (offer && !offered.has(o.id)) {
     offered.add(o.id);
     const [[sku, n]] = Object.entries(offer.action.set);
-    const add = n - (lines[sku] ?? 0);
+    const add = Math.max(1, n - (lines[sku] ?? 0));
+    const isScheme = offer.rule === 'threshold';
+    const first = session.name().split(' ')[0];
     openSheet({
-      title: t('f.offer.title'),
-      body: html`<div class="offer-art" aria-hidden="true">${icon('tag')}</div>
-        <p class="offer-text">${offer.text}</p>
-        <p class="fine">${t('f.offer.note')}</p>`,
-      actions: [{ key: 'add', label: t('f.offer.add', { n: add, name: name(sku) }), tone: 'primary' }, { key: 'close', label: t('common.close'), tone: 'secondary' }],
+      title: isScheme ? t('f.offer.titleScheme', { name: first }) : t('f.offer.titleReco', { name: first }),
+      body: html`<div class="offer-art ${isScheme ? '' : 'is-reco'}" aria-hidden="true">${icon(isScheme ? 'tag' : 'box')}</div>
+        <p class="offer-kind">${t(`f.type.${typeOf(offer)}`)}</p>
+        <p class="offer-text">${offer.text}</p>`,
+      actions: [{ key: 'add', label: t('f.offer.add', { n: add, name: name(sku) }), tone: 'primary' }, { key: 'close', label: t('f.offer.skip'), tone: 'secondary' }],
       dismissKey: 'close',
     }).then((k) => { if (k === 'add') applyAction(offer.action); });
   }
 }
 
-// ---- After submit: next week's outlook --------------------------------------------------------
+// ---- After submit: small wins and next week's outlook ------------------------------------------------
 
-function outlook(root, o) {
+function afterSubmit(root, o) {
   const slot = root.querySelector('[data-slot="saved-outlook"]');
   if (!slot) return;
+  const wins = metrics.milestones().filter((w) => !store.seen(`ms:${w.id}`));
+  wins.forEach((w) => store.markSeen(`ms:${w.id}`));
+  const gain = metrics.targetToday();
   const N = season.need(o.id);
-  if (!N.display) return;
+  mount(slot, html`
+    ${wins.map((w) => html`<p class="win is-new">${icon(w.icon)}<span>${t(w.key, w.vars ?? {})}</span></p>`)}
+    <p class="gain-line">${icon('target')}<span>${gain ? t('f.saved.gain', { n: fmt.num(gain) }) : t('f.saved.noGain')}</span></p>
+    ${N.display ? outlookHtml(o, N) : ''}`);
+  slot.hidden = false;
+}
+
+function outlookHtml(o, N) {
   const cal = data.calendar() ?? {};
   const from = N.cover.nextVisit;
   const to = fmt.addDays(from, Math.max(7, N.cover.days));
@@ -312,46 +371,41 @@ function outlook(root, o) {
   const bookings = (o.bookings ?? []).filter((b) => b.date >= from && b.date < to);
   const fc = (cal.forecast?.periods ?? []).filter((p) => p.to >= from && p.from <= to);
   const rain = fc.some((p) => ['moderate', 'high'].includes(p.rainChance));
-  const onset = cal.climatology?.normalOnsetPune ? `${data.demoDate().slice(0, 4)}-${cal.climatology.normalOnsetPune}` : null;
   const up = events.filter((e) => Number(Array.isArray(e.multiplier) ? e.multiplier[1] : e.multiplier) > 1);
   const down = events.filter((e) => Number(Array.isArray(e.multiplier) ? e.multiplier[0] : e.multiplier) < 1);
   const dir = closure || down.length ? 'down' : up.length || bookings.length ? 'up' : 'steady';
   const top = packsOf(N).slice(0, 3).map(([sku]) => name(sku));
-  // Packs this outlet needs that the distributor has limited or out this morning.
-  const limited = packsOf(N).map(([sku]) => ({ sku, it: data.stockFor(sku) }))
-    .filter((x) => x.it && (x.it.status !== 'ok' || x.it.sourceStatus)).slice(0, 2);
+  const limited = packsOf(N).map(([sku]) => ({ sku, it: data.stockFor(sku) })).filter((x) => x.it && (x.it.status !== 'ok' || x.it.sourceStatus)).slice(0, 2);
   const prep = [];
   if (closure) prep.push(t('f.out.prepClosure', { date: fmt.shortDate(closure.from) }));
-  if (bookings.length) prep.push(t('f.out.prepBookings', { n: bookings.length, cases: bookings.reduce((a, b) => a + (b.expectedCases ?? 0), 0) }));
+  if (bookings.length) prep.push(t('f.out.prepBookings', { n: bookings.length }));
   if (limited.length) prep.push(t('f.out.prepStock', { list: limited.map((x) => name(x.sku)).join(', ') }));
   if (rain) prep.push(t('f.out.prepRain'));
   prep.push(t('f.out.prepCall', { date: fmt.shortDate(fmt.addDays(from, -1)) }));
-  mount(slot, html`<section class="card outlook" aria-labelledby="outlook-title">
-    <h2 class="card-title" id="outlook-title">${icon('trend')}<span>${t('f.out.title')}</span></h2>
-    <p class="outlook-dir dir-${dir}">${t(`f.out.dir.${dir}`)}</p>
-    <dl class="kv">
-      <div><dt>${t('f.out.next')}</dt><dd>${fmt.shortDate(from)} <span class="muted">· ${t('f.out.expect', { n: Math.round(N.totals.expected) })}</span></dd></div>
-      ${top.length ? html`<div><dt>${t('f.out.focus')}</dt><dd>${top.join(', ')}</dd></div>` : ''}
-      ${up.length || down.length ? html`<div><dt>${t('f.out.events')}</dt><dd>${[...up, ...down].slice(0, 2).map((e) => e.name).join(', ')}</dd></div>` : ''}
-      ${limited.length ? html`<div><dt>${t('f.out.stock')}</dt><dd>${limited.map((x) => `${name(x.sku)} (${x.it.note || x.it.sourceStatus || x.it.status})`).join('; ')}</dd></div>` : ''}
-      ${onset ? html`<div><dt>${t('f.out.monsoon')}</dt><dd>${t('f.out.monsoonIn', { days: fmt.daysBetween(data.demoDate(), onset) })}</dd></div>` : ''}
-    </dl>
-    <p class="sub-title">${t('f.out.prep')}</p>
-    <ul class="prep">${prep.map((x) => html`<li>${icon('check')}<span>${x}</span></li>`)}</ul>
-    <p class="fine">${t('f.out.note')}</p>
-  </section>`);
-  slot.hidden = false;
+  return html`<section class="outlook" aria-labelledby="outlook-title">
+    <div class="outlook-head dir-${dir}">
+      <span class="outlook-ico">${icon(dir === 'down' ? 'calendarX' : 'trend')}</span>
+      <div><p class="outlook-eyebrow" id="outlook-title">${t('f.out.title')}</p><p class="outlook-dir">${t(`f.out.dir.${dir}`)}</p></div>
+    </div>
+    <div class="outlook-rows">
+      <p>${icon('calendar')}<span>${t('f.out.next', { date: fmt.shortDate(from), n: Math.round(N.totals.expected) })}</span></p>
+      ${top.length ? html`<p>${icon('box')}<span>${t('f.out.top', { list: top.join(', ') })}</span></p>` : ''}
+      ${[...up, ...down].length ? html`<p>${icon('calendar')}<span>${[...new Set([...up, ...down].map((e) => e.name))].slice(0, 2).join(', ')}</span></p>` : ''}
+      ${limited.length ? html`<p class="is-warn">${icon('truck')}<span>${t('f.out.stock', { list: limited.map((x) => name(x.sku)).join(', ') })}</span></p>` : ''}
+    </div>
+    <details class="outlook-prep"><summary>${icon('check')}<span>${t('f.out.prep', { n: prep.length })}</span>${icon('chevron', 'collapse-chev')}</summary>
+      <ul>${prep.map((x) => html`<li>${x}</li>`)}</ul></details>
+  </section>`;
 }
 
-// ---- Landing: a small suggestion badge on each route stop -------------------------------------
+// ---- Landing: a small suggestion badge on each route stop ---------------------------------------------
 
 function routeBadges(root) {
   root.querySelectorAll('[data-slot="route-badge"]').forEach((el) => {
     const N = season.need(el.dataset.outletId);
-    if (!N?.display) return;
-    const closing = N.mode === 'closing';
-    mount(el, closing ? pill(t('f.sc.badgeClosing'), 'caution', 'calendarX')
-      : N.totals.realisable ? pill(t('f.sc.badge', { n: N.totals.realisable }), 'info', 'spark') : '');
+    if (!N?.display || orders.demoOrdersOn(el.dataset.outletId, data.demoDate()).length) return;
+    mount(el, N.mode === 'closing' ? pill(t('f.so.badgeClosing'), 'caution', 'calendarX')
+      : N.totals.realisable ? pill(t('f.so.badge', { n: N.totals.realisable }), 'info', 'box') : '');
     el.hidden = false;
   });
 }

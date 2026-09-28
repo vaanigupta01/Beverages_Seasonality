@@ -99,3 +99,36 @@ export function leaderboard(name) {
   rows.forEach((r, i) => { r.rank = i + 1; });
   return { rows, me, rank: me.rank, total: rows.length, lb };
 }
+
+// ---- today's gain and milestones ---------------------------------------------------------
+
+/** Focus-pack cases added to the summer target by today's orders (demo orders only). */
+export function targetToday() {
+  const d = data.demoDate();
+  const t = data.field().targets.preSeason;
+  const share = (data.field().crossTerritory?.incentiveCreditPct ?? 50) / 100;
+  return Math.round(orders.demoOrders().filter((o) => o.date === d)
+    .reduce((n, o) => n + (isMine(o.outletId) ? 1 : share) * o.lines.filter((l) => t.skus.includes(l.sku)).reduce((m, l) => m + l.cases, 0), 0));
+}
+
+/**
+ * Small wins for today, in the order they are usually reached. Each is { id, icon, text key, vars }.
+ * Test them in the demo: book the first order; book at 3 outlets with a focus pack; reach 5 outlets;
+ * add 100 focus cases in a day; every 5% step of the summer target.
+ */
+export function milestones() {
+  const day = today();
+  const pre = preSeason();
+  const gain = targetToday();
+  const startPct = pre.target ? Math.floor(((pre.achieved - gain) / pre.target) * 100) : 0;
+  const out = [];
+  if (day.visited >= 1) out.push({ id: 'first-order', icon: 'check', key: 'f.ms.first' });
+  if (day.withFocus >= 3) out.push({ id: 'focus-3', icon: 'target', key: 'f.ms.focus3' });
+  if (day.visited >= 5) out.push({ id: 'five', icon: 'route', key: 'f.ms.five' });
+  if (day.visited >= 10) out.push({ id: 'ten', icon: 'route', key: 'f.ms.ten' });
+  if (gain >= 100) out.push({ id: 'gain-100', icon: 'trend', key: 'f.ms.gain100' });
+  for (let step = Math.ceil((startPct + 1) / 5) * 5; step <= pre.pct; step += 5) {
+    out.push({ id: `step-${step}`, icon: 'trophy', key: 'f.ms.step', vars: { pct: step } });
+  }
+  return out;
+}

@@ -8,6 +8,7 @@ import * as orders from '../orders.js';
 import * as schemes from '../schemes.js';
 import * as fmt from '../format.js';
 import { t, label, lang } from '../i18n.js';
+import { schemeArt } from '../feature/scheme-art.js';
 import { html, mount, fresh, icon, appBar, emptyState } from '../ui.js';
 
 export function render(root, { id, sub }) {
@@ -31,21 +32,22 @@ export function render(root, { id, sub }) {
   mount(view, html`
     ${appBar({ title: s.name, sub: o?.name ?? t('sd.title'), back })}
     <div class="page">
-      <section class="sd-hero ${st ? `st-${st.kind}` : ''}">
-        <p class="eyebrow">${t(`sd.type.${s.type}`)}</p>
-        <h1 class="display sd-name">${s.name}</h1>
-        ${s.type !== 'program' ? html`<p class="sd-chip">${icon('tag')}<span>${schemes.chipText(s)}</span></p>` : ''}
-        ${st ? statusBanner(st, o, s, today, month) : ''}
+      <section class="sd-art" style="${schemeArt(s)}">
+        <p class="sd-type">${t(`sd.type.${s.type}`)}</p>
+        <h1 class="sd-art-name">${s.name}</h1>
+        <p class="sd-art-offer">${s.type === 'program' ? t('f.sch.program', { amt: schemes.payoutAmount(s) }) : schemes.chipText(s)}</p>
       </section>
+      ${st ? html`<div class="sd-status-wrap">${statusBanner(st, o, s, today, month)}</div>` : ''}
 
-      <section class="card">
-        <h2 class="card-title">${icon('tag')}<span>${t('sd.offer')}</span></h2>
-        <p class="sd-offer">${schemes.offerText(s)}</p>
-      </section>
+      <details class="card collapse fold" open>
+        <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-amber">${icon('chat')}</span><span>${t('sd.offer')}</span></span>${icon('chevron', 'collapse-chev')}</summary>
+        <div class="collapse-body"><p class="sd-offer">${schemes.offerText(s)}</p></div>
+      </details>
 
-      <section class="card">
-        <h2 class="card-title">${icon('info')}<span>${t('sd.details')}</span></h2>
-        <dl class="kv sd-kv">
+      <details class="card collapse fold">
+        <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-blue">${icon('info')}</span><span>${t('sd.details')}</span></span>
+          <span class="collapse-sum">${s.validTo ? t('common.till', { date: fmt.shortDate(s.validTo) }) : t('common.ongoing')}</span>${icon('chevron', 'collapse-chev')}</summary>
+        <div class="collapse-body"><dl class="kv sd-kv">
           <div><dt>${t('sd.type')}</dt><dd>${t(`sd.type.${s.type}`)}</dd></div>
           <div><dt>${t('sd.valid')}</dt><dd>${s.validFrom && s.validTo
             ? html`${fmt.dateRange(s.validFrom, s.validTo, today)} <span class="muted">· ${t('sd.daysLeft', { n: Math.max(0, fmt.daysBetween(today, s.validTo)) })}</span>`
@@ -56,8 +58,8 @@ export function render(root, { id, sub }) {
           ${s.type === 'free-goods' ? html`<div><dt>${t('sd.freeAs')}</dt><dd>${freeAs(r)}</dd></div>` : ''}
           <div><dt>${t('sd.paid')}</dt><dd>${lang() === 'en' && s.payout && s.type !== 'program' ? s.payout : t(`sd.pay.${s.type}`)}</dd></div>
           ${s.extras ? html`<div><dt>${t('sd.also')}</dt><dd>${schemes.extrasText(s)}</dd></div>` : ''}
-        </dl>
-      </section>
+        </dl></div>
+      </details>
 
       ${Array.isArray(s.skus) ? productsCard(s) : ''}
       ${o && s.type === 'program' && o.cooler?.type === 'bottler' ? auditCard(o, today) : ''}
@@ -102,13 +104,12 @@ function freeAs(r) {
 function productsCard(s) {
   const list = s.skus.map((sku) => data.product(sku)).filter(Boolean);
   if (!list.length) return '';
-  return html`<section class="card">
-    <h2 class="card-title">${icon('box')}<span>${t('sd.products')}</span></h2>
+  return html`<details class="card collapse fold"><summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-purple">${icon('box')}</span><span>${t('sd.products')}</span></span><span class="collapse-sum">${s.skus.length}</span>${icon('chevron', 'collapse-chev')}</summary><div class="collapse-body">
     <ul class="mini-list sd-products">${list.map((p) => html`<li>
       <span>${p.name}</span>
       <span class="num">${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit: t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case') })}</span>
     </li>`)}</ul>
-  </section>`;
+  </div></details>`;
 }
 
 function auditCard(o, today) {

@@ -3,6 +3,7 @@
 import * as data from '../data.js';
 import * as orders from '../orders.js';
 import { t, label } from '../i18n.js';
+import { quickActions } from '../feature/outlet-tools.js';
 import { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, emptyState } from '../ui.js';
 
 // Kept while the app is open, so coming back restores the list as the rep left it.
@@ -103,7 +104,7 @@ function row(o, onRoute, today) {
   const search = [o.name, o.area, label('area', o.area), o.address, o.channel, label('ch', o.channel), o.shopType,
     label('shop', o.shopType), o.tier, label('tier', o.tier), o.id, o.persona?.label].filter(Boolean).join(' ').toLowerCase();
   const type = o.shopType && o.shopType !== o.channel ? ` · ${label('shop', o.shopType)}` : '';
-  return html`<li data-outlet="${o.id}" data-search="${search}">
+  return html`<li class="row-wrap" data-outlet="${o.id}" data-search="${search}">
     <a class="row outlet-row" href="#/outlet/${o.id}">
       <span class="row-main">
         <span class="row-title">${o.name}</span>
@@ -115,7 +116,7 @@ function row(o, onRoute, today) {
         </span>
         ${personaTag(o)}
       </span>
-      ${icon('chevron', 'row-chev')}
     </a>
+    ${quickActions(o)}
   </li>`;
 }

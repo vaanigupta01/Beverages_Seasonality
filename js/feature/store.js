@@ -5,6 +5,8 @@
 // Times of day (clock in/out, when a note was written) use the device clock. The date
 // always comes from config.demoDate, so the demo stays on Tue 28 Apr 2026.
 
+import * as data from '../data.js';
+
 const KEY = 'gtapp.field.v1';
 const EMPTY = () => ({ clock: { sessions: [] }, notes: {}, issues: {}, seenAlerts: [] });
 let memory = EMPTY();
@@ -66,14 +68,23 @@ export const addNote = (outletId, text, via) => update((s) => {
   (s.notes[outletId] ??= []).unshift({ at: nowMs(), time: timeNow(), text, via });
 });
 
-export const issuesFor = (outletId) => read().issues[outletId] ?? [];
+/** Issues for an outlet, newest first: the ones raised today in this browser, then the ones
+ *  already on record (data/field.json → issues). Resolving a recorded one is remembered here. */
+export function issuesFor(outletId) {
+  const state = read();
+  const local = state.issues[outletId] ?? [];
+  const seeded = (data.field()?.issues?.[outletId] ?? []).map((x) => ({ ...x, seeded: true,
+    status: state.resolvedSeeds?.includes(x.id) ? 'resolved' : x.status }));
+  return [...local, ...seeded];
+}
 export const openIssues = (outletId) => issuesFor(outletId).filter((i) => i.status === 'open');
 export const addIssue = (outletId, issue) => update((s) => {
   (s.issues[outletId] ??= []).unshift({ id: `ISS-${nowMs().toString(36)}`, at: nowMs(), time: timeNow(), status: 'open', ...issue });
 });
 export const resolveIssue = (outletId, id) => update((s) => {
   const it = (s.issues[outletId] ?? []).find((x) => x.id === id);
-  if (it) { it.status = 'resolved'; it.resolvedTime = timeNow(); }
+  if (it) { it.status = 'resolved'; it.resolvedTime = timeNow(); return; }
+  (s.resolvedSeeds ??= []).push(id);
 });
 
 // ---- alerts ----------------------------------------------------------------------

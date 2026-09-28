@@ -462,6 +462,19 @@ field = {
                         "casesOrdered": "All cases booked since 1 Mar",
                         "monthTargetPct": "April cases against the April target"}},
     "newSkus": new_skus,
+    # Retailer issues already open before today (demo), so the outlet profile has some to show.
+    "issues": {
+        "OUT-01": [{"id": "ISS-D1", "date": "2026-04-14", "categories": ["scheme"], "status": "open",
+                    "text": "March free case (Summer Single-Serve) still not credited by the distributor."}],
+        "OUT-02": [{"id": "ISS-D2", "date": "2026-04-21", "categories": ["billing"], "status": "open",
+                    "text": "Bill showed Rs 20 more per case of 2.25 L than the rate card."},
+                   {"id": "ISS-D3", "date": "2026-03-31", "categories": ["missing"], "status": "resolved",
+                    "text": "One case short on delivery. Replaced on the next trip."}],
+        "OUT-06": [{"id": "ISS-D4", "date": "2026-04-18", "categories": ["delay", "missing"], "status": "open",
+                    "text": "Order for the 17 Apr wedding came a day late and 2 crates of glass were cracked."}],
+        "OUT-03": [{"id": "ISS-D5", "date": "2026-04-21", "categories": ["quality"], "status": "open",
+                    "text": "Afternoon power cuts: 250 ml cola going flat in the cooler, customers complaining."}],
+    },
     "stockYesterday": {"asOf": "2026-04-27", "items": [
         {"sku": "CL250", "status": "rationed", "rationPerOutletCases": 4, "note": "Ration of 4 paid cases per outlet"},
         {"sku": "MG600", "status": "out-of-stock", "note": "Out since 24 Apr"},

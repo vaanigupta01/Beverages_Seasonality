@@ -35,17 +35,18 @@ export function render(root, { id }) {
         <h1 class="display">${t('saved.title')}</h1>
         <p class="saved-outlet">${o?.name ?? order.outletId}</p>
       </div>
-      <section class="card">
-        <dl class="kv">
+      ${slot('saved-outlook')}
+      <details class="card collapse fold">
+        <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-green">${icon('note')}</span><span>${t('f.saved.order', { cases: fmt.casesText(paid), value: fmt.rupees(order.netValue) })}</span></span>${icon('chevron', 'collapse-chev')}</summary>
+        <div class="collapse-body"><dl class="kv">
           <div><dt>${t('saved.order')}</dt><dd class="mono">${order.id}</dd></div>
           <div><dt>${t('saved.cases')}</dt><dd>${fmt.casesText(paid)}${free ? ` ${t('kv.plusFree', { n: free })}` : ''}</dd></div>
           <div><dt>${t('saved.lines')}</dt><dd>${fmt.num(order.lines.filter((l) => l.cases).length)}</dd></div>
           <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
           ${order.schemeEstimate?.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(order.schemeEstimate.discount)}</dd></div>` : ''}
           <div><dt>${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} <span class="muted">· ${fmt.relative(delivery, today)}</span></dd></div>
-        </dl>
-      </section>
-      ${slot('saved-outlook')}
+        </dl></div>
+      </details>
       <div class="stack">
         <a class="btn btn-primary btn-block" href="#/home">${icon('route')}<span>${t('saved.backRoute')}</span></a>
         <a class="btn btn-secondary btn-block" href="#/outlets">${icon('store')}<span>${t('saved.list')}</span></a>

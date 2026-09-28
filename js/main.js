@@ -23,6 +23,7 @@ import * as leaderboard from './screens/leaderboard.js';
 import * as talkingPoints from './feature/talking-points.js';
 import * as landing from './feature/landing.js';
 import * as store from './feature/store.js';
+import * as outletTools from './feature/outlet-tools.js';
 import * as season from './feature/season-engine.js';
 import * as seasonCheck from './feature/season-check.js';
 
@@ -146,6 +147,7 @@ async function boot() {
 
   talkingPoints.install();
   landing.install();
+  outletTools.install();
   seasonCheck.install();
 
   // Handles for feature code and the console.

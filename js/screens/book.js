@@ -164,8 +164,11 @@ function renderBooking(root, o) {
     const out = !sku.isOrderable(sku_);
     li.querySelector('[data-step="1"]').disabled = n >= MAX_CASES || out;
     li.querySelectorAll('[data-quick]').forEach((b) => { b.disabled = n >= MAX_CASES || out; });
+    // Above the distributor's ration: a warning that stays until the quantity is back within it.
     const ration = sku.stockStatus(sku_).ration;
-    if (ration && n > ration) showHint(li, t('f.sku.overRation', { n: ration }));
+    const warn = li.querySelector('[data-ration]');
+    warn.hidden = !(ration && n > ration);
+    if (!warn.hidden) warn.lastElementChild.textContent = t('f.sku.overRation', { n: ration });
   }
 
   function syncFooter() {
@@ -329,6 +332,7 @@ function skuRow(p, o, today, pastAndDemo) {
       <button type="button" class="step" data-step="1" aria-label="${t('book.more', { unit, name: p.name })}">+</button>
     </div>
     <p class="qty-hint" data-qty-hint role="status" hidden></p>
+    <p class="ration-warn" data-ration role="status" hidden>${icon('alert')}<span></span></p>
     ${chips.length ? html`<div class="sku-chips">${chips}</div>` : ''}
     ${sku.detailHtml(p, o)}
     ${slot('sku-hint', { tag: 'div', attrs: { 'data-sku': p.sku } })}
