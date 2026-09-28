@@ -1,6 +1,6 @@
 // Landing additions, filled into home.js's slots:
 //   landing-hero  clock in/out, rank chip and the summer target, inside the branded header
-//   landing-top   alert banners (new schemes, distributor stock changes), sent as push notifications
+//   landing-top   alert banners (new schemes, distributor stock changes); all of them on #/updates
 //   landing-next  the next outlet on the route, and today's small wins
 // Everything is computed from the data, the demo orders and what the rep recorded in this browser.
 
@@ -17,15 +17,13 @@ import { quickActions } from './outlet-tools.js';
 const NEW_SCHEME_DAYS = 30;   // a scheme is "new" for 30 days after it starts
 const SOON_DAYS = 7;          // …and announced 7 days before it starts
 const MAX_ALERTS = 3;         // never more than three banners at once
-const PUSH_KEY = 'gtapp.pushed.v1';   // push notifications go out once per sign-in (sessionStorage)
 
 export function install() {
   app.on('screen:rendered', ({ screen, root }) => {
     if (screen !== 'home') return;
     fillHero(root);
-    const alerts = fillAlerts(root);
+    fillAlerts(root);
     fillNext(root);
-    pushAlerts(alerts);
   });
 }
 
@@ -120,14 +118,16 @@ function stockAlerts() {
     }
     // The tag follows the pack's status now: anything still limited is a stock alert, even when
     // the limit was raised; only a pack that is fully available again is "back in stock".
-    const limited = st !== 'available';
-    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: limited ? 'down' : 'up', icon: 'box', item: now,
-      tag: limited ? t('f.alert.tagDown') : t('f.alert.tagUp'), title, sub: now.note });
+    // Colour follows how bad it is: out of stock (red), limited per shop (orange), running low (amber).
+    const tone = st === 'available' ? 'up' : st === 'out-of-stock' ? 'crit' : st === 'low' ? 'low' : 'down';
+    const tag = { up: t('f.alert.tagUp'), crit: t('f.alert.tagOut'), low: t('f.alert.tagLow'), down: t('f.alert.tagDown') }[tone];
+    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone, icon: tone === 'up' ? 'check' : 'alert', item: now,
+      tag, title, sub: now.note, rank: { crit: 0, down: 1, low: 2, up: 3 }[tone] });
   }
-  return out;
+  return out.sort((a, b) => a.rank - b.rank);
 }
 
-async function openAlert(a) {
+export async function openAlert(a) {
   store.markSeen(a.id);
   if (a.kind === 'scheme') {
     const s = a.scheme;
@@ -136,17 +136,20 @@ async function openAlert(a) {
       : s.type === 'percent-off' ? t('f.sch.thrPct', { n: r.minCases }) : t('f.sch.thrFirst', { days: r.withinDaysOfRegistration });
     const benefit = s.type === 'free-goods' ? t('f.sch.benFree', { n: r.freeCases }) : t('f.sch.benPct', { pct: r.percent });
     const tiers = Array.isArray(s.eligibleTiers) ? s.eligibleTiers.map((x) => label('tier', x)).join(', ') : t('f.sch.allTiers');
+    const packs = Array.isArray(s.skus) ? s.skus.map((k) => data.product(k)?.name ?? k) : null;
+    const say = s.type === 'free-goods' ? t('f.sch.sayFree', { buy: r.buyCases, free: r.freeCases, mix: r.pooled && s.skus.length > 1 ? t('f.sch.sayMix') : '' })
+      : s.type === 'percent-off' ? t('f.sch.sayPct', { min: r.minCases, pct: r.percent }) : t('f.sch.sayFirst', { pct: r.percent });
     await openSheet({
       title: s.name,
-      body: html`<div class="facts">
-          <p>${icon('box')}<span><b>${t('f.sch.skus')}</b>${Array.isArray(s.skus) ? schemes.listNames(s.skus) : t('f.sch.allSkus')}</span></p>
-          <p>${icon('target')}<span><b>${t('f.sch.threshold')}</b>${threshold}</span></p>
-          <p>${icon('tag')}<span><b>${t('f.sch.benefit')}</b>${benefit}</span></p>
-          <p>${icon('calendar')}<span><b>${t('f.sch.valid')}</b>${fmt.dateRange(s.validFrom, s.validTo, data.demoDate())}</span></p>
-          <p>${icon('store')}<span><b>${t('f.sch.tiers')}</b>${tiers}${s.requiresBottlerCooler ? ` · ${t('f.sch.cooler')}` : ''}</span></p>
+      body: html`<div class="tiles sheet-tiles">
+          <div class="tile"><span class="tile-l">${icon('target')}${t('f.sch.threshold')}</span><span class="tile-row"><b class="tile-v">${threshold}</b></span></div>
+          <div class="tile is-blue"><span class="tile-l">${icon('tag')}${t('f.sch.benefit')}</span><span class="tile-row"><b class="tile-v">${benefit}</b></span></div>
+          <div class="tile"><span class="tile-l">${icon('calendar')}${t('f.sch.valid')}</span><span class="tile-row"><b class="tile-v">${t('common.till', { date: fmt.shortDate(s.validTo) })}</b><span class="tile-s">${t('f.alert.from', { date: fmt.shortDate(s.validFrom) })}</span></span></div>
+          <div class="tile"><span class="tile-l">${icon('store')}${t('f.sch.tiers')}</span><span class="tile-row"><b class="tile-v">${tiers}</b>${s.requiresBottlerCooler ? html`<span class="tile-s">${t('f.sch.cooler')}</span>` : ''}</span></div>
         </div>
-        <div class="say-box"><p class="say-label">${icon('chat')}<span>${t('f.sch.say')}</span></p>
-          <p>${t('f.sch.sayText', { offer: schemes.offerText(s) })}</p></div>`,
+        <p class="fold-sub">${t('f.sch.skus')}</p>
+        ${packs ? html`<ul class="pack-list">${packs.map((n) => html`<li>${n}</li>`)}</ul>` : html`<p class="muted">${t('f.sch.allSkus')}</p>`}
+        <div class="say-box"><p class="say-label">${icon('chat')}<span>${t('f.sch.say')}</span></p><p>${say}</p></div>`,
       actions: [{ key: 'close', label: t('f.common.ok'), tone: 'primary' }],
       dismissKey: 'close',
     });
@@ -166,65 +169,37 @@ async function openAlert(a) {
   }
 }
 
-const currentAlerts = () => [...schemeAlerts(data.demoDate()), ...stockAlerts()].filter((a) => !store.seen(a.id)).slice(0, MAX_ALERTS);
+/** Every update for today, newest kind first. The landing shows the unread ones (up to three);
+ *  #/updates shows them all again. */
+export const allAlerts = () => [...schemeAlerts(data.demoDate()), ...stockAlerts()];
+const currentAlerts = () => allAlerts().filter((a) => !store.seen(a.id)).slice(0, MAX_ALERTS);
+
+export const alertCard = (a, i) => html`<button type="button" class="alert tone-${a.tone}" data-alert="${i}">
+  <span class="alert-icon">${icon(a.icon)}</span>
+  <span class="alert-text"><span class="alert-tag">${a.tag}</span><span class="alert-title">${a.title}</span>${a.sub ? html`<span class="alert-sub">${a.sub}</span>` : ''}</span>
+  <span class="alert-go">${t('f.alert.view')}</span>
+</button>`;
 
 function fillAlerts(root) {
   const slot = root.querySelector('[data-slot="landing-top"]');
-  if (!slot) return [];
+  if (!slot) return;
   const alerts = currentAlerts();
-  const canAsk = 'Notification' in window && Notification.permission === 'default';
-  if (!alerts.length) { slot.hidden = true; return alerts; }
+  if (!allAlerts().length) { slot.hidden = true; return; }
+  const draw = () => {
+    const left = [...slot.querySelectorAll('[data-alert]')].length;
+    const head = slot.querySelector('[data-head]');
+    if (head) head.textContent = left ? t('f.alert.head', { n: left }) : t('f.alert.none');
+  };
   mount(slot, html`<div class="alerts">
-    <div class="alerts-head"><p>${icon('bell')}<span>${t('f.alert.head', { n: alerts.length })}</span></p>
-      ${canAsk ? html`<button type="button" class="alerts-allow" data-allow>${t('f.alert.allow')}</button>` : ''}</div>
-    ${alerts.map((a, i) => html`<button type="button" class="alert tone-${a.tone}" data-alert="${i}">
-      <span class="alert-icon">${icon(a.icon)}</span>
-      <span class="alert-text"><span class="alert-tag">${a.tag}</span><span class="alert-title">${a.title}</span>${a.sub ? html`<span class="alert-sub">${a.sub}</span>` : ''}</span>
-      <span class="alert-go">${t('f.alert.view')}</span>
-    </button>`)}</div>`);
+    <div class="alerts-head"><p class="${alerts.length ? '' : 'is-quiet'}">${icon('bell')}<span data-head>${alerts.length ? t('f.alert.head', { n: alerts.length }) : t('f.alert.none')}</span></p>
+      <a class="alerts-all" href="#/updates">${t('f.alert.viewAll')}${icon('chevron')}</a></div>
+    ${alerts.map(alertCard)}</div>`);
   slot.hidden = false;
   slot.querySelectorAll('[data-alert]').forEach((btn) => btn.addEventListener('click', async () => {
     await openAlert(alerts[Number(btn.dataset.alert)]);
     btn.remove();
-    if (!slot.querySelector('[data-alert]')) slot.hidden = true;
+    draw();
   }));
-  slot.querySelector('[data-allow]')?.addEventListener('click', async (e) => {
-    e.currentTarget.remove();
-    const res = await Notification.requestPermission().catch(() => 'denied');
-    if (res === 'granted') systemNotify(alerts);
-  });
-  return alerts;
-}
-
-// ---- push notifications --------------------------------------------------------------------------
-
-function systemNotify(alerts) {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  alerts.forEach((a) => {
-    try { new Notification(`${a.tag} · ${a.title}`, { body: a.sub ?? '', tag: a.id }); } catch { /* some browsers need a service worker */ }
-  });
-}
-
-/** Once per sign-in: phone-style notifications drop in from the top, one after another, and the
- *  same alerts go to the phone's notification tray when the rep has allowed it. */
-function pushAlerts(alerts) {
-  let pushed = false;
-  try { pushed = sessionStorage.getItem(PUSH_KEY) === '1'; sessionStorage.setItem(PUSH_KEY, '1'); } catch { /* show anyway */ }
-  if (pushed || !alerts.length) return;
-  systemNotify(alerts);
-  alerts.forEach((a, i) => setTimeout(() => showPush(a), 600 + i * 4200));
-}
-
-function showPush(a) {
-  const el = document.createElement('button');
-  el.type = 'button';
-  el.className = `push tone-${a.tone}`;
-  el.innerHTML = String(html`<span class="push-app">GT</span><span class="push-text"><span class="push-top"><b>${a.tag}</b><span>${t('f.alert.now')}</span></span><span class="push-title">${a.title}</span>${a.sub ? html`<span class="push-sub">${a.sub}</span>` : ''}</span>`);
-  document.body.append(el);
-  requestAnimationFrame(() => el.classList.add('is-in'));
-  const close = () => { el.classList.remove('is-in'); setTimeout(() => el.remove(), 300); };
-  const timer = setTimeout(close, 3800);
-  el.addEventListener('click', () => { clearTimeout(timer); close(); if (!store.seen(a.id)) openAlert(a); });
 }
 
 // ---- next outlet and today's wins ------------------------------------------------------------------

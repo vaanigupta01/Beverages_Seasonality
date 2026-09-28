@@ -6,8 +6,8 @@ import * as orders from '../orders.js';
 import * as schemes from '../schemes.js';
 import { cart } from '../cart.js';
 import * as fmt from '../format.js';
-import { t, label } from '../i18n.js';
-import { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState, tiles } from '../ui.js';
+import { t } from '../i18n.js';
+import { html, mount, fresh, icon, appBar, tierBadge, personaTag, schemePill, slot, emptyState, tiles } from '../ui.js';
 import * as tools from '../feature/outlet-tools.js';
 import { directionsUrl } from '../feature/outlet-tools.js';
 import { schemeArt } from '../feature/scheme-art.js';
@@ -23,7 +23,6 @@ export function render(root, { id }) {
   const savedToday = orders.demoOrdersOn(o.id, today);
   const inCart = cart.outletId === o.id && !cart.isEmpty();
   const address = o.area && !String(o.address ?? '').includes(o.area) ? `${o.address}, ${o.area}` : o.address;
-  const typeLabel = o.shopType && o.shopType !== o.channel ? `${label('ch', o.channel)} · ${label('shop', o.shopType)}` : label('ch', o.channel);
   const closures = (o.closures ?? []).filter((c) => c.to >= today).sort((a, b) => (a.from < b.from ? -1 : 1));
 
   const bookLabel = inCart ? t('outlet.continue', { cases: fmt.casesText(cart.totalCases()) }) : savedToday.length ? t('outlet.bookAnother') : t('outlet.book');
@@ -52,8 +51,6 @@ export function render(root, { id }) {
         </div>
         <div class="row-tags">
           ${tierBadge(o, { visits: true })}
-          ${v?.todayOnRoute ? pill(t('outlet.stop', { n: v.routeOrder }), 'info', 'route') : ''}
-          ${pill(typeLabel, 'neutral')}
           ${tools.territoryPill(o)}
         </div>
         <div class="profile-foot">
@@ -66,7 +63,6 @@ export function render(root, { id }) {
       ${closures.map((c) => html`<p class="strip-warn">${icon('calendarX')}<span><b>${t('outlet.closed', { range: fmt.dateRange(c.from, c.to, today) })}</b> · ${c.reason}</span></p>`)}
 
       ${slot('outlet-season')}
-      ${tools.stockOnHandCard(o)}
       ${slot('outlet-brief')}
       ${schemesCard(o, all, today)}
       ${lastOrderCard(all, v, today, savedToday.length > 0)}
@@ -79,6 +75,16 @@ export function render(root, { id }) {
     <div class="bottom-bar">
       <a class="btn btn-primary btn-block" href="#/book/${o.id}">${icon('box')}<span>${bookLabel}</span></a>
     </div>`);
+
+  // A tile with a chevron opens the list that belongs to it (e.g. Value → what they ordered).
+  view.addEventListener('click', (e) => {
+    const tile = e.target.closest('[data-toggle]');
+    if (!tile) return;
+    const more = view.querySelector(`[data-toggled="${tile.dataset.toggle}"]`);
+    if (!more) return;
+    more.hidden = !more.hidden;
+    tile.setAttribute('aria-expanded', String(!more.hidden));
+  });
 
   // Notes and issues redraw in place, so the rep keeps their scroll position.
   tools.wire(view, o, (part) => {
@@ -120,11 +126,11 @@ function lastOrderCard(all, v, today, visitedToday) {
   return fold('calendar', 'blue', t('card.lastOrder'), summary, html`
     ${tiles([
       last && { icon: 'box', label: t('kv.lastOrder'), value: fmt.shortDate(last.date), sub: fmt.relative(last.date, today) },
-      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)) },
+      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)), toggle: 'last-lines' },
       { icon: 'check', label: t('kv.lastVisit'), value: lastVisit ? fmt.shortDate(lastVisit.date) : '—', sub: lastVisit ? fmt.relative(lastVisit.date, today) : t('kv.noVisits') },
       v?.nextVisitAfterToday && { icon: 'calendar', label: t('kv.nextVisit'), value: fmt.shortDate(v.nextVisitAfterToday), sub: fmt.relative(v.nextVisitAfterToday, today), tone: 'blue' },
     ])}
-    ${last ? html`<p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}` : ''}`);
+    ${last ? html`<div class="tile-more" data-toggled="last-lines" hidden><p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}</div>` : ''}`);
 }
 
 function paymentCard(o, today) {

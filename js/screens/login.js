@@ -10,8 +10,6 @@ export function render(root) {
   const view = fresh(root);
   const cfg = data.config();
 
-  const shops = data.route().length;
-
   mount(view, html`
     <div class="login2">
       <header class="login2-hero">
@@ -23,7 +21,7 @@ export function render(root) {
           <span class="bottle b1"></span><span class="bottle b2"></span><span class="bottle b3"></span>
         </div>
         <h1 class="login2-title">${t('f.login.title')}</h1>
-        <p class="login2-sub">${icon('map')}<span>${label('region', cfg.region.name)} · ${fmt.date(cfg.demoDate, { weekday: true, year: false })} · ${t('f.login.shops', { n: shops })}</span></p>
+        <p class="login2-sub">${icon('map')}<span>${label('region', cfg.region.name)} · ${fmt.date(cfg.demoDate, { weekday: true, year: false })}</span></p>
       </header>
 
       <form class="login2-form" novalidate>

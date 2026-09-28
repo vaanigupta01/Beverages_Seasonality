@@ -1512,6 +1512,47 @@ details.lb-row .lb-score { margin-left: auto; }
 .sd-notes .icon { width: 13px; height: 13px; flex: none; margin-top: 2px; color: var(--accent); }
 .sd-notes b { color: var(--ink); font-weight: 650; }
 .sd-recent { margin-top: 8px; }
+
+/* alerts: severity colours, view-all link, updates screen */
+.alert.tone-crit { background: linear-gradient(120deg, #8e1426, #c8243c 60%, #ec4a5c); }
+.alert.tone-low { background: linear-gradient(120deg, #a86a00, #d69a0b 60%, #f2c440); }
+.alerts-all { display: inline-flex; align-items: center; gap: 2px; margin-left: 8px; order: 2; padding: 5px 6px 5px 11px; border-radius: var(--pill); background: var(--accent-tint); color: var(--accent); font-size: 11.5px; font-weight: 750; white-space: nowrap; }
+.alerts-all .icon { width: 14px; height: 14px; }
+.alerts-head p.is-quiet::before { background: #1b9a5a; box-shadow: 0 0 0 3px rgba(27, 154, 90, 0.18); }
+.page-upd { padding-top: var(--s3); }
+.upd-sum { margin: 0 var(--s4) var(--s3); font-size: var(--t-sm); color: var(--muted); }
+.upd-group .section-title { margin: 0 var(--s4) var(--s2); }
+.upd-list { margin-bottom: var(--s4); }
+.upd-item.is-read .alert { filter: saturate(0.55); opacity: 0.82; }
+.sheet-tiles { margin-bottom: 4px; }
+.pack-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.pack-list li { padding: 5px 10px; border-radius: var(--pill); background: #f1ecff; color: #4b2aa8; font-size: 12px; font-weight: 650; }
+.tile.is-toggle { position: relative; text-align: left; font: inherit; color: inherit; cursor: pointer; padding-right: 30px; border-color: #c9d8f6; background: #f5f8ff; }
+.tile-chev { position: absolute; right: 8px; top: 50%; display: grid; place-items: center; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%; background: var(--accent-tint); color: var(--accent); }
+.tile-chev .icon { width: 13px; height: 13px; transform: rotate(90deg); transition: transform 150ms ease; }
+.tile.is-toggle[aria-expanded="true"] .tile-chev .icon { transform: rotate(-90deg); }
+.tile-more { margin-top: 4px; }
+/* suggested packs: one swipeable row */
+.so-packs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--s4)); padding: 2px var(--s4); scroll-padding-inline: var(--s4); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 22px), transparent); }
+.so-packs::-webkit-scrollbar { display: none; }
+.so-pack { flex: none; white-space: nowrap; }
+/* talking points: extra points stay hidden until "Show more" (a later .tp-item rule set display) */
+.tp-list:not(.is-open) > .tp-extra { display: none; }
+.tp-facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px; }
+.tp-fact { display: flex; flex-direction: column; min-width: 96px; padding: 6px 10px; border-radius: 10px; background: #f5f8ff; border: 1px solid #dbe6fb; }
+.tp-fact b { font-size: var(--t-sm); font-weight: 750; color: var(--ink); }
+.tp-fact small { font-size: 10.5px; color: var(--muted); }
+.tp-packs-l { margin: 0 0 5px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.tp-body .pack-list { margin-bottom: 8px; }
+.sd-offer { font-size: var(--t-md); font-weight: 700; margin: 0 0 10px; }
+.sd-packs { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.sd-packs li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 12px; border-radius: 10px; background: #f6f2ff; font-size: 12.5px; font-weight: 650; }
+.sd-packs li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: linear-gradient(135deg, #7c4dff, #ff5a8a); margin-right: -2px; }
+.sd-packs li span { flex: 1; }
+.sd-packs li b { font-size: 12px; color: #4b2aa8; }
+.tp-body .pack-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tp-body .pack-list li { display: inline-block; width: auto; margin: 0; padding: 4px 9px; }
+.alerts-all { text-decoration: none; }
 </style>
 </head>
 <body>
@@ -1943,7 +1984,7 @@ return { demoOrders, demoOrdersFor, demoOrdersOn, orderById, allOrdersFor, lastO
 /* ==================== js/feature/strings-en.js ==================== */
 modules['feature/strings-en'] = (() => {
 // English text for the field features (keys start with "f."). Merged into STRINGS.en by
-// js/strings.js. Marathi and Hindi fall back to English until translated.
+// js/strings.js. Marathi and Hindi versions: strings-mr.js and strings-hi.js (same keys).
 //
 // Writing rules: short, everyday words a 10th–12th pass rep reads in a second. Numbers first.
 // No jargon ("realisable", "placement", "cover window", "peers"). One idea per line.
@@ -1953,7 +1994,6 @@ const FIELD_EN = {
 
   // Login
   'f.login.title': 'Ready for today\'s route?',
-  'f.login.shops': '{n} shops',
   'f.login.show': 'Show',
   'f.login.hide': 'Hide',
   'f.login.demo': 'Demo: any name and password works.',
@@ -1968,21 +2008,27 @@ const FIELD_EN = {
   'f.clock.inToast': 'Day started at {time}',
   'f.clock.outToast': 'Day ended · {dur} on duty',
   'f.rank.chip': 'Rank {rank} of {total}',
-  'f.target.title': 'Summer target',
+  'f.target.title': 'Pre-summer target',
   'f.target.cases': 'cases',
   'f.target.today': 'today',
   'f.target.daysLeft': { one: '1 day left', other: '{n} days left' },
   'f.target.pace': 'Sell about {n} cases a day to hit it',
   'f.target.done': 'Target done! Every extra case adds to your lead.',
-  'f.target.counts': 'Counts only: {skus}',
+  'f.target.counts': 'Summer SKUs: {skus}',
   'f.target.window': 'From {from} to {to}',
   'f.target.month': 'April target',
 
-  // Landing: alerts and push
+  // Landing: alerts and the updates screen
   'f.alert.head': { one: '1 update for today', other: '{n} updates for today' },
-  'f.alert.allow': 'Get on phone',
+  'f.alert.viewAll': 'View updates',
+  'f.alert.none': 'No new updates',
+  'f.alert.tagOut': 'Out of stock',
+  'f.alert.tagLow': 'Running low',
+  'f.upd.title': 'Updates',
+  'f.upd.unread': { one: '1 not opened yet', other: '{n} not opened yet' },
+  'f.upd.stock': 'Distributor stock',
+  'f.upd.schemes': 'Schemes',
   'f.alert.view': 'View',
-  'f.alert.now': 'now',
   'f.alert.tagNew': 'New scheme',
   'f.alert.tagSoon': 'Scheme soon',
   'f.alert.tagUp': 'Back in stock',
@@ -1990,7 +2036,7 @@ const FIELD_EN = {
   'f.alert.from': 'from {date}',
   'f.alert.till': 'till {date}',
   'f.alert.rationUp': '{name}: limit raised to {n} per shop',
-  'f.alert.rationDown': '{name}: only {n} cases per shop now',
+  'f.alert.rationDown': '{name}: limit reduced to {n} per shop',
   'f.alert.stock.out-of-stock': '{name} is out of stock',
   'f.alert.stock.rationed': '{name}: limited per shop',
   'f.alert.stock.rationed-against-empties': '{name}: only against empty crates',
@@ -2011,7 +2057,10 @@ const FIELD_EN = {
   'f.sch.benFree': '{n} free case',
   'f.sch.benPct': '{pct}% off',
   'f.sch.say': 'Tell the shop owner',
-  'f.sch.sayText': '"{offer} You get it from the distributor after delivery, not on today\'s bill."',
+  'f.sch.sayFree': '"Buy {buy} cases of these packs{mix} and get {free} free case. It comes from the distributor after delivery, not on today\'s bill."',
+  'f.sch.sayMix': ', any mix,',
+  'f.sch.sayPct': '"Buy {min} or more cases of these packs and get {pct}% off. The distributor takes it off the bill."',
+  'f.sch.sayFirst': '"Your first order gets {pct}% off."',
   'f.stock.status': 'Stock',
   'f.stock.ration': 'Limit',
   'f.stock.perOutlet': '{n} cases per shop',
@@ -2036,7 +2085,7 @@ const FIELD_EN = {
   'f.ms.five': '5 shops ordered today. Great pace!',
   'f.ms.ten': '10 shops ordered today!',
   'f.ms.gain100': '100 target cases added today!',
-  'f.ms.step': 'Summer target crossed {pct}%!',
+  'f.ms.step': 'Pre-summer target crossed {pct}%!',
 
   // Leaderboard
   'f.lb.title': 'Leaderboard',
@@ -2047,13 +2096,13 @@ const FIELD_EN = {
   'f.lb.outlets': '{n} shops',
   'f.lb.defs': 'What these mean',
   'f.lb.rep': 'All reps',
-  'f.lb.short.preSeasonPct': 'Summer target',
+  'f.lb.short.preSeasonPct': 'Pre-summer target',
   'f.lb.short.productiveCallsPct': 'Productive visits',
   'f.lb.short.activeOutletsPct': 'Active shops',
   'f.lb.short.focusCoveragePct': 'Focus pack shops',
   'f.lb.short.monthTargetPct': 'April target',
   'f.lb.short.casesOrdered': 'Cases',
-  'f.lb.def.preSeasonPct': 'Focus pack cases sold since 1 Mar, out of your summer target.',
+  'f.lb.def.preSeasonPct': 'Focus pack cases sold since 1 Mar, out of your pre-summer target.',
   'f.lb.def.productiveCallsPct': 'Out of your visits in the last 30 days, how many ended with an order.',
   'f.lb.def.activeOutletsPct': 'Shops that ordered at least once in the last 30 days.',
   'f.lb.def.focusCoveragePct': 'Of those shops, how many bought at least one focus pack.',
@@ -2073,8 +2122,6 @@ const FIELD_EN = {
   'f.fold.fitsVal': '{n} cases',
   'f.fold.fitsSub': 'of 250 ml',
   'f.fold.outage': 'Afternoon power cuts: drinks get warm after 2 pm',
-  'f.kind.since': 'customer since {year}',
-  'f.kind.new': 'new customer',
   'f.tools.call': 'Call',
   'f.tools.callName': 'Call {name}',
   'f.tools.note': 'Write a note',
@@ -2090,22 +2137,6 @@ const FIELD_EN = {
   'f.sch.head': { one: 'Schemes · 1 you can use', other: 'Schemes · {n} you can use' },
   'f.sch.program': '{amt} every month',
   'f.sch.left': '{left} of {cap} free cases left in {month}',
-  'f.call.title': 'Call {name}',
-  'f.call.owner': 'the owner',
-  'f.call.demoNumber': 'Demo: no phone number saved',
-  'f.call.ask': 'Is {owner} at the shop? Is it open today?',
-  'f.call.usual': 'You usually reach at {time}. Does that suit them?',
-  'f.call.next': 'If not today, next visit is {date}.',
-  'f.call.log': 'After the call, tap what they said.',
-  'f.call.dial': 'Call now',
-  'f.call.dialDemo': 'Call (demo)',
-  'f.call.noNumber': 'Demo: no real number, so no call',
-  'f.call.present': 'Owner is there · coming today',
-  'f.call.closed': 'Shop closed today',
-  'f.call.later': 'Call back later',
-  'f.call.note.present': 'Called: owner at shop, visit confirmed.',
-  'f.call.note.closed': 'Called: shop closed today.',
-  'f.call.note.later': 'Called: asked to call back later.',
   'f.note.title': 'New note',
   'f.note.titleVoice': 'Speak your note',
   'f.note.ph': 'e.g. Cooler full by 9 am. Wants 2 L bottles for the weekend.',
@@ -2143,15 +2174,6 @@ const FIELD_EN = {
   'f.terr.incentive': 'You get only {pct}% incentive on this order. The rest goes to that shop\'s rep.',
   'f.terr.go': 'Book anyway ({pct}% incentive)',
   'f.terr.back': 'Go back',
-  'f.soh.title': 'Stock in the shop',
-  'f.soh.sum': 'about {n} cases',
-  'f.soh.none': 'Not known',
-  'f.soh.delivered': '{n} delivered on {date}',
-  'f.soh.counted': 'You counted',
-  'f.soh.conf.high': 'Sure',
-  'f.soh.conf.medium': 'Likely',
-  'f.soh.conf.low': 'Rough guess',
-  'f.soh.method': 'A guess from the last delivery and daily sales. Count the shelf to be sure.',
 
   // Smart order (the recommendation)
   'f.so.eyebrow': 'Suggested order',
@@ -2174,7 +2196,7 @@ const FIELD_EN = {
   'f.so.r.seasonPeak': 'Peak season, same as last few weeks',
   'f.so.r.hot': '{c}°C: hotter than usual',
   'f.so.r.normal': '{c}°C: normal for this time',
-  'f.so.r.onHand': '{cases} already in the shop',
+  'f.so.r.onHand': 'About {cases} still in the shop (estimate)',
   'f.so.r.closing': 'Shuts {date}: {n} selling days left',
   'f.so.r.rain': 'Rain coming: order for fewer days',
   'f.so.r.swap': '{from} limited: {to} instead',
@@ -2238,8 +2260,8 @@ const FIELD_EN = {
 
   // After submit
   'f.saved.order': 'Order · {cases} · {value}',
-  'f.saved.gain': '+{n} cases to your summer target',
-  'f.saved.noGain': 'No focus packs in this order, so the summer target did not move',
+  'f.saved.gain': '+{n} cases to your pre-summer target',
+  'f.saved.noGain': 'No focus packs in this order, so the pre-summer target did not move',
   'f.out.title': 'Next week at this shop',
   'f.out.dir.up': 'Sales likely to go up',
   'f.out.dir.down': 'Sales likely to go down',
@@ -2263,10 +2285,10 @@ const FIELD_EN = {
   'f.sku.sOut': 'Out of stock',
   'f.sku.details': 'Details',
   'f.sku.newer': 'New pack',
-  'f.sku.shelf': 'Stays good for',
+  'f.sku.shelf': 'Shelf life',
   'f.sku.shelfDays': '{n} days',
   'f.sku.focus': 'Focus pack',
-  'f.sku.focusYes': 'Yes · counts for summer target',
+  'f.sku.focusYes': 'Yes · counts for pre-summer target',
   'f.sku.alt': 'Out of stock. Give {name} instead.',
   'f.sku.outHint': 'Out of stock at the distributor',
   'f.sku.overRation': 'Only {n} cases allowed per shop',
@@ -2280,6 +2302,642 @@ const FIELD_EN = {
 return { FIELD_EN };
 })();
 
+/* ==================== js/feature/strings-mr.js ==================== */
+modules['feature/strings-mr'] = (() => {
+// Marathi text for the field features (keys start with "f."), same keys as strings-en.js.
+// Merged into STRINGS.mr by js/strings.js. Simple spoken Marathi; pack names stay as they are.
+
+const FIELD_MR = {
+  'f.common.ok': 'ठीक आहे',
+
+  // Login
+  'f.login.title': 'आजच्या रूटसाठी तयार?',
+  'f.login.show': 'दाखवा',
+  'f.login.hide': 'लपवा',
+  'f.login.demo': 'डेमो: कोणतेही नाव आणि पासवर्ड चालेल.',
+
+  // Landing: header
+  'f.clock.in': 'दिवस सुरू करा',
+  'f.clock.out': 'संपवा',
+  'f.clock.onFor': 'ड्युटीवर · {dur}',
+  'f.clock.dayDone': 'दिवस पूर्ण · {dur}',
+  'f.clock.hm': '{h}ता {m}मि',
+  'f.clock.m': '{m} मि',
+  'f.clock.inToast': 'दिवस {time} ला सुरू झाला',
+  'f.clock.outToast': 'दिवस संपला · {dur} ड्युटी',
+  'f.rank.chip': '{total} पैकी {rank} वा',
+  'f.target.title': 'प्री-समर टार्गेट',
+  'f.target.cases': 'पेट्या',
+  'f.target.today': 'आज',
+  'f.target.daysLeft': { one: '1 दिवस बाकी', other: '{n} दिवस बाकी' },
+  'f.target.pace': 'पूर्ण करण्यासाठी रोज सुमारे {n} पेट्या विका',
+  'f.target.done': 'टार्गेट पूर्ण! प्रत्येक जास्त पेटी तुमची आघाडी वाढवते.',
+  'f.target.counts': 'समर SKU: {skus}',
+  'f.target.window': '{from} ते {to}',
+  'f.target.month': 'एप्रिल टार्गेट',
+
+  // Landing: alerts and the updates screen
+  'f.alert.head': { one: 'आजची 1 अपडेट', other: 'आजच्या {n} अपडेट्स' },
+  'f.alert.viewAll': 'अपडेट्स पहा',
+  'f.alert.none': 'नवीन अपडेट नाही',
+  'f.alert.tagOut': 'स्टॉक संपला',
+  'f.alert.tagLow': 'स्टॉक कमी',
+  'f.upd.title': 'अपडेट्स',
+  'f.upd.unread': { one: '1 अजून उघडली नाही', other: '{n} अजून उघडल्या नाहीत' },
+  'f.upd.stock': 'डिस्ट्रिब्युटर स्टॉक',
+  'f.upd.schemes': 'स्कीम',
+  'f.alert.view': 'पहा',
+  'f.alert.tagNew': 'नवीन स्कीम',
+  'f.alert.tagSoon': 'स्कीम लवकरच',
+  'f.alert.tagUp': 'स्टॉक परत आला',
+  'f.alert.tagDown': 'स्टॉक अलर्ट',
+  'f.alert.from': '{date} पासून',
+  'f.alert.till': '{date} पर्यंत',
+  'f.alert.rationUp': '{name}: मर्यादा वाढून प्रति दुकान {n}',
+  'f.alert.rationDown': '{name}: मर्यादा कमी होऊन प्रति दुकान {n}',
+  'f.alert.stock.out-of-stock': '{name} स्टॉकमध्ये नाही',
+  'f.alert.stock.rationed': '{name}: प्रति दुकान मर्यादित',
+  'f.alert.stock.rationed-against-empties': '{name}: फक्त रिकाम्या क्रेटच्या बदल्यात',
+  'f.alert.stock.low': '{name} कमी उरले आहे',
+  'f.alert.stock.available': '{name} परत स्टॉकमध्ये',
+  'f.sch.skus': 'पॅक',
+  'f.sch.allSkus': 'संपूर्ण ऑर्डर',
+  'f.sch.threshold': 'घ्या',
+  'f.sch.benefit': 'मिळवा',
+  'f.sch.valid': 'कालावधी',
+  'f.sch.tiers': 'कोणत्या दुकानांना',
+  'f.sch.allTiers': 'सर्व दुकाने',
+  'f.sch.cooler': 'कंपनीचा कूलर हवा',
+  'f.sch.thrFree': 'एका ऑर्डरमध्ये {n} पेट्या{pooled}',
+  'f.sch.pooled': ' (कोणतेही मिश्रण)',
+  'f.sch.thrPct': 'एका ऑर्डरमध्ये {n} किंवा जास्त पेट्या',
+  'f.sch.thrFirst': 'पहिली ऑर्डर, जोडल्यापासून {days} दिवसांत',
+  'f.sch.benFree': '{n} मोफत पेटी',
+  'f.sch.benPct': '{pct}% सूट',
+  'f.sch.say': 'दुकानदाराला सांगा',
+  'f.sch.sayFree': '"या पॅकच्या {buy} पेट्या घ्या{mix} आणि {free} मोफत पेटी मिळवा. ती डिलिव्हरीनंतर डिस्ट्रिब्युटरकडून मिळते, आजच्या बिलात नाही."',
+  'f.sch.sayMix': ' (कोणतेही मिश्रण)',
+  'f.sch.sayPct': '"या पॅकच्या {min} किंवा जास्त पेट्या घ्या आणि {pct}% सूट मिळवा. डिस्ट्रिब्युटर बिलातून कमी करतो."',
+  'f.sch.sayFirst': '"तुमच्या पहिल्या ऑर्डरवर {pct}% सूट."',
+  'f.stock.status': 'स्टॉक',
+  'f.stock.ration': 'मर्यादा',
+  'f.stock.perOutlet': 'प्रति दुकान {n} पेट्या',
+  'f.stock.note': 'डिस्ट्रिब्युटर म्हणतो',
+  'f.stock.sync': 'आज {time} ला डिस्ट्रिब्युटरकडून. दिवसभरात बदलू शकते.',
+  'f.stock.s.available': 'उपलब्ध',
+  'f.stock.s.low': 'स्टॉक कमी',
+  'f.stock.s.rationed': 'मर्यादित',
+  'f.stock.s.rationed-against-empties': 'फक्त रिकाम्यांच्या बदल्यात',
+  'f.stock.s.out-of-stock': 'स्टॉकमध्ये नाही',
+
+  // Landing: day, next stop, wins
+  'f.home.route': { one: 'आज 1 दुकान', other: 'आज {n} दुकाने' },
+  'f.home.done': 'पूर्ण',
+  'f.home.stops': 'आजचा रूट',
+  'f.home.ordered': 'ऑर्डर · {cases}',
+  'f.next.label': 'पुढचे · थांबा {stop}',
+  'f.next.open': 'दुकान उघडा',
+  'f.next.allDone': 'आजची सर्व दुकाने पूर्ण. काम संपल्यावर दिवस संपवा.',
+  'f.ms.first': 'दिवसाची पहिली ऑर्डर झाली!',
+  'f.ms.focus3': 'आज 3 दुकानांत फोकस पॅक विकले',
+  'f.ms.five': 'आज 5 दुकानांनी ऑर्डर दिली. छान वेग!',
+  'f.ms.ten': 'आज 10 दुकानांनी ऑर्डर दिली!',
+  'f.ms.gain100': 'आज 100 टार्गेट पेट्या जोडल्या!',
+  'f.ms.step': 'प्री-समर टार्गेट {pct}% पार!',
+
+  // Leaderboard
+  'f.lb.title': 'लीडरबोर्ड',
+  'f.lb.youAre': '{name} (तुम्ही)',
+  'f.lb.gap': '{name} पेक्षा {gap} गुण मागे',
+  'f.lb.top': 'तुम्ही नंबर 1 आहात. असेच चालू ठेवा!',
+  'f.lb.you': '{name} (तुम्ही)',
+  'f.lb.outlets': '{n} दुकाने',
+  'f.lb.defs': 'याचा अर्थ काय',
+  'f.lb.rep': 'सर्व प्रतिनिधी',
+  'f.lb.short.preSeasonPct': 'प्री-समर टार्गेट',
+  'f.lb.short.productiveCallsPct': 'ऑर्डर मिळालेल्या भेटी',
+  'f.lb.short.activeOutletsPct': 'सक्रिय दुकाने',
+  'f.lb.short.focusCoveragePct': 'फोकस पॅक दुकाने',
+  'f.lb.short.monthTargetPct': 'एप्रिल टार्गेट',
+  'f.lb.short.casesOrdered': 'पेट्या',
+  'f.lb.def.preSeasonPct': '1 मार्चपासून विकलेल्या फोकस पॅक पेट्या, तुमच्या प्री-समर टार्गेटपैकी.',
+  'f.lb.def.productiveCallsPct': 'मागील 30 दिवसांच्या भेटींपैकी किती भेटींत ऑर्डर मिळाली.',
+  'f.lb.def.activeOutletsPct': 'मागील 30 दिवसांत किमान एकदा ऑर्डर दिलेली दुकाने.',
+  'f.lb.def.focusCoveragePct': 'त्यापैकी किती दुकानांनी किमान एक फोकस पॅक घेतला.',
+  'f.lb.def.monthTargetPct': 'एप्रिलच्या पेट्या, तुमच्या एप्रिल टार्गेटपैकी.',
+  'f.lb.def.casesOrdered': '1 मार्चपासून बुक केलेल्या सर्व पेट्या.',
+
+  // Outlet details
+  'f.fold.lastLines': 'त्यांनी काय घेतले',
+  'f.fold.creditUsed': '{limit} पैकी {used} वापरले',
+  'f.fold.pays': 'पेमेंट',
+  'f.fold.cashAbove': 'मर्यादेवर रोख',
+  'f.fold.cashAboveSub': '{amt} पर्यंत उधार',
+  'f.fold.recent': 'शेवटच्या 3 ऑर्डर',
+  'f.fold.today': 'आज',
+  'f.fold.company': 'कंपनीचा कूलर',
+  'f.fold.fits': 'थंड बसतात',
+  'f.fold.fitsVal': '{n} पेट्या',
+  'f.fold.fitsSub': '250 ml च्या',
+  'f.fold.outage': 'दुपारी वीज जाते: 2 नंतर ड्रिंक्स गरम होतात',
+  'f.tools.call': 'कॉल',
+  'f.tools.callName': '{name} ला कॉल करा',
+  'f.tools.note': 'नोट लिहा',
+  'f.tools.mic': 'बोलून नोट',
+  'f.tools.issue': 'तक्रार नोंदवा',
+  'f.outlet.orderedToday': 'आज ऑर्डर: {cases} · {value}',
+  'f.pay.due': '{amt} थकबाकी',
+  'f.pay.room': '{amt} उधार बाकी',
+  'f.hist.sum': { one: '1 ऑर्डर', other: '{n} ऑर्डर' },
+  'f.book.sum': { one: '1 कार्यक्रम · {cases}', other: '{n} कार्यक्रम · {cases}' },
+  'f.notes.sum': { one: '1 नोट', other: '{n} नोट्स' },
+  'f.notes.empty': 'अजून नोट नाही. वरचे नोट किंवा माइक बटण वापरा.',
+  'f.sch.head': { one: 'स्कीम · 1 वापरता येते', other: 'स्कीम · {n} वापरता येतात' },
+  'f.sch.program': 'दरमहा {amt}',
+  'f.sch.left': '{month} मध्ये {cap} पैकी {left} मोफत पेट्या बाकी',
+  'f.note.title': 'नवीन नोट',
+  'f.note.titleVoice': 'तुमची नोट बोला',
+  'f.note.ph': 'उदा. सकाळी 9 पर्यंत कूलर भरलेला. वीकेंडसाठी 2 L बाटल्या हव्या.',
+  'f.note.speak': 'बोलण्यासाठी टॅप करा',
+  'f.note.listening': 'ऐकत आहे… थांबवण्यासाठी टॅप करा',
+  'f.note.noVoice': 'या ब्राउझरमध्ये आवाज चालत नाही. कृपया टाइप करा.',
+  'f.note.micBlocked': 'माइक बंद आहे. कृपया नोट टाइप करा.',
+  'f.note.micFail': 'ऐकू आले नाही. पुन्हा प्रयत्न करा किंवा टाइप करा.',
+  'f.note.save': 'नोट सेव्ह करा',
+  'f.note.saved': 'नोट सेव्ह झाली',
+  'f.note.voice': 'आवाज',
+  'f.note.call': 'कॉल',
+  'f.issue.title': 'दुकानदाराची तक्रार',
+  'f.issue.ph': 'तपशील लिहा (ऐच्छिक)',
+  'f.issue.category': 'कशाबद्दल आहे? (एक किंवा जास्त निवडा)',
+  'f.issue.save': 'तक्रार सेव्ह करा',
+  'f.issue.saved': 'सेव्ह झाले · {cat}',
+  'f.issue.cap': { one: 'उघडी तक्रार', other: 'उघड्या तक्रारी' },
+  'f.issue.listTitle': 'या दुकानाच्या तक्रारी',
+  'f.issue.today': 'आज जोडली, {time}',
+  'f.issue.earlier': 'आधी नोंदवली, {date}',
+  'f.issue.capLabel': '{n} उघड्या तक्रारी',
+  'f.issue.add': 'तक्रार जोडा',
+  'f.issue.resolve': 'सुटली म्हणून नोंदवा',
+  'f.issue.resolved': 'सुटली',
+  'f.issue.cat.scheme': 'स्कीमचे पैसे',
+  'f.issue.cat.quality': 'मालाचा दर्जा',
+  'f.issue.cat.delay': 'उशिरा डिलिव्हरी',
+  'f.issue.cat.missing': 'कमी किंवा फुटलेले',
+  'f.issue.cat.billing': 'किंमत किंवा बिल',
+  'f.issue.cat.other': 'इतर',
+  'f.terr.pill': '{name} चे दुकान',
+  'f.terr.title': 'तुमचे दुकान नाही',
+  'f.terr.body': '{name} हे {rep} ({territory}) यांचे दुकान आहे.',
+  'f.terr.incentive': 'या ऑर्डरवर तुम्हाला फक्त {pct}% इन्सेंटिव्ह मिळेल. बाकी त्या दुकानाच्या प्रतिनिधीला जाईल.',
+  'f.terr.go': 'तरीही बुक करा ({pct}% इन्सेंटिव्ह)',
+  'f.terr.back': 'मागे जा',
+
+  // Smart order (the recommendation)
+  'f.so.eyebrow': 'सुचवलेली ऑर्डर',
+  'f.so.till': '{date} पर्यंत पुरेल',
+  'f.so.cases': 'पेट्या',
+  'f.so.sub': '{date} पर्यंत पुरेल',
+  'f.so.subClosing': 'दुकान लवकरच बंद होणार. कमी किंवा काहीच ऑर्डर नको.',
+  'f.so.subNew': 'नवीन दुकान: कमी सुरुवात करा, {date} ला अजून जोडा',
+  'f.so.guess': 'अंदाज',
+  'f.so.silent': 'सूचना नाही. होलसेलर स्वतःच्या नियोजनाने ऑर्डर देतात.',
+  'f.so.why': 'हा आकडा का',
+  'f.so.whatIf': '43°C झाले तर?',
+  'f.so.whatIfOff': 'आजच्या हवामानावर परत',
+  'f.so.use': 'या {n} पेट्यांनी ऑर्डर सुरू करा',
+  'f.so.r.rate': 'अलीकडे आठवड्याला सुमारे {n} पेट्या विकल्या',
+  'f.so.r.bookings': { one: 'पुढच्या डिलिव्हरीआधी 1 कार्यक्रम बुक', other: 'पुढच्या डिलिव्हरीआधी {n} कार्यक्रम बुक' },
+  'f.so.r.peers': 'नवीन किंवा कमी ऑर्डर: {n} सारख्या दुकानांवरून',
+  'f.so.r.seasonUp': 'पुढे जास्त गर्दीचे दिवस',
+  'f.so.r.seasonDown': 'पुढे कमी विक्रीचे दिवस',
+  'f.so.r.seasonPeak': 'पीक सीझन, मागील काही आठवड्यांसारखा',
+  'f.so.r.hot': '{c}°C: नेहमीपेक्षा जास्त उष्ण',
+  'f.so.r.normal': '{c}°C: या वेळेसाठी सामान्य',
+  'f.so.r.onHand': 'दुकानात अजून सुमारे {cases} (अंदाज)',
+  'f.so.r.closing': '{date} ला बंद: {n} विक्रीचे दिवस बाकी',
+  'f.so.r.rain': 'पाऊस येतोय: कमी दिवसांसाठी ऑर्डर द्या',
+  'f.so.r.swap': '{from} मर्यादित: त्याऐवजी {to}',
+  'f.so.r.out': '{name} स्टॉकमध्ये नाही',
+  'f.so.r.ration': '{name}: जास्तीत जास्त {n}',
+  'f.so.r.cooler': 'कूलरमध्ये बसतील इतके थंड पॅक',
+  'f.so.r.creditTrim': 'बाकी उधारीत बसेल इतके कमी केले',
+  'f.so.r.creditCash': 'उधारीपेक्षा {amt} जास्त: रोख घ्या',
+  'f.so.r.cap': '{n} पेट्यांखाली ठेवले (सुरक्षित मर्यादा)',
+  'f.so.r.today': 'आज आधीच {cases} ऑर्डर',
+  'f.so.r.newOutlet': 'पहिली ऑर्डर: आता 80%, {date} ला अजून जोडा',
+  'f.so.chip': 'सुचवलेले',
+  'f.so.liveTitle': 'सुचवलेले: {n} पेट्या',
+  'f.so.inCart': 'कार्टमध्ये {target} पैकी {have}',
+  'f.so.addAll': 'सर्व जोडा',
+  'f.so.allGood': 'चांगली ऑर्डर. दुकान जितके विकेल तितकीच.',
+  'f.so.skuHint': 'सुचवलेले {n}',
+  'f.so.skuShelf': 'दुकानात {n}',
+  'f.so.badge': 'ऑर्डर ~{n}',
+  'f.so.badgeClosing': 'लवकरच बंद',
+
+  // Tips (booking and review)
+  'f.type.warning': 'तपासा',
+  'f.type.scheme': 'स्कीम',
+  'f.type.reco': 'अजून जोडा',
+  'f.type.info': 'नोंद',
+  'f.tips.more': { one: 'अजून 1 सूचना', other: 'अजून {n} सूचना' },
+  'f.act.add': '{n} जोडा',
+  'f.act.set': '{n} करा',
+  'f.act.swap': 'बदला',
+  'f.act.trim': 'कमी करा',
+  'f.tip.out': '{name} स्टॉकमध्ये नाही. काढून टाका.',
+  'f.tip.outSwap': '{name} स्टॉकमध्ये नाही. त्याऐवजी {n} {alt} द्या.',
+  'f.tip.ration': 'फक्त {n} {name} चालतील. {move} {alt} मध्ये हलवा.',
+  'f.tip.rationOnly': 'प्रति दुकान फक्त {n} {name} चालतील.',
+  'f.tip.pace': 'अजून {n} {name} जोडा. {date} पर्यंत विकले जाईल.',
+  'f.tip.regular': '{name} नाही. ते जवळजवळ प्रत्येक वेळी घेतात.',
+  'f.tip.thresholdFree': 'अजून {n} {name} = 1 मोफत पेटी ({scheme})',
+  'f.tip.thresholdPct': 'अजून {n} {name} = {pct}% सूट ({scheme})',
+  'f.tip.cap': '{scheme}: या महिन्याच्या मोफत पेट्या संपल्या',
+  'f.tip.larger': 'नेहमीपेक्षा खूप मोठी: {n} पेट्या, दुकानाला सुमारे {need} लागतील',
+  'f.tip.cooler': 'थंड पॅक जास्त. कूलरमध्ये सुमारे {n} पेट्याच बसतात.',
+  'f.tip.noCooler': 'इथे कूलर नाही. थंड पॅक कमी ठेवा, मोठ्या बाटल्या विका.',
+  'f.tip.closing': 'दुकान लवकरच बंद: फक्त {n} विक्रीचे दिवस बाकी.',
+  'f.tip.shelf': '{name}: {days} दिवसांचा स्टॉक. विकण्याआधी खराब होईल.',
+  'f.tip.cover': '{name}: {days} दिवसांचा स्टॉक. खूप जास्त, कमी करा.',
+  'f.tip.together': 'जवळची दुकाने जी {with} घेतात ती {name} पण घेतात ({pct}%)',
+  'f.rc.title': 'सबमिट करण्याआधी',
+  'f.rc.ok': 'चांगली ऑर्डर. {date} पर्यंत दुकान जितके विकेल तितकीच.',
+  'f.offer.titleScheme': 'नमस्कार {name}! ही ऑफर सोडू नका',
+  'f.offer.titleReco': 'नमस्कार {name}! अजून एक विकणारी गोष्ट',
+  'f.offer.add': '{n} {name} जोडा',
+  'f.offer.addCases': '{n} पेट्या जोडा',
+
+  // The scheme picked with "Book with this scheme"
+  'f.fs.count': 'कार्टमध्ये {need} पैकी {have} स्कीम पेट्या',
+  'f.fs.met': 'स्कीम पूर्ण',
+  'f.fs.free': '{packs} पैकी अजून {n} जोडा आणि {free} मोफत पेटी मिळवा ({name}).',
+  'f.fs.pct': '{packs} पैकी अजून {n} जोडा आणि {pct}% सूट मिळवा ({name}).',
+  'f.offer.skip': 'आत्ता नको',
+
+  // After submit
+  'f.saved.order': 'ऑर्डर · {cases} · {value}',
+  'f.saved.gain': 'प्री-समर टार्गेटमध्ये +{n} पेट्या',
+  'f.saved.noGain': 'या ऑर्डरमध्ये फोकस पॅक नाहीत, त्यामुळे प्री-समर टार्गेट बदलले नाही',
+  'f.out.title': 'या दुकानात पुढचा आठवडा',
+  'f.out.dir.up': 'विक्री वाढण्याची शक्यता',
+  'f.out.dir.down': 'विक्री कमी होण्याची शक्यता',
+  'f.out.dir.steady': 'विक्री जास्तच राहण्याची शक्यता',
+  'f.out.next': 'पुढची भेट {date} · सुमारे {n} पेट्या',
+  'f.out.top': 'टॉप पॅक: {list}',
+  'f.out.stock': 'डिस्ट्रिब्युटरकडे {list} कमी आहे',
+  'f.out.prep': { one: 'तयारीसाठी 1 गोष्ट', other: 'तयारीसाठी {n} गोष्टी' },
+  'f.out.prepClosure': '{date} पासून दुकान बंद: छोटी शेवटची ऑर्डर ठरवा',
+  'f.out.prepBookings': { one: '1 कार्यक्रम बुक: पुढच्या भेटीत पक्का करा', other: '{n} कार्यक्रम बुक: पुढच्या भेटीत पक्के करा' },
+  'f.out.prepStock': 'डिस्ट्रिब्युटरला {list} बद्दल विचारा',
+  'f.out.prepRain': 'पावसाची शक्यता: पुढची ऑर्डर छोटी ठेवा',
+  'f.out.prepCall': '{date} ला मालकाला कॉल करा',
+
+  // Booking: SKU details
+  'f.sku.ration': 'मर्यादित · प्रति दुकान {n}',
+  'f.sku.sIn': 'स्टॉकमध्ये',
+  'f.sku.sMax': 'कमाल {n}',
+  'f.sku.sEmpties': 'फक्त रिकाम्यांवर',
+  'f.sku.sLow': 'स्टॉक कमी',
+  'f.sku.sOut': 'स्टॉक नाही',
+  'f.sku.details': 'तपशील',
+  'f.sku.newer': 'नवीन पॅक',
+  'f.sku.shelf': 'शेल्फ लाइफ',
+  'f.sku.shelfDays': '{n} दिवस',
+  'f.sku.focus': 'फोकस पॅक',
+  'f.sku.focusYes': 'हो · प्री-समर टार्गेटमध्ये मोजले जाते',
+  'f.sku.alt': 'स्टॉकमध्ये नाही. त्याऐवजी {name} द्या.',
+  'f.sku.outHint': 'डिस्ट्रिब्युटरकडे स्टॉक नाही',
+  'f.sku.overRation': 'प्रति दुकान फक्त {n} पेट्या चालतील',
+  'f.sku.evTitle': 'दुकाने हे का घेत आहेत',
+  'f.sku.evBuyers': '{area} मधील दुकानांनी {weeks} आठवड्यांत घेतले ({cases} पेट्या)',
+  'f.sku.evGrew': 'त्यापैकी मागील वर्षापेक्षा जास्त घेतले',
+  'f.sku.evOfftake': '{region} मध्ये {weeks} आठवड्यांत ग्राहकांना {unit} विकल्या',
+  'f.sku.demoEv': 'डेमो',
+};
+
+return { FIELD_MR };
+})();
+
+/* ==================== js/feature/strings-hi.js ==================== */
+modules['feature/strings-hi'] = (() => {
+// Hindi text for the field features (keys start with "f."), same keys as strings-en.js.
+// Merged into STRINGS.hi by js/strings.js. Simple spoken Hindi; pack names stay as they are.
+
+const FIELD_HI = {
+  'f.common.ok': 'ठीक है',
+
+  // Login
+  'f.login.title': 'आज के रूट के लिए तैयार?',
+  'f.login.show': 'दिखाएँ',
+  'f.login.hide': 'छुपाएँ',
+  'f.login.demo': 'डेमो: कोई भी नाम और पासवर्ड चलेगा।',
+
+  // Landing: header
+  'f.clock.in': 'दिन शुरू करें',
+  'f.clock.out': 'खत्म',
+  'f.clock.onFor': 'ड्यूटी पर · {dur}',
+  'f.clock.dayDone': 'दिन पूरा · {dur}',
+  'f.clock.hm': '{h}घं {m}मि',
+  'f.clock.m': '{m} मि',
+  'f.clock.inToast': 'दिन {time} पर शुरू हुआ',
+  'f.clock.outToast': 'दिन खत्म · {dur} ड्यूटी',
+  'f.rank.chip': '{total} में {rank}वाँ',
+  'f.target.title': 'प्री-समर टारगेट',
+  'f.target.cases': 'पेटी',
+  'f.target.today': 'आज',
+  'f.target.daysLeft': { one: '1 दिन बाकी', other: '{n} दिन बाकी' },
+  'f.target.pace': 'पूरा करने के लिए रोज़ लगभग {n} पेटी बेचें',
+  'f.target.done': 'टारगेट पूरा! हर अतिरिक्त पेटी आपकी बढ़त बढ़ाती है।',
+  'f.target.counts': 'समर SKU: {skus}',
+  'f.target.window': '{from} से {to}',
+  'f.target.month': 'अप्रैल टारगेट',
+
+  // Landing: alerts and the updates screen
+  'f.alert.head': { one: 'आज का 1 अपडेट', other: 'आज के {n} अपडेट' },
+  'f.alert.viewAll': 'अपडेट देखें',
+  'f.alert.none': 'कोई नया अपडेट नहीं',
+  'f.alert.tagOut': 'स्टॉक खत्म',
+  'f.alert.tagLow': 'स्टॉक कम',
+  'f.upd.title': 'अपडेट',
+  'f.upd.unread': { one: '1 अभी खोला नहीं', other: '{n} अभी खोले नहीं' },
+  'f.upd.stock': 'डिस्ट्रीब्यूटर स्टॉक',
+  'f.upd.schemes': 'स्कीम',
+  'f.alert.view': 'देखें',
+  'f.alert.tagNew': 'नई स्कीम',
+  'f.alert.tagSoon': 'स्कीम जल्द',
+  'f.alert.tagUp': 'स्टॉक वापस आया',
+  'f.alert.tagDown': 'स्टॉक अलर्ट',
+  'f.alert.from': '{date} से',
+  'f.alert.till': '{date} तक',
+  'f.alert.rationUp': '{name}: सीमा बढ़कर प्रति दुकान {n}',
+  'f.alert.rationDown': '{name}: सीमा घटकर प्रति दुकान {n}',
+  'f.alert.stock.out-of-stock': '{name} स्टॉक में नहीं',
+  'f.alert.stock.rationed': '{name}: प्रति दुकान सीमित',
+  'f.alert.stock.rationed-against-empties': '{name}: सिर्फ़ खाली क्रेट के बदले',
+  'f.alert.stock.low': '{name} कम बचा है',
+  'f.alert.stock.available': '{name} फिर से स्टॉक में',
+  'f.sch.skus': 'पैक',
+  'f.sch.allSkus': 'पूरा ऑर्डर',
+  'f.sch.threshold': 'लें',
+  'f.sch.benefit': 'पाएँ',
+  'f.sch.valid': 'अवधि',
+  'f.sch.tiers': 'किन दुकानों के लिए',
+  'f.sch.allTiers': 'सभी दुकानें',
+  'f.sch.cooler': 'कंपनी का कूलर ज़रूरी',
+  'f.sch.thrFree': 'एक ऑर्डर में {n} पेटी{pooled}',
+  'f.sch.pooled': ' (कोई भी मिलाकर)',
+  'f.sch.thrPct': 'एक ऑर्डर में {n} या ज़्यादा पेटी',
+  'f.sch.thrFirst': 'पहला ऑर्डर, जुड़ने के {days} दिन के अंदर',
+  'f.sch.benFree': '{n} फ़्री पेटी',
+  'f.sch.benPct': '{pct}% छूट',
+  'f.sch.say': 'दुकानदार को बताएँ',
+  'f.sch.sayFree': '"इन पैक की {buy} पेटी लें{mix} और {free} फ़्री पेटी पाएँ। यह डिलीवरी के बाद डिस्ट्रीब्यूटर से मिलती है, आज के बिल में नहीं।"',
+  'f.sch.sayMix': ' (कोई भी मिलाकर)',
+  'f.sch.sayPct': '"इन पैक की {min} या ज़्यादा पेटी लें और {pct}% छूट पाएँ। डिस्ट्रीब्यूटर बिल में से घटाता है।"',
+  'f.sch.sayFirst': '"आपके पहले ऑर्डर पर {pct}% छूट।"',
+  'f.stock.status': 'स्टॉक',
+  'f.stock.ration': 'सीमा',
+  'f.stock.perOutlet': 'प्रति दुकान {n} पेटी',
+  'f.stock.note': 'डिस्ट्रीब्यूटर कहता है',
+  'f.stock.sync': 'आज {time} पर डिस्ट्रीब्यूटर से। दिन में बदल सकता है।',
+  'f.stock.s.available': 'उपलब्ध',
+  'f.stock.s.low': 'स्टॉक कम',
+  'f.stock.s.rationed': 'सीमित',
+  'f.stock.s.rationed-against-empties': 'सिर्फ़ खाली के बदले',
+  'f.stock.s.out-of-stock': 'स्टॉक में नहीं',
+
+  // Landing: day, next stop, wins
+  'f.home.route': { one: 'आज 1 दुकान', other: 'आज {n} दुकानें' },
+  'f.home.done': 'पूरी',
+  'f.home.stops': 'आज का रूट',
+  'f.home.ordered': 'ऑर्डर · {cases}',
+  'f.next.label': 'अगला · स्टॉप {stop}',
+  'f.next.open': 'दुकान खोलें',
+  'f.next.allDone': 'आज की सभी दुकानें पूरी। काम खत्म होने पर दिन खत्म करें।',
+  'f.ms.first': 'दिन का पहला ऑर्डर हो गया!',
+  'f.ms.focus3': 'आज 3 दुकानों पर फ़ोकस पैक बिके',
+  'f.ms.five': 'आज 5 दुकानों ने ऑर्डर दिया। बढ़िया रफ़्तार!',
+  'f.ms.ten': 'आज 10 दुकानों ने ऑर्डर दिया!',
+  'f.ms.gain100': 'आज 100 टारगेट पेटी जुड़ीं!',
+  'f.ms.step': 'प्री-समर टारगेट {pct}% पार!',
+
+  // Leaderboard
+  'f.lb.title': 'लीडरबोर्ड',
+  'f.lb.youAre': '{name} (आप)',
+  'f.lb.gap': '{name} से {gap} अंक पीछे',
+  'f.lb.top': 'आप नंबर 1 हैं। ऐसे ही चलते रहें!',
+  'f.lb.you': '{name} (आप)',
+  'f.lb.outlets': '{n} दुकानें',
+  'f.lb.defs': 'इनका मतलब',
+  'f.lb.rep': 'सभी प्रतिनिधि',
+  'f.lb.short.preSeasonPct': 'प्री-समर टारगेट',
+  'f.lb.short.productiveCallsPct': 'ऑर्डर वाली विज़िट',
+  'f.lb.short.activeOutletsPct': 'सक्रिय दुकानें',
+  'f.lb.short.focusCoveragePct': 'फ़ोकस पैक दुकानें',
+  'f.lb.short.monthTargetPct': 'अप्रैल टारगेट',
+  'f.lb.short.casesOrdered': 'पेटी',
+  'f.lb.def.preSeasonPct': '1 मार्च से बिकी फ़ोकस पैक पेटी, आपके प्री-समर टारगेट में से।',
+  'f.lb.def.productiveCallsPct': 'पिछले 30 दिनों की विज़िट में से कितनी पर ऑर्डर मिला।',
+  'f.lb.def.activeOutletsPct': 'पिछले 30 दिनों में कम से कम एक बार ऑर्डर देने वाली दुकानें।',
+  'f.lb.def.focusCoveragePct': 'उनमें से कितनी दुकानों ने कम से कम एक फ़ोकस पैक लिया।',
+  'f.lb.def.monthTargetPct': 'अप्रैल की पेटी, आपके अप्रैल टारगेट में से।',
+  'f.lb.def.casesOrdered': '1 मार्च से बुक की गई सभी पेटी।',
+
+  // Outlet details
+  'f.fold.lastLines': 'उन्होंने क्या लिया',
+  'f.fold.creditUsed': '{limit} में से {used} इस्तेमाल',
+  'f.fold.pays': 'भुगतान',
+  'f.fold.cashAbove': 'सीमा से ऊपर नकद',
+  'f.fold.cashAboveSub': '{amt} तक उधार',
+  'f.fold.recent': 'आख़िरी 3 ऑर्डर',
+  'f.fold.today': 'आज',
+  'f.fold.company': 'कंपनी का कूलर',
+  'f.fold.fits': 'ठंडा रखता है',
+  'f.fold.fitsVal': '{n} पेटी',
+  'f.fold.fitsSub': '250 ml की',
+  'f.fold.outage': 'दोपहर में बिजली जाती है: 2 बजे के बाद ड्रिंक गर्म होते हैं',
+  'f.tools.call': 'कॉल',
+  'f.tools.callName': '{name} को कॉल करें',
+  'f.tools.note': 'नोट लिखें',
+  'f.tools.mic': 'बोलकर नोट',
+  'f.tools.issue': 'शिकायत दर्ज करें',
+  'f.outlet.orderedToday': 'आज ऑर्डर: {cases} · {value}',
+  'f.pay.due': '{amt} बकाया',
+  'f.pay.room': '{amt} उधार बाकी',
+  'f.hist.sum': { one: '1 ऑर्डर', other: '{n} ऑर्डर' },
+  'f.book.sum': { one: '1 कार्यक्रम · {cases}', other: '{n} कार्यक्रम · {cases}' },
+  'f.notes.sum': { one: '1 नोट', other: '{n} नोट' },
+  'f.notes.empty': 'अभी कोई नोट नहीं। ऊपर का नोट या माइक बटन इस्तेमाल करें।',
+  'f.sch.head': { one: 'स्कीम · 1 इस्तेमाल हो सकती है', other: 'स्कीम · {n} इस्तेमाल हो सकती हैं' },
+  'f.sch.program': 'हर महीने {amt}',
+  'f.sch.left': '{month} में {cap} में से {left} फ़्री पेटी बाकी',
+  'f.note.title': 'नया नोट',
+  'f.note.titleVoice': 'अपना नोट बोलें',
+  'f.note.ph': 'जैसे: सुबह 9 बजे तक कूलर भरा। वीकेंड के लिए 2 L बोतलें चाहिए।',
+  'f.note.speak': 'बोलने के लिए टैप करें',
+  'f.note.listening': 'सुन रहे हैं… रोकने के लिए टैप करें',
+  'f.note.noVoice': 'इस ब्राउज़र में आवाज़ नहीं चलती। कृपया टाइप करें।',
+  'f.note.micBlocked': 'माइक बंद है। कृपया नोट टाइप करें।',
+  'f.note.micFail': 'सुनाई नहीं दिया। फिर कोशिश करें या टाइप करें।',
+  'f.note.save': 'नोट सेव करें',
+  'f.note.saved': 'नोट सेव हुआ',
+  'f.note.voice': 'आवाज़',
+  'f.note.call': 'कॉल',
+  'f.issue.title': 'दुकानदार की शिकायत',
+  'f.issue.ph': 'विवरण लिखें (वैकल्पिक)',
+  'f.issue.category': 'किस बारे में है? (एक या ज़्यादा चुनें)',
+  'f.issue.save': 'शिकायत सेव करें',
+  'f.issue.saved': 'सेव हुआ · {cat}',
+  'f.issue.cap': { one: 'खुली शिकायत', other: 'खुली शिकायतें' },
+  'f.issue.listTitle': 'इस दुकान की शिकायतें',
+  'f.issue.today': 'आज जोड़ी, {time}',
+  'f.issue.earlier': 'पहले दर्ज, {date}',
+  'f.issue.capLabel': '{n} खुली शिकायतें',
+  'f.issue.add': 'शिकायत जोड़ें',
+  'f.issue.resolve': 'हल हुई',
+  'f.issue.resolved': 'हल',
+  'f.issue.cat.scheme': 'स्कीम का पैसा',
+  'f.issue.cat.quality': 'माल की क्वालिटी',
+  'f.issue.cat.delay': 'देर से डिलीवरी',
+  'f.issue.cat.missing': 'कम या टूटा',
+  'f.issue.cat.billing': 'कीमत या बिल',
+  'f.issue.cat.other': 'अन्य',
+  'f.terr.pill': '{name} की दुकान',
+  'f.terr.title': 'आपकी दुकान नहीं',
+  'f.terr.body': '{name} {rep} ({territory}) की दुकान है।',
+  'f.terr.incentive': 'इस ऑर्डर पर आपको सिर्फ़ {pct}% इंसेंटिव मिलेगा। बाकी उस दुकान के प्रतिनिधि को जाएगा।',
+  'f.terr.go': 'फिर भी बुक करें ({pct}% इंसेंटिव)',
+  'f.terr.back': 'वापस जाएँ',
+
+  // Smart order (the recommendation)
+  'f.so.eyebrow': 'सुझाया गया ऑर्डर',
+  'f.so.till': '{date} तक काफ़ी',
+  'f.so.cases': 'पेटी',
+  'f.so.sub': '{date} तक काफ़ी',
+  'f.so.subClosing': 'दुकान जल्द बंद होगी। कम या कुछ भी ऑर्डर न करें।',
+  'f.so.subNew': 'नई दुकान: कम से शुरू करें, {date} को और जोड़ें',
+  'f.so.guess': 'अंदाज़ा',
+  'f.so.silent': 'कोई सुझाव नहीं। होलसेलर अपनी योजना से ऑर्डर देते हैं।',
+  'f.so.why': 'यह संख्या क्यों',
+  'f.so.whatIf': 'अगर 43°C हो जाए तो?',
+  'f.so.whatIfOff': 'आज के मौसम पर वापस',
+  'f.so.use': 'इन {n} पेटी से ऑर्डर शुरू करें',
+  'f.so.r.rate': 'हाल में हफ़्ते में लगभग {n} पेटी बिकीं',
+  'f.so.r.bookings': { one: 'अगली डिलीवरी से पहले 1 कार्यक्रम बुक', other: 'अगली डिलीवरी से पहले {n} कार्यक्रम बुक' },
+  'f.so.r.peers': 'नए या कम ऑर्डर: {n} मिलती-जुलती दुकानों के आधार पर',
+  'f.so.r.seasonUp': 'आगे ज़्यादा बिक्री के दिन',
+  'f.so.r.seasonDown': 'आगे कम बिक्री के दिन',
+  'f.so.r.seasonPeak': 'पीक सीज़न, पिछले कुछ हफ़्तों जैसा',
+  'f.so.r.hot': '{c}°C: आम से ज़्यादा गर्म',
+  'f.so.r.normal': '{c}°C: इस समय के लिए सामान्य',
+  'f.so.r.onHand': 'दुकान में अभी लगभग {cases} (अंदाज़ा)',
+  'f.so.r.closing': '{date} को बंद: {n} बिक्री के दिन बाकी',
+  'f.so.r.rain': 'बारिश आ रही है: कम दिनों का ऑर्डर दें',
+  'f.so.r.swap': '{from} सीमित: उसकी जगह {to}',
+  'f.so.r.out': '{name} स्टॉक में नहीं',
+  'f.so.r.ration': '{name}: ज़्यादा से ज़्यादा {n}',
+  'f.so.r.cooler': 'कूलर में जितने आएँ उतने ठंडे पैक',
+  'f.so.r.creditTrim': 'बचे उधार में आए उतना कम किया',
+  'f.so.r.creditCash': 'उधार से {amt} ज़्यादा: नकद लें',
+  'f.so.r.cap': '{n} पेटी से कम रखा (सुरक्षित सीमा)',
+  'f.so.r.today': 'आज पहले ही {cases} ऑर्डर',
+  'f.so.r.newOutlet': 'पहला ऑर्डर: अभी 80%, {date} को और जोड़ें',
+  'f.so.chip': 'सुझाए गए',
+  'f.so.liveTitle': 'सुझाव: {n} पेटी',
+  'f.so.inCart': 'कार्ट में {target} में से {have}',
+  'f.so.addAll': 'सब जोड़ें',
+  'f.so.allGood': 'अच्छा ऑर्डर। दुकान जितना बेचेगी उतना ही।',
+  'f.so.skuHint': 'सुझाव {n}',
+  'f.so.skuShelf': 'दुकान में {n}',
+  'f.so.badge': 'ऑर्डर ~{n}',
+  'f.so.badgeClosing': 'जल्द बंद',
+
+  // Tips (booking and review)
+  'f.type.warning': 'जाँचें',
+  'f.type.scheme': 'स्कीम',
+  'f.type.reco': 'और जोड़ें',
+  'f.type.info': 'नोट',
+  'f.tips.more': { one: '1 और सुझाव', other: '{n} और सुझाव' },
+  'f.act.add': '{n} जोड़ें',
+  'f.act.set': '{n} करें',
+  'f.act.swap': 'बदलें',
+  'f.act.trim': 'कम करें',
+  'f.tip.out': '{name} स्टॉक में नहीं। हटा दें।',
+  'f.tip.outSwap': '{name} स्टॉक में नहीं। उसकी जगह {n} {alt} दें।',
+  'f.tip.ration': 'सिर्फ़ {n} {name} चलेंगे। {move} {alt} में डालें।',
+  'f.tip.rationOnly': 'प्रति दुकान सिर्फ़ {n} {name} चलेंगे।',
+  'f.tip.pace': '{n} और {name} जोड़ें। {date} तक बिक जाएगा।',
+  'f.tip.regular': '{name} नहीं है। वे लगभग हर बार लेते हैं।',
+  'f.tip.thresholdFree': '{n} और {name} = 1 फ़्री पेटी ({scheme})',
+  'f.tip.thresholdPct': '{n} और {name} = {pct}% छूट ({scheme})',
+  'f.tip.cap': '{scheme}: इस महीने की फ़्री पेटी खत्म',
+  'f.tip.larger': 'आम से बहुत बड़ा: {n} पेटी, दुकान को लगभग {need} चाहिए',
+  'f.tip.cooler': 'ठंडे पैक ज़्यादा। कूलर में लगभग {n} पेटी ही आती हैं।',
+  'f.tip.noCooler': 'यहाँ कूलर नहीं। ठंडे पैक कम रखें, बड़ी बोतलें बेचें।',
+  'f.tip.closing': 'दुकान जल्द बंद: सिर्फ़ {n} बिक्री के दिन बाकी।',
+  'f.tip.shelf': '{name}: {days} दिन का स्टॉक। बिकने से पहले खराब होगा।',
+  'f.tip.cover': '{name}: {days} दिन का स्टॉक। बहुत ज़्यादा, कम करें।',
+  'f.tip.together': 'पास की जो दुकानें {with} लेती हैं वे {name} भी लेती हैं ({pct}%)',
+  'f.rc.title': 'सबमिट करने से पहले',
+  'f.rc.ok': 'अच्छा ऑर्डर। {date} तक दुकान जितना बेचेगी उतना ही।',
+  'f.offer.titleScheme': 'नमस्ते {name}! यह ऑफ़र मत छोड़िए',
+  'f.offer.titleReco': 'नमस्ते {name}! एक और चीज़ जो बिकती है',
+  'f.offer.add': '{n} {name} जोड़ें',
+  'f.offer.addCases': '{n} पेटी जोड़ें',
+
+  // The scheme picked with "Book with this scheme"
+  'f.fs.count': 'कार्ट में {need} में से {have} स्कीम पेटी',
+  'f.fs.met': 'स्कीम पूरी',
+  'f.fs.free': '{packs} में से {n} और जोड़ें और {free} फ़्री पेटी पाएँ ({name})।',
+  'f.fs.pct': '{packs} में से {n} और जोड़ें और {pct}% छूट पाएँ ({name})।',
+  'f.offer.skip': 'अभी नहीं',
+
+  // After submit
+  'f.saved.order': 'ऑर्डर · {cases} · {value}',
+  'f.saved.gain': 'प्री-समर टारगेट में +{n} पेटी',
+  'f.saved.noGain': 'इस ऑर्डर में फ़ोकस पैक नहीं, इसलिए प्री-समर टारगेट नहीं बदला',
+  'f.out.title': 'इस दुकान पर अगला हफ़्ता',
+  'f.out.dir.up': 'बिक्री बढ़ने की संभावना',
+  'f.out.dir.down': 'बिक्री घटने की संभावना',
+  'f.out.dir.steady': 'बिक्री ऊँची रहने की संभावना',
+  'f.out.next': 'अगली विज़िट {date} · लगभग {n} पेटी',
+  'f.out.top': 'टॉप पैक: {list}',
+  'f.out.stock': 'डिस्ट्रीब्यूटर के पास {list} कम है',
+  'f.out.prep': { one: 'तैयारी के लिए 1 बात', other: 'तैयारी के लिए {n} बातें' },
+  'f.out.prepClosure': '{date} से दुकान बंद: छोटा आख़िरी ऑर्डर तय करें',
+  'f.out.prepBookings': { one: '1 कार्यक्रम बुक: अगली विज़िट पर पक्का करें', other: '{n} कार्यक्रम बुक: अगली विज़िट पर पक्के करें' },
+  'f.out.prepStock': 'डिस्ट्रीब्यूटर से {list} के बारे में पूछें',
+  'f.out.prepRain': 'बारिश की संभावना: अगला ऑर्डर छोटा रखें',
+  'f.out.prepCall': '{date} को मालिक को कॉल करें',
+
+  // Booking: SKU details
+  'f.sku.ration': 'सीमित · प्रति दुकान {n}',
+  'f.sku.sIn': 'स्टॉक में',
+  'f.sku.sMax': 'अधिकतम {n}',
+  'f.sku.sEmpties': 'सिर्फ़ खाली पर',
+  'f.sku.sLow': 'स्टॉक कम',
+  'f.sku.sOut': 'स्टॉक नहीं',
+  'f.sku.details': 'विवरण',
+  'f.sku.newer': 'नया पैक',
+  'f.sku.shelf': 'शेल्फ लाइफ',
+  'f.sku.shelfDays': '{n} दिन',
+  'f.sku.focus': 'फ़ोकस पैक',
+  'f.sku.focusYes': 'हाँ · प्री-समर टारगेट में गिना जाता है',
+  'f.sku.alt': 'स्टॉक में नहीं। उसकी जगह {name} दें।',
+  'f.sku.outHint': 'डिस्ट्रीब्यूटर के पास स्टॉक नहीं',
+  'f.sku.overRation': 'प्रति दुकान सिर्फ़ {n} पेटी चलेंगी',
+  'f.sku.evTitle': 'दुकानें इसे क्यों ले रही हैं',
+  'f.sku.evBuyers': '{area} की दुकानों ने {weeks} हफ़्तों में लिया ({cases} पेटी)',
+  'f.sku.evGrew': 'उनमें से पिछले साल से ज़्यादा लिया',
+  'f.sku.evOfftake': '{region} में {weeks} हफ़्तों में ग्राहकों को {unit} बिकीं',
+  'f.sku.demoEv': 'डेमो',
+};
+
+return { FIELD_HI };
+})();
+
 /* ==================== js/strings.js ==================== */
 modules['strings'] = (() => {
 // Interface text in English (en), Marathi (mr) and Hindi (hi). Placeholders: {name}.
@@ -2288,6 +2946,8 @@ modules['strings'] = (() => {
 // Values under tier. ch. shop. cat. area. region. repRole. role. schOffer. schExtras. translate data values.
 
 const { FIELD_EN } = modules['feature/strings-en'];
+const { FIELD_MR } = modules['feature/strings-mr'];
+const { FIELD_HI } = modules['feature/strings-hi'];
 
 const STRINGS = {
   en: {
@@ -2594,6 +3254,8 @@ const STRINGS = {
     'sd.timesUsed': 'Times used',
     'sd.freeGot': 'Free cases got',
     'sd.lastUsed': 'Last used',
+    'sd.offerFree': 'Buy {buy} cases, get {free} free case.',
+    'sd.offerPct': 'Buy {min} or more cases, get {pct}% off.',
     'sd.history': 'Used at this outlet',
     'sd.historyEmpty': 'Not used here yet',
     'sd.historyApplied': 'Applied',
@@ -2610,6 +3272,15 @@ const STRINGS = {
     'tp.less': 'Show less',
     'tp.open': 'Talking points · {n}',
     'tp.none': 'Nothing special to raise at this visit.',
+    'tp.f.ly': 'same days last year',
+    'tp.f.recent': 'past {days} days this year',
+    'tp.f.topPacks': 'Top packs last year',
+    'tp.f.till': 'valid till',
+    'tp.f.firstTill': 'welcome offer till',
+    'tp.f.freeLeft': 'free cases left this month',
+    'tp.f.anyMix': 'Any mix of these counts',
+    'tp.f.together': 'These count together',
+    'tp.f.pack': 'Pack',
     'tp.seeScheme': 'See scheme',
     'tp.cat.weather': 'Weather',
     'tp.cat.history': 'Last year',
@@ -2753,7 +3424,7 @@ const STRINGS = {
     'status.savedShort': 'ऑर्डर सेव्ह',
     'status.savedShortN': '{n} ऑर्डर सेव्ह',
 
-    'outlets.title': 'दुकाने',
+    'outlets.title': 'सर्व दुकाने',
     'outlets.search': 'नाव, भाग किंवा प्रकार शोधा',
     'outlets.searchLabel': 'दुकाने शोधा',
     'outlets.filters': 'दुकाने फिल्टर करा',
@@ -2770,7 +3441,7 @@ const STRINGS = {
     'persona.tag': 'डेमो · पर्सोना {no} · {label}',
     'persona.tip': 'डेमोसाठी: हे दुकान कोणत्या पर्सोनाचे आहे',
 
-    'outlet.title': 'दुकान',
+    'outlet.title': 'दुकानाची माहिती',
     'outlet.stop': 'आजचा रूट · थांबा {n}',
     'outlet.owner': 'मालक',
     'outlet.directions': 'रस्ता दाखवा',
@@ -2852,7 +3523,7 @@ const STRINGS = {
     'sch.reason.age': 'फक्त पहिल्या {days} दिवसांतील दुकानांसाठी',
     'sch.reason.first': 'फक्त पहिल्या ऑर्डरसाठी',
 
-    'book.title': 'ऑर्डर बुक करा',
+    'book.title': 'नवीन ऑर्डर',
     'book.search': 'उत्पादने शोधा',
     'book.category': 'प्रकार',
     'book.all': 'सर्व',
@@ -2886,7 +3557,14 @@ const STRINGS = {
     'book.keep': '{name} ची ऑर्डर पुढे बदला',
     'book.discard': 'रद्द करा आणि इथे सुरू करा',
 
-    'review.title': 'ऑर्डर तपासा',
+    'review.booked': 'ऑर्डरची किंमत',
+    'review.estTitle': 'स्कीमचा अंदाज · आत्ता लागू नाही',
+    'review.estFree': 'अपेक्षित मोफत पेट्या',
+    'review.estOff': 'अंदाजे सूट',
+    'review.estNote': 'स्कीमचा हिशेब नंतर डिस्ट्रिब्युटर करतो. दुकानदाराला ऑर्डरच्या किमतीचे बिल येते; लाभ क्लेममधून मिळतो.',
+    'book.estFree': 'नंतर अंदाजे {free}',
+    'book.estOff': 'नंतर अंदाजे {amt} सूट',
+    'review.title': 'ऑर्डर सारांश',
     'review.delivery': 'डिलिव्हरी {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} मोफत · {name}',
@@ -2913,7 +3591,7 @@ const STRINGS = {
     'rn.pct': '{name}: {pct}% सूट · {amt}',
     'rn.pctFirst': '{name}: पहिल्या ऑर्डरवर {pct}% सूट · {amt}',
 
-    'saved.title': 'ऑर्डर सेव्ह झाली',
+    'saved.title': 'ऑर्डर झाली',
     'saved.gone': 'ही ऑर्डर आता सेव्ह नाही',
     'saved.goneBody': 'डेमो रीसेट झाला असेल.',
     'saved.order': 'ऑर्डर',
@@ -2970,6 +3648,8 @@ const STRINGS = {
     'sd.timesUsed': 'किती वेळा वापरले',
     'sd.freeGot': 'मिळालेल्या मोफत पेट्या',
     'sd.lastUsed': 'शेवटचा वापर',
+    'sd.offerFree': '{buy} पेट्या घ्या, {free} मोफत पेटी मिळवा.',
+    'sd.offerPct': '{min} किंवा जास्त पेट्या घ्या, {pct}% सूट मिळवा.',
     'sd.history': 'या दुकानातील वापर',
     'sd.historyEmpty': 'इथे अजून वापर नाही',
     'sd.historyApplied': 'लागू झाली',
@@ -2986,6 +3666,15 @@ const STRINGS = {
     'tp.less': 'कमी दाखवा',
     'tp.open': 'बोलण्याचे मुद्दे · {n}',
     'tp.none': 'या भेटीत खास सांगण्यासारखे काही नाही.',
+    'tp.f.ly': 'मागील वर्षी याच दिवसांत',
+    'tp.f.recent': 'यंदा मागील {days} दिवसांत',
+    'tp.f.topPacks': 'मागील वर्षीचे टॉप पॅक',
+    'tp.f.till': 'पर्यंत लागू',
+    'tp.f.firstTill': 'स्वागत ऑफर पर्यंत',
+    'tp.f.freeLeft': 'या महिन्यात बाकी मोफत पेट्या',
+    'tp.f.anyMix': 'यांचे कोणतेही मिश्रण चालेल',
+    'tp.f.together': 'हे सर्व मिळून मोजले जातात',
+    'tp.f.pack': 'पॅक',
     'tp.seeScheme': 'स्कीम पहा',
     'tp.cat.weather': 'हवामान',
     'tp.cat.history': 'गेल्या वर्षी',
@@ -3162,7 +3851,7 @@ const STRINGS = {
     'status.savedShort': 'ऑर्डर सेव',
     'status.savedShortN': '{n} ऑर्डर सेव',
 
-    'outlets.title': 'दुकानें',
+    'outlets.title': 'सभी दुकानें',
     'outlets.search': 'नाम, इलाका या प्रकार खोजें',
     'outlets.searchLabel': 'दुकानें खोजें',
     'outlets.filters': 'दुकानें फ़िल्टर करें',
@@ -3179,7 +3868,7 @@ const STRINGS = {
     'persona.tag': 'डेमो · पर्सोना {no} · {label}',
     'persona.tip': 'डेमो के लिए: यह दुकान किस पर्सोना की है',
 
-    'outlet.title': 'दुकान',
+    'outlet.title': 'दुकान की जानकारी',
     'outlet.stop': 'आज का रूट · स्टॉप {n}',
     'outlet.owner': 'मालिक',
     'outlet.directions': 'रास्ता देखें',
@@ -3261,7 +3950,7 @@ const STRINGS = {
     'sch.reason.age': 'सिर्फ़ पहले {days} दिन वाली दुकानों के लिए',
     'sch.reason.first': 'सिर्फ़ पहले ऑर्डर पर',
 
-    'book.title': 'ऑर्डर बुक करें',
+    'book.title': 'नया ऑर्डर',
     'book.search': 'प्रोडक्ट खोजें',
     'book.category': 'प्रकार',
     'book.all': 'सभी',
@@ -3295,7 +3984,14 @@ const STRINGS = {
     'book.keep': '{name} का ऑर्डर बदलते रहें',
     'book.discard': 'हटाएँ और यहाँ शुरू करें',
 
-    'review.title': 'ऑर्डर जाँचें',
+    'review.booked': 'ऑर्डर की कीमत',
+    'review.estTitle': 'स्कीम का अंदाज़ा · अभी लागू नहीं',
+    'review.estFree': 'अपेक्षित फ़्री पेटी',
+    'review.estOff': 'अनुमानित छूट',
+    'review.estNote': 'स्कीम का हिसाब बाद में डिस्ट्रीब्यूटर करता है। दुकानदार को ऑर्डर की कीमत का बिल आता है; फ़ायदा क्लेम से मिलता है।',
+    'book.estFree': 'बाद में लगभग {free}',
+    'book.estOff': 'बाद में लगभग {amt} छूट',
+    'review.title': 'ऑर्डर सारांश',
     'review.delivery': 'डिलीवरी {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} फ़्री · {name}',
@@ -3322,7 +4018,7 @@ const STRINGS = {
     'rn.pct': '{name}: {pct}% छूट · {amt}',
     'rn.pctFirst': '{name}: पहले ऑर्डर पर {pct}% छूट · {amt}',
 
-    'saved.title': 'ऑर्डर सेव हो गया',
+    'saved.title': 'ऑर्डर हो गया',
     'saved.gone': 'यह ऑर्डर अब सेव नहीं है',
     'saved.goneBody': 'शायद डेमो रीसेट हो गया है।',
     'saved.order': 'ऑर्डर',
@@ -3379,6 +4075,8 @@ const STRINGS = {
     'sd.timesUsed': 'कितनी बार इस्तेमाल',
     'sd.freeGot': 'मिली मुफ़्त पेटियाँ',
     'sd.lastUsed': 'आख़िरी इस्तेमाल',
+    'sd.offerFree': '{buy} पेटी लें, {free} फ़्री पेटी पाएँ।',
+    'sd.offerPct': '{min} या ज़्यादा पेटी लें, {pct}% छूट पाएँ।',
     'sd.history': 'इस दुकान पर इस्तेमाल',
     'sd.historyEmpty': 'यहाँ अभी इस्तेमाल नहीं हुई',
     'sd.historyApplied': 'लागू हुई',
@@ -3395,6 +4093,15 @@ const STRINGS = {
     'tp.less': 'कम दिखाएँ',
     'tp.open': 'बात करने के मुद्दे · {n}',
     'tp.none': 'इस विज़िट में ख़ास बताने को कुछ नहीं।',
+    'tp.f.ly': 'पिछले साल इन्हीं दिनों',
+    'tp.f.recent': 'इस साल पिछले {days} दिन',
+    'tp.f.topPacks': 'पिछले साल के टॉप पैक',
+    'tp.f.till': 'तक लागू',
+    'tp.f.firstTill': 'स्वागत ऑफ़र तक',
+    'tp.f.freeLeft': 'इस महीने बची फ़्री पेटी',
+    'tp.f.anyMix': 'इनमें से कोई भी मिलाकर चलेगा',
+    'tp.f.together': 'ये सब मिलाकर गिने जाते हैं',
+    'tp.f.pack': 'पैक',
     'tp.seeScheme': 'स्कीम देखें',
     'tp.cat.weather': 'मौसम',
     'tp.cat.history': 'पिछले साल',
@@ -3493,6 +4200,8 @@ const STRINGS = {
 };
 
 Object.assign(STRINGS.en, FIELD_EN);
+Object.assign(STRINGS.mr, FIELD_MR);
+Object.assign(STRINGS.hi, FIELD_HI);
 
 return { STRINGS };
 })();
@@ -4155,10 +4864,14 @@ function toast(message, iconName = 'check') {
   }, 3200);
 }
 
-/** Compact fact tiles: a small label with an icon, then the value with its note on the same line. */
-const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
-  <span class="tile-l">${icon(i.icon)}${i.label}</span><span class="tile-row"><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}</span>
-</div>`)}</div>`;
+/** Compact fact tiles: a small label with an icon, then the value with its note on the same line.
+ *  A tile with `toggle` is a button (with a chevron) that opens the element [data-toggled=toggle]. */
+const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => {
+  const inner = html`<span class="tile-l">${icon(i.icon)}${i.label}</span><span class="tile-row"><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}</span>`;
+  return i.toggle
+    ? html`<button type="button" class="tile is-toggle ${i.tone ? `is-${i.tone}` : ''}" data-toggle="${i.toggle}" aria-expanded="false">${inner}<span class="tile-chev">${icon('chevron')}</span></button>`
+    : html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">${inner}</div>`;
+})}</div>`;
 
 return { esc, raw, html, mount, fresh, icon, appBar, langButton, langSwitch, pill, tierBadge, personaTag, schemePill, emptyState, slot, openSheet, closeSheets, toast, tiles };
 })();
@@ -4177,8 +4890,6 @@ function render(root) {
   const view = fresh(root);
   const cfg = data.config();
 
-  const shops = data.route().length;
-
   mount(view, html`
     <div class="login2">
       <header class="login2-hero">
@@ -4190,7 +4901,7 @@ function render(root) {
           <span class="bottle b1"></span><span class="bottle b2"></span><span class="bottle b3"></span>
         </div>
         <h1 class="login2-title">${t('f.login.title')}</h1>
-        <p class="login2-sub">${icon('map')}<span>${label('region', cfg.region.name)} · ${fmt.date(cfg.demoDate, { weekday: true, year: false })} · ${t('f.login.shops', { n: shops })}</span></p>
+        <p class="login2-sub">${icon('map')}<span>${label('region', cfg.region.name)} · ${fmt.date(cfg.demoDate, { weekday: true, year: false })}</span></p>
       </header>
 
       <form class="login2-form" novalidate>
@@ -4347,8 +5058,8 @@ return { read, update, reset, timeNow, nowMs, clockState, clockIn, clockOut, dut
 /* ==================== js/feature/outlet-tools.js ==================== */
 modules['feature/outlet-tools'] = (() => {
 // Outlet details tools: call before the visit, add a note (typed or spoken), report a
-// retailer issue, see open issues, the other rep's territory, the last order's SKUs and the
-// estimated stock on hand. Notes and issues are saved in this browser (feature/store.js).
+// retailer issue, see open issues, the other rep's territory and the last order's SKUs.
+// Notes and issues are saved in this browser (feature/store.js).
 
 const data = modules['data'];
 const fmt = modules['format'];
@@ -4356,9 +5067,9 @@ const { t, lang } = modules['i18n'];
 const { html, icon, pill, openSheet, toast } = modules['ui'];
 const store = modules['feature/store'];
 
-// Dialling is off in the demo: the dataset has no phone numbers, and a made-up number
-// could belong to a real person. With real numbers in outlets[].phone, set this to true.
-const CALL_ENABLED = false;
+// The dataset has no phone numbers. Until outlets[].phone is filled, the dialer opens with a
+// placeholder that can't ring anyone (Indian mobiles start with 6–9, never 0).
+const phoneOf = (o) => o.phone ?? `+91 00000 ${String(o.id).replace(/\D/g, '').padStart(5, '0')}`;
 
 // ---- territory ------------------------------------------------------------------
 
@@ -4419,7 +5130,7 @@ function install() {
     if (!btn) return;
     e.preventDefault();
     const o = data.outlet(btn.dataset.call);
-    if (o) callSheet(o, () => document.dispatchEvent(new CustomEvent('gt:notes', { detail: o.id })));
+    if (o) dial(o);
   });
 }
 
@@ -4446,7 +5157,7 @@ function wire(root, o, refresh) {
     const btn = e.target.closest('[data-tool]');
     if (!btn) return;
     const tool = btn.dataset.tool;
-    if (tool === 'call') await callSheet(o, refresh);
+    if (tool === 'call') dial(o);
     if (tool === 'note' && await noteSheet(o)) refresh('notes');
     if (tool === 'mic' && await noteSheet(o, { listen: true })) refresh('notes');
     if (tool === 'issue' && await issueSheet(o)) refresh('issues');
@@ -4458,41 +5169,9 @@ function wire(root, o, refresh) {
 
 // ---- call ------------------------------------------------------------------------
 
-/** When the rep usually checks in here, from the last visits' check-in times. */
-function usualTime(o) {
-  const times = (data.visits(o.id)?.visits ?? []).filter((v) => v.done && v.checkIn).slice(-6).map((v) => v.checkIn).sort();
-  return times.length ? times[Math.floor(times.length / 2)] : null;
-}
-
-async function callSheet(o, refresh) {
-  const v = data.visits(o.id);
-  const usual = usualTime(o);
-  const owner = o.owner?.name ?? t('f.call.owner');
-  const key = await openSheet({
-    title: t('f.call.title', { name: o.name }),
-    body: html`<p class="call-num">${icon('phone')}<span>${CALL_ENABLED && o.phone ? o.phone : t('f.call.demoNumber')}</span></p>
-      <ul class="prep">
-        <li>${icon('store')}<span>${t('f.call.ask', { owner })}</span></li>
-        ${usual ? html`<li>${icon('clock')}<span>${t('f.call.usual', { time: usual })}</span></li>` : ''}
-        ${v?.nextVisitAfterToday ? html`<li>${icon('calendar')}<span>${t('f.call.next', { date: fmt.shortDate(v.nextVisitAfterToday) })}</span></li>` : ''}
-      </ul>
-      <p class="fine">${t('f.call.log')}</p>`,
-    actions: [
-      { key: 'dial', label: CALL_ENABLED && o.phone ? t('f.call.dial') : t('f.call.dialDemo'), tone: 'success' },
-      { key: 'present', label: t('f.call.present'), tone: 'secondary' },
-      { key: 'closed', label: t('f.call.closed'), tone: 'secondary' },
-      { key: 'later', label: t('f.call.later'), tone: 'secondary' },
-    ],
-    dismissKey: null,
-  });
-  if (key === 'dial') {
-    if (CALL_ENABLED && o.phone) location.href = `tel:${o.phone.replace(/\s/g, '')}`;
-    else toast(t('f.call.noNumber'), 'info');
-  } else if (key && key !== 'route-change') {
-    store.addNote(o.id, t(`f.call.note.${key}`), 'call');
-    toast(t('f.note.saved'));
-    refresh('notes');
-  }
+/** Straight to the phone's dialer with the shop's number filled in. */
+function dial(o) {
+  location.href = `tel:${phoneOf(o).replace(/\s/g, '')}`;
 }
 
 // ---- notes (typed or spoken) ----------------------------------------------------------
@@ -4666,33 +5345,7 @@ function orderLinesHtml(order) {
   </li>`)}</ul>`;
 }
 
-const CONF = { high: 'ok', medium: 'info', low: 'caution' };
-
-function stockOnHandCard(o) {
-  const rows = data.onHand(o.id).slice().sort((a, b) => (b.repCountedCases ?? b.estimatedCasesOnHand) - (a.repCountedCases ?? a.estimatedCasesOnHand));
-  const total = rows.reduce((n, r) => n + (r.repCountedCases ?? r.estimatedCasesOnHand), 0);
-  const counted = rows.filter((r) => r.repCountedCases != null).length;
-  return html`<details class="card collapse fold" data-card="onhand">
-    <summary class="collapse-head">
-      <span class="card-title"><span class="fold-ico ic-teal">${icon('box')}</span><span>${t('f.soh.title')}</span></span>
-      <span class="collapse-sum">${rows.length ? t('f.soh.sum', { n: fmt.num(Math.round(total)) }) : t('f.soh.none')}</span>
-      ${icon('chevron', 'collapse-chev')}
-    </summary>
-    <div class="collapse-body">
-      ${rows.length ? html`<ul class="soh">${rows.map((r) => {
-        const p = data.product(r.sku);
-        const val = r.repCountedCases ?? r.estimatedCasesOnHand;
-        return html`<li>
-          <span class="soh-name">${p?.name ?? r.sku}<span class="soh-meta">${t('f.soh.delivered', { n: r.lastDeliveredCases, date: fmt.shortDate(r.lastDeliveredOn) })}</span></span>
-          <span class="soh-val"><span class="num">~${fmt.num(Math.round(val * 10) / 10)}</span>${r.repCountedCases != null ? pill(t('f.soh.counted'), 'ok') : pill(t(`f.soh.conf.${r.confidence}`), CONF[r.confidence] ?? 'neutral')}</span>
-        </li>`;
-      })}</ul>` : ''}
-      <p class="fine">${t('f.soh.method', { counted })}</p>
-    </div>
-  </details>`;
-}
-
-return { otherRep, territoryPill, confirmCrossTerritory, directionsUrl, quickActions, install, issuesBadge, wire, callSheet, notesList, notesHtml, ISSUE_CATEGORIES, classifyAll, classifyIssue, orderLinesHtml, stockOnHandCard };
+return { otherRep, territoryPill, confirmCrossTerritory, directionsUrl, quickActions, install, issuesBadge, wire, dial, notesList, notesHtml, ISSUE_CATEGORIES, classifyAll, classifyIssue, orderLinesHtml };
 })();
 
 /* ==================== js/feature/route-map.js ==================== */
@@ -5122,10 +5775,10 @@ const THEMES = {
 // illustration, so the card still looks right if the photo can't load (e.g. offline).
 const PHOTO_IDS = {
   cola: 'YavhkwhRBoU',      // fizz bubbles on a bold red background
-  mango: 'pxqxJECu-No',     // juice glass on a tropical orange backdrop
-  water: 'glmqeNTUEfE',     // electric-blue water splash
-  cooler: 'hinE560H5_E',    // neon "drinks" sign
-  shop: 'xLNJprcCSpg',      // colourful balloons against a bright blue sky
+  mango: '8Q93Tun7uhM',     // mango juice topped with flowers
+  water: 'DGZC_fn0aJM',     // studio shot: blue bottle, red ring, blue backdrop
+  cooler: 'ODjUXmZZFwk',    // soda bottles packed in a cooler
+  shop: 'YPpFk6niPf4',      // shopfront glowing with neon at night
   festival: 'xisPXJqwQkA',  // glowing festival lamps
 };
 const photo = (theme) => (PHOTO_IDS[theme] ? `url("https://unsplash.com/photos/${PHOTO_IDS[theme]}/download?w=720"), ` : '');
@@ -5159,8 +5812,8 @@ const orders = modules['orders'];
 const schemes = modules['schemes'];
 const { cart } = modules['cart'];
 const fmt = modules['format'];
-const { t, label } = modules['i18n'];
-const { html, mount, fresh, icon, appBar, pill, tierBadge, personaTag, schemePill, slot, emptyState, tiles } = modules['ui'];
+const { t } = modules['i18n'];
+const { html, mount, fresh, icon, appBar, tierBadge, personaTag, schemePill, slot, emptyState, tiles } = modules['ui'];
 const tools = modules['feature/outlet-tools'];
 const { directionsUrl } = modules['feature/outlet-tools'];
 const { schemeArt } = modules['feature/scheme-art'];
@@ -5176,7 +5829,6 @@ function render(root, { id }) {
   const savedToday = orders.demoOrdersOn(o.id, today);
   const inCart = cart.outletId === o.id && !cart.isEmpty();
   const address = o.area && !String(o.address ?? '').includes(o.area) ? `${o.address}, ${o.area}` : o.address;
-  const typeLabel = o.shopType && o.shopType !== o.channel ? `${label('ch', o.channel)} · ${label('shop', o.shopType)}` : label('ch', o.channel);
   const closures = (o.closures ?? []).filter((c) => c.to >= today).sort((a, b) => (a.from < b.from ? -1 : 1));
 
   const bookLabel = inCart ? t('outlet.continue', { cases: fmt.casesText(cart.totalCases()) }) : savedToday.length ? t('outlet.bookAnother') : t('outlet.book');
@@ -5205,8 +5857,6 @@ function render(root, { id }) {
         </div>
         <div class="row-tags">
           ${tierBadge(o, { visits: true })}
-          ${v?.todayOnRoute ? pill(t('outlet.stop', { n: v.routeOrder }), 'info', 'route') : ''}
-          ${pill(typeLabel, 'neutral')}
           ${tools.territoryPill(o)}
         </div>
         <div class="profile-foot">
@@ -5219,7 +5869,6 @@ function render(root, { id }) {
       ${closures.map((c) => html`<p class="strip-warn">${icon('calendarX')}<span><b>${t('outlet.closed', { range: fmt.dateRange(c.from, c.to, today) })}</b> · ${c.reason}</span></p>`)}
 
       ${slot('outlet-season')}
-      ${tools.stockOnHandCard(o)}
       ${slot('outlet-brief')}
       ${schemesCard(o, all, today)}
       ${lastOrderCard(all, v, today, savedToday.length > 0)}
@@ -5232,6 +5881,16 @@ function render(root, { id }) {
     <div class="bottom-bar">
       <a class="btn btn-primary btn-block" href="#/book/${o.id}">${icon('box')}<span>${bookLabel}</span></a>
     </div>`);
+
+  // A tile with a chevron opens the list that belongs to it (e.g. Value → what they ordered).
+  view.addEventListener('click', (e) => {
+    const tile = e.target.closest('[data-toggle]');
+    if (!tile) return;
+    const more = view.querySelector(`[data-toggled="${tile.dataset.toggle}"]`);
+    if (!more) return;
+    more.hidden = !more.hidden;
+    tile.setAttribute('aria-expanded', String(!more.hidden));
+  });
 
   // Notes and issues redraw in place, so the rep keeps their scroll position.
   tools.wire(view, o, (part) => {
@@ -5273,11 +5932,11 @@ function lastOrderCard(all, v, today, visitedToday) {
   return fold('calendar', 'blue', t('card.lastOrder'), summary, html`
     ${tiles([
       last && { icon: 'box', label: t('kv.lastOrder'), value: fmt.shortDate(last.date), sub: fmt.relative(last.date, today) },
-      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)) },
+      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)), toggle: 'last-lines' },
       { icon: 'check', label: t('kv.lastVisit'), value: lastVisit ? fmt.shortDate(lastVisit.date) : '—', sub: lastVisit ? fmt.relative(lastVisit.date, today) : t('kv.noVisits') },
       v?.nextVisitAfterToday && { icon: 'calendar', label: t('kv.nextVisit'), value: fmt.shortDate(v.nextVisitAfterToday), sub: fmt.relative(v.nextVisitAfterToday, today), tone: 'blue' },
     ])}
-    ${last ? html`<p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}` : ''}`);
+    ${last ? html`<div class="tile-more" data-toggled="last-lines" hidden><p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}</div>` : ''}`);
 }
 
 function paymentCard(o, today) {
@@ -6109,7 +6768,7 @@ function render(root, { id, sub }) {
 
       <details class="card collapse fold" open>
         <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-amber">${icon('chat')}</span><span>${t('sd.offer')}</span></span>${icon('chevron', 'collapse-chev')}</summary>
-        <div class="collapse-body"><p class="sd-offer">${schemes.offerText(s)}</p></div>
+        <div class="collapse-body">${offerBody(s)}</div>
       </details>
 
       <details class="card collapse fold">
@@ -6130,7 +6789,6 @@ function render(root, { id, sub }) {
         </div>
       </details>
 
-      ${Array.isArray(s.skus) ? productsCard(s) : ''}
       ${o && s.type === 'program' && o.cooler?.type === 'bottler' ? auditCard(o, today) : ''}
       ${o ? historyCard(s, all) : ''}
     </div>
@@ -6177,15 +6835,18 @@ function freeAs(r) {
   return data.product(r.freeSku)?.name ?? r.freeSku;
 }
 
-function productsCard(s) {
-  const list = s.skus.map((sku) => data.product(sku)).filter(Boolean);
-  if (!list.length) return '';
-  return html`<details class="card collapse fold"><summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-purple">${icon('box')}</span><span>${t('sd.products')}</span></span><span class="collapse-sum">${s.skus.length}</span>${icon('chevron', 'collapse-chev')}</summary><div class="collapse-body">
-    <ul class="mini-list sd-products">${list.map((p) => html`<li>
-      <span>${p.name}</span>
-      <span class="num">${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit: t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case') })}</span>
-    </li>`)}</ul>
-  </div></details>`;
+/** The offer in one short line, then its packs as pills with their rate (no long sentence). */
+function offerBody(s) {
+  const r = s.rule ?? {};
+  const list = Array.isArray(s.skus) ? s.skus.map((sku) => data.product(sku)).filter(Boolean) : [];
+  const line = s.type === 'free-goods' ? t('sd.offerFree', { buy: r.buyCases, free: r.freeCases })
+    : s.type === 'percent-off' ? t('sd.offerPct', { min: r.minCases, pct: r.percent })
+    : schemes.offerText(s);
+  if (!list.length) return html`<p class="sd-offer">${line}</p>`;
+  const unit = (p) => t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case');
+  return html`<p class="sd-offer">${line}</p>
+    <p class="tp-packs-l">${list.length > 1 ? (r.pooled ? t('tp.f.anyMix') : t('tp.f.together')) : t('tp.f.pack')}</p>
+    <ul class="sd-packs">${list.map((p) => html`<li><span>${p.name}</span><b class="num">${fmt.rupees(p.ptrPerCase)}/${unit(p)}</b></li>`)}</ul>`;
 }
 
 function auditCard(o, today) {
@@ -6359,6 +7020,281 @@ function milestones() {
 }
 
 return { myOutlets, preSeason, month, today, myMetrics, leaderboard, targetToday, milestones };
+})();
+
+/* ==================== js/feature/landing.js ==================== */
+modules['feature/landing'] = (() => {
+// Landing additions, filled into home.js's slots:
+//   landing-hero  clock in/out, rank chip and the summer target, inside the branded header
+//   landing-top   alert banners (new schemes, distributor stock changes); all of them on #/updates
+//   landing-next  the next outlet on the route, and today's small wins
+// Everything is computed from the data, the demo orders and what the rep recorded in this browser.
+
+const { app, session } = modules['app'];
+const data = modules['data'];
+const schemes = modules['schemes'];
+const fmt = modules['format'];
+const { t, label } = modules['i18n'];
+const { html, mount, icon, openSheet, toast } = modules['ui'];
+const store = modules['feature/store'];
+const metrics = modules['feature/metrics'];
+const { quickActions } = modules['feature/outlet-tools'];
+
+const NEW_SCHEME_DAYS = 30;   // a scheme is "new" for 30 days after it starts
+const SOON_DAYS = 7;          // …and announced 7 days before it starts
+const MAX_ALERTS = 3;         // never more than three banners at once
+
+function install() {
+  app.on('screen:rendered', ({ screen, root }) => {
+    if (screen !== 'home') return;
+    fillHero(root);
+    fillAlerts(root);
+    fillNext(root);
+  });
+}
+
+const hm = (mins) => (mins >= 60 ? t('f.clock.hm', { h: Math.floor(mins / 60), m: mins % 60 }) : t('f.clock.m', { m: mins }));
+
+// ---- header: clock, rank, summer target -------------------------------------------------------
+
+function fillHero(root) {
+  const slot = root.querySelector('[data-slot="landing-hero"]');
+  if (!slot) return;
+  const draw = () => {
+    const st = store.clockState();
+    const mins = store.dutyMinutes();
+    const board = metrics.leaderboard(session.name());
+    const pre = metrics.preSeason();
+    const gain = metrics.targetToday();
+    const mon = metrics.month();
+    const clock = st.state === 'in'
+      ? html`<button type="button" class="hchip is-on" data-clock="out"><span class="live-dot"></span><span>${t('f.clock.onFor', { dur: hm(mins) })}</span><span class="hchip-act">${t('f.clock.out')}</span></button>`
+      : st.state === 'closed'
+        ? html`<button type="button" class="hchip is-closed" data-clock="in">${icon('check')}<span>${t('f.clock.dayDone', { dur: hm(mins) })}</span></button>`
+        : html`<button type="button" class="hchip is-start" data-clock="in">${icon('clock')}<span>${t('f.clock.in')}</span></button>`;
+    mount(slot, html`
+      <div class="hero-chips">
+        ${clock}
+        <a class="hchip is-rank" href="#/leaderboard">${icon('trophy')}<span>${t('f.rank.chip', { rank: board.rank, total: board.total })}</span>${icon('chevron')}</a>
+      </div>
+      <details class="goal">
+        <summary>
+          <span class="ring" style="--p:${Math.min(100, pre.pct)}" aria-hidden="true"><span>${pre.pct}%</span></span>
+          <span class="goal-main">
+            <span class="goal-title">${t('f.target.title')}</span>
+            <span class="goal-nums"><strong>${fmt.num(pre.achieved)}</strong> / ${fmt.num(pre.target)} ${t('f.target.cases')}</span>
+            <span class="goal-meta">${gain ? html`<span class="goal-gain">${icon('trend')}+${fmt.num(gain)} ${t('f.target.today')}</span>` : ''}<span>${t('f.target.daysLeft', { n: pre.daysLeft })}</span></span>
+          </span>
+          ${icon('chevron', 'collapse-chev')}
+        </summary>
+        <div class="goal-body">
+          <p class="goal-line">${icon('target')}<span>${pre.remaining ? t('f.target.pace', { n: fmt.num(pre.perDay) }) : t('f.target.done')}</span></p>
+          <p class="goal-line">${icon('box')}<span>${t('f.target.counts', { skus: pre.skus.map((s) => shortName(s)).join(', ') })}</span></p>
+          <p class="goal-line">${icon('calendar')}<span>${t('f.target.window', { from: fmt.shortDate(pre.from), to: fmt.shortDate(pre.to) })}</span></p>
+          <div class="goal-sub"><span>${t('f.target.month')}</span><span class="num"><strong>${fmt.num(mon.achieved)}</strong> / ${fmt.num(mon.target)} · ${mon.pct}%</span></div>
+        </div>
+      </details>`);
+    slot.hidden = false;
+  };
+  draw();
+  slot.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-clock]');
+    if (!btn) return;
+    if (btn.dataset.clock === 'in') { store.clockIn(); toast(t('f.clock.inToast', { time: store.timeNow() }), 'clock'); }
+    else { store.clockOut(); toast(t('f.clock.outToast', { dur: hm(store.dutyMinutes()) }), 'clock'); }
+    draw();
+  });
+}
+
+/** "Cola 250 ml" from "Cola 250 ml PET". */
+const shortName = (sku) => String(data.product(sku)?.name ?? sku).replace(/\s+(PET|Tetra|returnable glass|can)$/i, (m) => (/glass/i.test(m) ? ' glass' : ''));
+
+// ---- alerts ------------------------------------------------------------------------------------
+
+function schemeAlerts(today) {
+  return data.schemes()
+    .filter((s) => s.type !== 'program' && s.validFrom && s.validTo >= today)
+    .filter((s) => fmt.daysBetween(s.validFrom, today) <= NEW_SCHEME_DAYS && fmt.daysBetween(today, s.validFrom) <= SOON_DAYS)
+    .map((s) => ({
+      id: `scheme:${s.id}`, kind: 'scheme', tone: 'scheme', icon: 'tag', scheme: s,
+      tag: s.validFrom > today ? t('f.alert.tagSoon') : t('f.alert.tagNew'),
+      title: s.name,
+      sub: `${schemes.chipText(s)} · ${s.validFrom > today ? t('f.alert.from', { date: fmt.shortDate(s.validFrom) }) : t('f.alert.till', { date: fmt.shortDate(s.validTo) })}`,
+    }));
+}
+
+const statusRank = { 'out-of-stock': 0, rationed: 1, 'rationed-against-empties': 1, low: 2, available: 3 };
+
+/** Only real changes since yesterday's sync: a ration raised or cut, a pack going out, low or back. */
+function stockAlerts() {
+  const before = new Map((data.field().stockYesterday?.items ?? []).map((x) => [x.sku, x]));
+  const out = [];
+  for (const now of data.stock().items) {
+    const st = now.sourceStatus ?? 'available';
+    const prev = before.get(now.sku);
+    const prevSt = prev?.status ?? 'available';
+    const name = data.product(now.sku)?.name ?? now.sku;
+    let title = null; let up = false;
+    if (st === prevSt && st === 'rationed' && prev.rationPerOutletCases !== now.maxCasesPerOutlet) {
+      up = now.maxCasesPerOutlet > prev.rationPerOutletCases;
+      title = t(up ? 'f.alert.rationUp' : 'f.alert.rationDown', { name, n: now.maxCasesPerOutlet });
+    } else if (st !== prevSt) {
+      up = statusRank[st] > statusRank[prevSt];
+      title = t(`f.alert.stock.${st}`, { name });
+    }
+    // The tag follows the pack's status now: anything still limited is a stock alert, even when
+    // the limit was raised; only a pack that is fully available again is "back in stock".
+    // Colour follows how bad it is: out of stock (red), limited per shop (orange), running low (amber).
+    const tone = st === 'available' ? 'up' : st === 'out-of-stock' ? 'crit' : st === 'low' ? 'low' : 'down';
+    const tag = { up: t('f.alert.tagUp'), crit: t('f.alert.tagOut'), low: t('f.alert.tagLow'), down: t('f.alert.tagDown') }[tone];
+    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone, icon: tone === 'up' ? 'check' : 'alert', item: now,
+      tag, title, sub: now.note, rank: { crit: 0, down: 1, low: 2, up: 3 }[tone] });
+  }
+  return out.sort((a, b) => a.rank - b.rank);
+}
+
+async function openAlert(a) {
+  store.markSeen(a.id);
+  if (a.kind === 'scheme') {
+    const s = a.scheme;
+    const r = s.rule ?? {};
+    const threshold = s.type === 'free-goods' ? t('f.sch.thrFree', { n: r.buyCases, pooled: r.pooled && s.skus.length > 1 ? t('f.sch.pooled') : '' })
+      : s.type === 'percent-off' ? t('f.sch.thrPct', { n: r.minCases }) : t('f.sch.thrFirst', { days: r.withinDaysOfRegistration });
+    const benefit = s.type === 'free-goods' ? t('f.sch.benFree', { n: r.freeCases }) : t('f.sch.benPct', { pct: r.percent });
+    const tiers = Array.isArray(s.eligibleTiers) ? s.eligibleTiers.map((x) => label('tier', x)).join(', ') : t('f.sch.allTiers');
+    const packs = Array.isArray(s.skus) ? s.skus.map((k) => data.product(k)?.name ?? k) : null;
+    const say = s.type === 'free-goods' ? t('f.sch.sayFree', { buy: r.buyCases, free: r.freeCases, mix: r.pooled && s.skus.length > 1 ? t('f.sch.sayMix') : '' })
+      : s.type === 'percent-off' ? t('f.sch.sayPct', { min: r.minCases, pct: r.percent }) : t('f.sch.sayFirst', { pct: r.percent });
+    await openSheet({
+      title: s.name,
+      body: html`<div class="tiles sheet-tiles">
+          <div class="tile"><span class="tile-l">${icon('target')}${t('f.sch.threshold')}</span><span class="tile-row"><b class="tile-v">${threshold}</b></span></div>
+          <div class="tile is-blue"><span class="tile-l">${icon('tag')}${t('f.sch.benefit')}</span><span class="tile-row"><b class="tile-v">${benefit}</b></span></div>
+          <div class="tile"><span class="tile-l">${icon('calendar')}${t('f.sch.valid')}</span><span class="tile-row"><b class="tile-v">${t('common.till', { date: fmt.shortDate(s.validTo) })}</b><span class="tile-s">${t('f.alert.from', { date: fmt.shortDate(s.validFrom) })}</span></span></div>
+          <div class="tile"><span class="tile-l">${icon('store')}${t('f.sch.tiers')}</span><span class="tile-row"><b class="tile-v">${tiers}</b>${s.requiresBottlerCooler ? html`<span class="tile-s">${t('f.sch.cooler')}</span>` : ''}</span></div>
+        </div>
+        <p class="fold-sub">${t('f.sch.skus')}</p>
+        ${packs ? html`<ul class="pack-list">${packs.map((n) => html`<li>${n}</li>`)}</ul>` : html`<p class="muted">${t('f.sch.allSkus')}</p>`}
+        <div class="say-box"><p class="say-label">${icon('chat')}<span>${t('f.sch.say')}</span></p><p>${say}</p></div>`,
+      actions: [{ key: 'close', label: t('f.common.ok'), tone: 'primary' }],
+      dismissKey: 'close',
+    });
+  } else {
+    const it = a.item;
+    await openSheet({
+      title: data.product(it.sku)?.name ?? it.sku,
+      body: html`<div class="facts">
+          <p>${icon('box')}<span><b>${t('f.stock.status')}</b>${t(`f.stock.s.${it.sourceStatus ?? 'available'}`)}</span></p>
+          ${it.maxCasesPerOutlet ? html`<p>${icon('store')}<span><b>${t('f.stock.ration')}</b>${t('f.stock.perOutlet', { n: it.maxCasesPerOutlet })}</span></p>` : ''}
+          ${it.note ? html`<p>${icon('info')}<span><b>${t('f.stock.note')}</b>${it.note}</span></p>` : ''}
+        </div>
+        <p class="fine">${t('f.stock.sync', { time: String(data.stock().syncedAt ?? '').slice(11, 16) })}</p>`,
+      actions: [{ key: 'close', label: t('f.common.ok'), tone: 'primary' }],
+      dismissKey: 'close',
+    });
+  }
+}
+
+/** Every update for today, newest kind first. The landing shows the unread ones (up to three);
+ *  #/updates shows them all again. */
+const allAlerts = () => [...schemeAlerts(data.demoDate()), ...stockAlerts()];
+const currentAlerts = () => allAlerts().filter((a) => !store.seen(a.id)).slice(0, MAX_ALERTS);
+
+const alertCard = (a, i) => html`<button type="button" class="alert tone-${a.tone}" data-alert="${i}">
+  <span class="alert-icon">${icon(a.icon)}</span>
+  <span class="alert-text"><span class="alert-tag">${a.tag}</span><span class="alert-title">${a.title}</span>${a.sub ? html`<span class="alert-sub">${a.sub}</span>` : ''}</span>
+  <span class="alert-go">${t('f.alert.view')}</span>
+</button>`;
+
+function fillAlerts(root) {
+  const slot = root.querySelector('[data-slot="landing-top"]');
+  if (!slot) return;
+  const alerts = currentAlerts();
+  if (!allAlerts().length) { slot.hidden = true; return; }
+  const draw = () => {
+    const left = [...slot.querySelectorAll('[data-alert]')].length;
+    const head = slot.querySelector('[data-head]');
+    if (head) head.textContent = left ? t('f.alert.head', { n: left }) : t('f.alert.none');
+  };
+  mount(slot, html`<div class="alerts">
+    <div class="alerts-head"><p class="${alerts.length ? '' : 'is-quiet'}">${icon('bell')}<span data-head>${alerts.length ? t('f.alert.head', { n: alerts.length }) : t('f.alert.none')}</span></p>
+      <a class="alerts-all" href="#/updates">${t('f.alert.viewAll')}${icon('chevron')}</a></div>
+    ${alerts.map(alertCard)}</div>`);
+  slot.hidden = false;
+  slot.querySelectorAll('[data-alert]').forEach((btn) => btn.addEventListener('click', async () => {
+    await openAlert(alerts[Number(btn.dataset.alert)]);
+    btn.remove();
+    draw();
+  }));
+}
+
+// ---- next outlet and today's wins ------------------------------------------------------------------
+
+function fillNext(root) {
+  const slot = root.querySelector('[data-slot="landing-next"]');
+  if (!slot) return;
+  const day = metrics.today();
+  const wins = metrics.milestones();
+  const fresh = wins.filter((w) => !store.seen(`ms:${w.id}`));
+  fresh.forEach((w) => store.markSeen(`ms:${w.id}`));
+  const latest = wins.at(-1);
+  const n = day.next;
+  mount(slot, html`
+    ${latest ? html`<p class="win ${fresh.length ? 'is-new' : ''}">${icon(latest.icon)}<span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
+    ${n ? html`<section class="next">
+      <p class="next-label">${t('f.next.label', { stop: data.visits(n.id)?.routeOrder ?? '' })}</p>
+      <div class="next-row">
+        <a class="next-main" href="#/outlet/${n.id}"><span class="next-name">${n.name}</span><span class="next-meta">${label('area', n.area)} · ${label('ch', n.channel)}</span></a>
+        ${quickActions(n)}
+      </div>
+      <a class="btn next-go" href="#/outlet/${n.id}">${t('f.next.open')}${icon('chevron')}</a>
+    </section>` : html`<p class="win is-new">${icon('check')}<span>${t('f.next.allDone')}</span></p>`}`);
+  slot.hidden = false;
+}
+
+return { install, openAlert, allAlerts, alertCard };
+})();
+
+/* ==================== js/screens/updates.js ==================== */
+modules['screens/updates'] = (() => {
+// Updates: every alert for today (new schemes, distributor stock changes), read or not, so the rep
+// can look at them again after tapping them away on Landing. Same cards, grouped by kind.
+
+const data = modules['data'];
+const fmt = modules['format'];
+const { t } = modules['i18n'];
+const { html, mount, fresh, icon, appBar, emptyState } = modules['ui'];
+const store = modules['feature/store'];
+const { allAlerts, alertCard, openAlert } = modules['feature/landing'];
+
+function render(root) {
+  const view = fresh(root);
+  const list = allAlerts();
+  const groups = [
+    { key: 'stock', title: t('f.upd.stock'), items: list.filter((a) => a.kind === 'stock') },
+    { key: 'scheme', title: t('f.upd.schemes'), items: list.filter((a) => a.kind === 'scheme') },
+  ].filter((g) => g.items.length);
+  const unread = list.filter((a) => !store.seen(a.id)).length;
+
+  mount(view, html`
+    ${appBar({ title: t('f.upd.title'), sub: fmt.date(data.demoDate()), back: '#/home' })}
+    <div class="page page-upd">
+      ${list.length ? html`
+        <p class="upd-sum">${unread ? t('f.upd.unread', { n: unread }) : t('f.alert.none')}</p>
+        ${groups.map((g) => html`<section class="upd-group">
+          <h2 class="section-title">${g.title} · ${g.items.length}</h2>
+          <div class="alerts upd-list">${g.items.map((a) => html`<div class="upd-item ${store.seen(a.id) ? 'is-read' : ''}">${alertCard(a, list.indexOf(a))}</div>`)}</div>
+        </section>`)}`
+      : emptyState({ icon: 'bell', title: t('f.alert.none'), body: '' })}
+    </div>`);
+
+  view.querySelectorAll('[data-alert]').forEach((btn) => btn.addEventListener('click', async () => {
+    await openAlert(list[Number(btn.dataset.alert)]);
+    btn.closest('.upd-item')?.classList.add('is-read');
+  }));
+}
+
+return { render };
 })();
 
 /* ==================== js/screens/leaderboard.js ==================== */
@@ -7371,6 +8307,8 @@ function itemHtml(p, extra = false) {
         ${icon('chevron', 'collapse-chev')}
       </summary>
       <div class="tp-body">
+        ${p.facts ? html`<div class="tp-facts">${p.facts.map((f) => html`<span class="tp-fact"><b>${f.value}</b><small>${f.label}</small></span>`)}</div>` : ''}
+        ${p.packs?.length ? html`<p class="tp-packs-l">${p.packsLabel}</p><ul class="pack-list">${p.packs.map((n) => html`<li>${n}</li>`)}</ul>` : ''}
         ${p.body ? html`<p class="tp-detail">${p.body}</p>` : ''}
         <p class="tp-src">${p.source}${p.href ? html` · <a href="${p.href}">${t('tp.seeScheme')}</a>` : ''}</p>
       </div>
@@ -7490,11 +8428,14 @@ function lastYearPoint(past, { today, nextVisit }) {
   const lyCases = paidOf(ly);
   if (!lyCases) return null;
   const recent = paidOf(past.filter((x) => inRange(x, fmt.addDays(today, -days), today)));
-  const skus = joinNames(topSkus(ly));
   return {
     cat: 'history', icon: 'history', tone: 'thin',
     title: t('tp.ly.title', { days, cases: fmt.casesText(lyCases) }),
-    body: recent ? t('tp.ly.body', { days, recent: fmt.casesText(recent), skus }) : t('tp.ly.bodyNoRecent', { skus }),
+    facts: [
+      { value: fmt.casesText(lyCases), label: t('tp.f.ly') },
+      recent ? { value: fmt.casesText(recent), label: t('tp.f.recent', { days }) } : null,
+    ].filter(Boolean),
+    packs: topSkus(ly, 3), packsLabel: t('tp.f.topPacks'),
     source: t('tp.src.orders'),
   };
 }
@@ -7508,21 +8449,25 @@ function schemePoints(o, all, bought, { today, nextVisit }) {
     if (!relevant) continue;
     const st = schemes.statusFor(s, o, today, all);
     const base = { cat: 'scheme', icon: 'tag', tone: 'info', source: t('tp.src.scheme'), href: `#/scheme/${s.id}/${o.id}` };
-    const names = schemes.listNames(s.skus);
+    const packs = Array.isArray(s.skus) ? s.skus.map(productName) : [];
+    const till = s.validTo ? { value: fmt.shortDate(s.validTo), label: t('tp.f.till') } : null;
     if (st.kind === 'applicable' && s.type === 'first-order') {
       const until = fmt.addDays(o.registeredOn, s.rule?.withinDaysOfRegistration ?? 90);
-      out.push({ ...base, rank: 0, title: `${s.name}: ${schemes.chipText(s)}`, body: t('tp.scheme.first', { date: fmt.shortDate(until) }) });
+      out.push({ ...base, rank: 0, title: `${s.name}: ${schemes.chipText(s)}`, facts: [{ value: fmt.shortDate(until), label: t('tp.f.firstTill') }] });
     } else if (st.kind === 'applicable' && s.type === 'free-goods' && st.cap) {
       const left = st.cap - st.used;
       out.push({ ...base, rank: 1, title: `${s.name}: ${schemes.chipText(s)}`,
-        body: s.skus.length > 1 ? t('tp.scheme.left', { left, cap: st.cap, skus: names }) : t('tp.scheme.leftSingle', { left, cap: st.cap }) });
+        facts: [{ value: `${left} / ${st.cap}`, label: t('tp.f.freeLeft') }, till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.anyMix') : t('tp.f.pack') });
     } else if (st.kind === 'used' && s.validTo >= nextVisit && fmt.monthKey(nextVisit) !== fmt.monthKey(today)) {
       out.push({ ...base, rank: 2, title: t('tp.scheme.usedTitle', { name: s.name, month }),
         body: t('tp.scheme.nextMonth', { cap: st.cap, month, date: fmt.shortDate(nextVisit) }) });
     } else if (st.kind === 'applicable' && s.type === 'percent-off') {
-      out.push({ ...base, rank: 3, title: `${s.name}: ${schemes.chipText(s)}`, body: t('tp.scheme.pct', { skus: names, date: fmt.shortDate(s.validTo) }) });
+      out.push({ ...base, rank: 3, title: `${s.name}: ${schemes.chipText(s)}`, facts: [till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.together') : t('tp.f.pack') });
     } else if (st.kind === 'applicable' && s.type === 'free-goods') {
-      out.push({ ...base, rank: 4, title: `${s.name}: ${schemes.chipText(s)}`, body: s.validTo ? t('tp.scheme.till', { date: fmt.shortDate(s.validTo) }) : '' });
+      out.push({ ...base, rank: 4, title: `${s.name}: ${schemes.chipText(s)}`, facts: [till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.anyMix') : t('tp.f.pack') });
     }
   }
   return out.sort((a, b) => a.rank - b.rank).slice(0, 2);
@@ -7664,264 +8609,6 @@ function paymentPoint(o) {
 }
 
 return { install, pointsFor };
-})();
-
-/* ==================== js/feature/landing.js ==================== */
-modules['feature/landing'] = (() => {
-// Landing additions, filled into home.js's slots:
-//   landing-hero  clock in/out, rank chip and the summer target, inside the branded header
-//   landing-top   alert banners (new schemes, distributor stock changes), sent as push notifications
-//   landing-next  the next outlet on the route, and today's small wins
-// Everything is computed from the data, the demo orders and what the rep recorded in this browser.
-
-const { app, session } = modules['app'];
-const data = modules['data'];
-const schemes = modules['schemes'];
-const fmt = modules['format'];
-const { t, label } = modules['i18n'];
-const { html, mount, icon, openSheet, toast } = modules['ui'];
-const store = modules['feature/store'];
-const metrics = modules['feature/metrics'];
-const { quickActions } = modules['feature/outlet-tools'];
-
-const NEW_SCHEME_DAYS = 30;   // a scheme is "new" for 30 days after it starts
-const SOON_DAYS = 7;          // …and announced 7 days before it starts
-const MAX_ALERTS = 3;         // never more than three banners at once
-const PUSH_KEY = 'gtapp.pushed.v1';   // push notifications go out once per sign-in (sessionStorage)
-
-function install() {
-  app.on('screen:rendered', ({ screen, root }) => {
-    if (screen !== 'home') return;
-    fillHero(root);
-    const alerts = fillAlerts(root);
-    fillNext(root);
-    pushAlerts(alerts);
-  });
-}
-
-const hm = (mins) => (mins >= 60 ? t('f.clock.hm', { h: Math.floor(mins / 60), m: mins % 60 }) : t('f.clock.m', { m: mins }));
-
-// ---- header: clock, rank, summer target -------------------------------------------------------
-
-function fillHero(root) {
-  const slot = root.querySelector('[data-slot="landing-hero"]');
-  if (!slot) return;
-  const draw = () => {
-    const st = store.clockState();
-    const mins = store.dutyMinutes();
-    const board = metrics.leaderboard(session.name());
-    const pre = metrics.preSeason();
-    const gain = metrics.targetToday();
-    const mon = metrics.month();
-    const clock = st.state === 'in'
-      ? html`<button type="button" class="hchip is-on" data-clock="out"><span class="live-dot"></span><span>${t('f.clock.onFor', { dur: hm(mins) })}</span><span class="hchip-act">${t('f.clock.out')}</span></button>`
-      : st.state === 'closed'
-        ? html`<button type="button" class="hchip is-closed" data-clock="in">${icon('check')}<span>${t('f.clock.dayDone', { dur: hm(mins) })}</span></button>`
-        : html`<button type="button" class="hchip is-start" data-clock="in">${icon('clock')}<span>${t('f.clock.in')}</span></button>`;
-    mount(slot, html`
-      <div class="hero-chips">
-        ${clock}
-        <a class="hchip is-rank" href="#/leaderboard">${icon('trophy')}<span>${t('f.rank.chip', { rank: board.rank, total: board.total })}</span>${icon('chevron')}</a>
-      </div>
-      <details class="goal">
-        <summary>
-          <span class="ring" style="--p:${Math.min(100, pre.pct)}" aria-hidden="true"><span>${pre.pct}%</span></span>
-          <span class="goal-main">
-            <span class="goal-title">${t('f.target.title')}</span>
-            <span class="goal-nums"><strong>${fmt.num(pre.achieved)}</strong> / ${fmt.num(pre.target)} ${t('f.target.cases')}</span>
-            <span class="goal-meta">${gain ? html`<span class="goal-gain">${icon('trend')}+${fmt.num(gain)} ${t('f.target.today')}</span>` : ''}<span>${t('f.target.daysLeft', { n: pre.daysLeft })}</span></span>
-          </span>
-          ${icon('chevron', 'collapse-chev')}
-        </summary>
-        <div class="goal-body">
-          <p class="goal-line">${icon('target')}<span>${pre.remaining ? t('f.target.pace', { n: fmt.num(pre.perDay) }) : t('f.target.done')}</span></p>
-          <p class="goal-line">${icon('box')}<span>${t('f.target.counts', { skus: pre.skus.map((s) => shortName(s)).join(', ') })}</span></p>
-          <p class="goal-line">${icon('calendar')}<span>${t('f.target.window', { from: fmt.shortDate(pre.from), to: fmt.shortDate(pre.to) })}</span></p>
-          <div class="goal-sub"><span>${t('f.target.month')}</span><span class="num"><strong>${fmt.num(mon.achieved)}</strong> / ${fmt.num(mon.target)} · ${mon.pct}%</span></div>
-        </div>
-      </details>`);
-    slot.hidden = false;
-  };
-  draw();
-  slot.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-clock]');
-    if (!btn) return;
-    if (btn.dataset.clock === 'in') { store.clockIn(); toast(t('f.clock.inToast', { time: store.timeNow() }), 'clock'); }
-    else { store.clockOut(); toast(t('f.clock.outToast', { dur: hm(store.dutyMinutes()) }), 'clock'); }
-    draw();
-  });
-}
-
-/** "Cola 250 ml" from "Cola 250 ml PET". */
-const shortName = (sku) => String(data.product(sku)?.name ?? sku).replace(/\s+(PET|Tetra|returnable glass|can)$/i, (m) => (/glass/i.test(m) ? ' glass' : ''));
-
-// ---- alerts ------------------------------------------------------------------------------------
-
-function schemeAlerts(today) {
-  return data.schemes()
-    .filter((s) => s.type !== 'program' && s.validFrom && s.validTo >= today)
-    .filter((s) => fmt.daysBetween(s.validFrom, today) <= NEW_SCHEME_DAYS && fmt.daysBetween(today, s.validFrom) <= SOON_DAYS)
-    .map((s) => ({
-      id: `scheme:${s.id}`, kind: 'scheme', tone: 'scheme', icon: 'tag', scheme: s,
-      tag: s.validFrom > today ? t('f.alert.tagSoon') : t('f.alert.tagNew'),
-      title: s.name,
-      sub: `${schemes.chipText(s)} · ${s.validFrom > today ? t('f.alert.from', { date: fmt.shortDate(s.validFrom) }) : t('f.alert.till', { date: fmt.shortDate(s.validTo) })}`,
-    }));
-}
-
-const statusRank = { 'out-of-stock': 0, rationed: 1, 'rationed-against-empties': 1, low: 2, available: 3 };
-
-/** Only real changes since yesterday's sync: a ration raised or cut, a pack going out, low or back. */
-function stockAlerts() {
-  const before = new Map((data.field().stockYesterday?.items ?? []).map((x) => [x.sku, x]));
-  const out = [];
-  for (const now of data.stock().items) {
-    const st = now.sourceStatus ?? 'available';
-    const prev = before.get(now.sku);
-    const prevSt = prev?.status ?? 'available';
-    const name = data.product(now.sku)?.name ?? now.sku;
-    let title = null; let up = false;
-    if (st === prevSt && st === 'rationed' && prev.rationPerOutletCases !== now.maxCasesPerOutlet) {
-      up = now.maxCasesPerOutlet > prev.rationPerOutletCases;
-      title = t(up ? 'f.alert.rationUp' : 'f.alert.rationDown', { name, n: now.maxCasesPerOutlet });
-    } else if (st !== prevSt) {
-      up = statusRank[st] > statusRank[prevSt];
-      title = t(`f.alert.stock.${st}`, { name });
-    }
-    // The tag follows the pack's status now: anything still limited is a stock alert, even when
-    // the limit was raised; only a pack that is fully available again is "back in stock".
-    const limited = st !== 'available';
-    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: limited ? 'down' : 'up', icon: 'box', item: now,
-      tag: limited ? t('f.alert.tagDown') : t('f.alert.tagUp'), title, sub: now.note });
-  }
-  return out;
-}
-
-async function openAlert(a) {
-  store.markSeen(a.id);
-  if (a.kind === 'scheme') {
-    const s = a.scheme;
-    const r = s.rule ?? {};
-    const threshold = s.type === 'free-goods' ? t('f.sch.thrFree', { n: r.buyCases, pooled: r.pooled && s.skus.length > 1 ? t('f.sch.pooled') : '' })
-      : s.type === 'percent-off' ? t('f.sch.thrPct', { n: r.minCases }) : t('f.sch.thrFirst', { days: r.withinDaysOfRegistration });
-    const benefit = s.type === 'free-goods' ? t('f.sch.benFree', { n: r.freeCases }) : t('f.sch.benPct', { pct: r.percent });
-    const tiers = Array.isArray(s.eligibleTiers) ? s.eligibleTiers.map((x) => label('tier', x)).join(', ') : t('f.sch.allTiers');
-    await openSheet({
-      title: s.name,
-      body: html`<div class="facts">
-          <p>${icon('box')}<span><b>${t('f.sch.skus')}</b>${Array.isArray(s.skus) ? schemes.listNames(s.skus) : t('f.sch.allSkus')}</span></p>
-          <p>${icon('target')}<span><b>${t('f.sch.threshold')}</b>${threshold}</span></p>
-          <p>${icon('tag')}<span><b>${t('f.sch.benefit')}</b>${benefit}</span></p>
-          <p>${icon('calendar')}<span><b>${t('f.sch.valid')}</b>${fmt.dateRange(s.validFrom, s.validTo, data.demoDate())}</span></p>
-          <p>${icon('store')}<span><b>${t('f.sch.tiers')}</b>${tiers}${s.requiresBottlerCooler ? ` · ${t('f.sch.cooler')}` : ''}</span></p>
-        </div>
-        <div class="say-box"><p class="say-label">${icon('chat')}<span>${t('f.sch.say')}</span></p>
-          <p>${t('f.sch.sayText', { offer: schemes.offerText(s) })}</p></div>`,
-      actions: [{ key: 'close', label: t('f.common.ok'), tone: 'primary' }],
-      dismissKey: 'close',
-    });
-  } else {
-    const it = a.item;
-    await openSheet({
-      title: data.product(it.sku)?.name ?? it.sku,
-      body: html`<div class="facts">
-          <p>${icon('box')}<span><b>${t('f.stock.status')}</b>${t(`f.stock.s.${it.sourceStatus ?? 'available'}`)}</span></p>
-          ${it.maxCasesPerOutlet ? html`<p>${icon('store')}<span><b>${t('f.stock.ration')}</b>${t('f.stock.perOutlet', { n: it.maxCasesPerOutlet })}</span></p>` : ''}
-          ${it.note ? html`<p>${icon('info')}<span><b>${t('f.stock.note')}</b>${it.note}</span></p>` : ''}
-        </div>
-        <p class="fine">${t('f.stock.sync', { time: String(data.stock().syncedAt ?? '').slice(11, 16) })}</p>`,
-      actions: [{ key: 'close', label: t('f.common.ok'), tone: 'primary' }],
-      dismissKey: 'close',
-    });
-  }
-}
-
-const currentAlerts = () => [...schemeAlerts(data.demoDate()), ...stockAlerts()].filter((a) => !store.seen(a.id)).slice(0, MAX_ALERTS);
-
-function fillAlerts(root) {
-  const slot = root.querySelector('[data-slot="landing-top"]');
-  if (!slot) return [];
-  const alerts = currentAlerts();
-  const canAsk = 'Notification' in window && Notification.permission === 'default';
-  if (!alerts.length) { slot.hidden = true; return alerts; }
-  mount(slot, html`<div class="alerts">
-    <div class="alerts-head"><p>${icon('bell')}<span>${t('f.alert.head', { n: alerts.length })}</span></p>
-      ${canAsk ? html`<button type="button" class="alerts-allow" data-allow>${t('f.alert.allow')}</button>` : ''}</div>
-    ${alerts.map((a, i) => html`<button type="button" class="alert tone-${a.tone}" data-alert="${i}">
-      <span class="alert-icon">${icon(a.icon)}</span>
-      <span class="alert-text"><span class="alert-tag">${a.tag}</span><span class="alert-title">${a.title}</span>${a.sub ? html`<span class="alert-sub">${a.sub}</span>` : ''}</span>
-      <span class="alert-go">${t('f.alert.view')}</span>
-    </button>`)}</div>`);
-  slot.hidden = false;
-  slot.querySelectorAll('[data-alert]').forEach((btn) => btn.addEventListener('click', async () => {
-    await openAlert(alerts[Number(btn.dataset.alert)]);
-    btn.remove();
-    if (!slot.querySelector('[data-alert]')) slot.hidden = true;
-  }));
-  slot.querySelector('[data-allow]')?.addEventListener('click', async (e) => {
-    e.currentTarget.remove();
-    const res = await Notification.requestPermission().catch(() => 'denied');
-    if (res === 'granted') systemNotify(alerts);
-  });
-  return alerts;
-}
-
-// ---- push notifications --------------------------------------------------------------------------
-
-function systemNotify(alerts) {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  alerts.forEach((a) => {
-    try { new Notification(`${a.tag} · ${a.title}`, { body: a.sub ?? '', tag: a.id }); } catch { /* some browsers need a service worker */ }
-  });
-}
-
-/** Once per sign-in: phone-style notifications drop in from the top, one after another, and the
- *  same alerts go to the phone's notification tray when the rep has allowed it. */
-function pushAlerts(alerts) {
-  let pushed = false;
-  try { pushed = sessionStorage.getItem(PUSH_KEY) === '1'; sessionStorage.setItem(PUSH_KEY, '1'); } catch { /* show anyway */ }
-  if (pushed || !alerts.length) return;
-  systemNotify(alerts);
-  alerts.forEach((a, i) => setTimeout(() => showPush(a), 600 + i * 4200));
-}
-
-function showPush(a) {
-  const el = document.createElement('button');
-  el.type = 'button';
-  el.className = `push tone-${a.tone}`;
-  el.innerHTML = String(html`<span class="push-app">GT</span><span class="push-text"><span class="push-top"><b>${a.tag}</b><span>${t('f.alert.now')}</span></span><span class="push-title">${a.title}</span>${a.sub ? html`<span class="push-sub">${a.sub}</span>` : ''}</span>`);
-  document.body.append(el);
-  requestAnimationFrame(() => el.classList.add('is-in'));
-  const close = () => { el.classList.remove('is-in'); setTimeout(() => el.remove(), 300); };
-  const timer = setTimeout(close, 3800);
-  el.addEventListener('click', () => { clearTimeout(timer); close(); if (!store.seen(a.id)) openAlert(a); });
-}
-
-// ---- next outlet and today's wins ------------------------------------------------------------------
-
-function fillNext(root) {
-  const slot = root.querySelector('[data-slot="landing-next"]');
-  if (!slot) return;
-  const day = metrics.today();
-  const wins = metrics.milestones();
-  const fresh = wins.filter((w) => !store.seen(`ms:${w.id}`));
-  fresh.forEach((w) => store.markSeen(`ms:${w.id}`));
-  const latest = wins.at(-1);
-  const n = day.next;
-  mount(slot, html`
-    ${latest ? html`<p class="win ${fresh.length ? 'is-new' : ''}">${icon(latest.icon)}<span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
-    ${n ? html`<section class="next">
-      <p class="next-label">${t('f.next.label', { stop: data.visits(n.id)?.routeOrder ?? '' })}</p>
-      <div class="next-row">
-        <a class="next-main" href="#/outlet/${n.id}"><span class="next-name">${n.name}</span><span class="next-meta">${label('area', n.area)} · ${label('ch', n.channel)}</span></a>
-        ${quickActions(n)}
-      </div>
-      <a class="btn next-go" href="#/outlet/${n.id}">${t('f.next.open')}${icon('chevron')}</a>
-    </section>` : html`<p class="win is-new">${icon('check')}<span>${t('f.next.allDone')}</span></p>`}`);
-  slot.hidden = false;
-}
-
-return { install };
 })();
 
 /* ==================== js/feature/season-check.js ==================== */
@@ -8134,7 +8821,7 @@ function outletCard(root, o) {
       slot.hidden = false;
       return;
     }
-    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0).slice(0, 6) : [];
+    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0) : [];
     const why = reasons(N);
     const tags = why.filter((r) => r.tone);
     const special = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : '';
@@ -8466,6 +9153,7 @@ const book = modules['screens/book'];
 const review = modules['screens/review'];
 const saved = modules['screens/saved'];
 const scheme = modules['screens/scheme'];
+const updates = modules['screens/updates'];
 const leaderboard = modules['screens/leaderboard'];
 const talkingPoints = modules['feature/talking-points'];
 const landing = modules['feature/landing'];
@@ -8475,7 +9163,7 @@ const season = modules['feature/season-engine'];
 const seasonCheck = modules['feature/season-check'];
 
 const { t, label } = i18n;
-const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard };
+const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard, updates };
 const screenEl = document.getElementById('screen');
 let cleanup = null;
 

@@ -41,7 +41,7 @@ export function render(root, { id, sub }) {
 
       <details class="card collapse fold" open>
         <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-amber">${icon('chat')}</span><span>${t('sd.offer')}</span></span>${icon('chevron', 'collapse-chev')}</summary>
-        <div class="collapse-body"><p class="sd-offer">${schemes.offerText(s)}</p></div>
+        <div class="collapse-body">${offerBody(s)}</div>
       </details>
 
       <details class="card collapse fold">
@@ -62,7 +62,6 @@ export function render(root, { id, sub }) {
         </div>
       </details>
 
-      ${Array.isArray(s.skus) ? productsCard(s) : ''}
       ${o && s.type === 'program' && o.cooler?.type === 'bottler' ? auditCard(o, today) : ''}
       ${o ? historyCard(s, all) : ''}
     </div>
@@ -109,15 +108,18 @@ function freeAs(r) {
   return data.product(r.freeSku)?.name ?? r.freeSku;
 }
 
-function productsCard(s) {
-  const list = s.skus.map((sku) => data.product(sku)).filter(Boolean);
-  if (!list.length) return '';
-  return html`<details class="card collapse fold"><summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-purple">${icon('box')}</span><span>${t('sd.products')}</span></span><span class="collapse-sum">${s.skus.length}</span>${icon('chevron', 'collapse-chev')}</summary><div class="collapse-body">
-    <ul class="mini-list sd-products">${list.map((p) => html`<li>
-      <span>${p.name}</span>
-      <span class="num">${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit: t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case') })}</span>
-    </li>`)}</ul>
-  </div></details>`;
+/** The offer in one short line, then its packs as pills with their rate (no long sentence). */
+function offerBody(s) {
+  const r = s.rule ?? {};
+  const list = Array.isArray(s.skus) ? s.skus.map((sku) => data.product(sku)).filter(Boolean) : [];
+  const line = s.type === 'free-goods' ? t('sd.offerFree', { buy: r.buyCases, free: r.freeCases })
+    : s.type === 'percent-off' ? t('sd.offerPct', { min: r.minCases, pct: r.percent })
+    : schemes.offerText(s);
+  if (!list.length) return html`<p class="sd-offer">${line}</p>`;
+  const unit = (p) => t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case');
+  return html`<p class="sd-offer">${line}</p>
+    <p class="tp-packs-l">${list.length > 1 ? (r.pooled ? t('tp.f.anyMix') : t('tp.f.together')) : t('tp.f.pack')}</p>
+    <ul class="sd-packs">${list.map((p) => html`<li><span>${p.name}</span><b class="num">${fmt.rupees(p.ptrPerCase)}/${unit(p)}</b></li>`)}</ul>`;
 }
 
 function auditCard(o, today) {

@@ -239,7 +239,11 @@ export function toast(message, iconName = 'check') {
   }, 3200);
 }
 
-/** Compact fact tiles: a small label with an icon, then the value with its note on the same line. */
-export const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
-  <span class="tile-l">${icon(i.icon)}${i.label}</span><span class="tile-row"><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}</span>
-</div>`)}</div>`;
+/** Compact fact tiles: a small label with an icon, then the value with its note on the same line.
+ *  A tile with `toggle` is a button (with a chevron) that opens the element [data-toggled=toggle]. */
+export const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => {
+  const inner = html`<span class="tile-l">${icon(i.icon)}${i.label}</span><span class="tile-row"><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}</span>`;
+  return i.toggle
+    ? html`<button type="button" class="tile is-toggle ${i.tone ? `is-${i.tone}` : ''}" data-toggle="${i.toggle}" aria-expanded="false">${inner}<span class="tile-chev">${icon('chevron')}</span></button>`
+    : html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">${inner}</div>`;
+})}</div>`;

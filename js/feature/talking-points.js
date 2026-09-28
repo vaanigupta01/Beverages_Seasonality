@@ -99,6 +99,8 @@ function itemHtml(p, extra = false) {
         ${icon('chevron', 'collapse-chev')}
       </summary>
       <div class="tp-body">
+        ${p.facts ? html`<div class="tp-facts">${p.facts.map((f) => html`<span class="tp-fact"><b>${f.value}</b><small>${f.label}</small></span>`)}</div>` : ''}
+        ${p.packs?.length ? html`<p class="tp-packs-l">${p.packsLabel}</p><ul class="pack-list">${p.packs.map((n) => html`<li>${n}</li>`)}</ul>` : ''}
         ${p.body ? html`<p class="tp-detail">${p.body}</p>` : ''}
         <p class="tp-src">${p.source}${p.href ? html` · <a href="${p.href}">${t('tp.seeScheme')}</a>` : ''}</p>
       </div>
@@ -218,11 +220,14 @@ function lastYearPoint(past, { today, nextVisit }) {
   const lyCases = paidOf(ly);
   if (!lyCases) return null;
   const recent = paidOf(past.filter((x) => inRange(x, fmt.addDays(today, -days), today)));
-  const skus = joinNames(topSkus(ly));
   return {
     cat: 'history', icon: 'history', tone: 'thin',
     title: t('tp.ly.title', { days, cases: fmt.casesText(lyCases) }),
-    body: recent ? t('tp.ly.body', { days, recent: fmt.casesText(recent), skus }) : t('tp.ly.bodyNoRecent', { skus }),
+    facts: [
+      { value: fmt.casesText(lyCases), label: t('tp.f.ly') },
+      recent ? { value: fmt.casesText(recent), label: t('tp.f.recent', { days }) } : null,
+    ].filter(Boolean),
+    packs: topSkus(ly, 3), packsLabel: t('tp.f.topPacks'),
     source: t('tp.src.orders'),
   };
 }
@@ -236,21 +241,25 @@ function schemePoints(o, all, bought, { today, nextVisit }) {
     if (!relevant) continue;
     const st = schemes.statusFor(s, o, today, all);
     const base = { cat: 'scheme', icon: 'tag', tone: 'info', source: t('tp.src.scheme'), href: `#/scheme/${s.id}/${o.id}` };
-    const names = schemes.listNames(s.skus);
+    const packs = Array.isArray(s.skus) ? s.skus.map(productName) : [];
+    const till = s.validTo ? { value: fmt.shortDate(s.validTo), label: t('tp.f.till') } : null;
     if (st.kind === 'applicable' && s.type === 'first-order') {
       const until = fmt.addDays(o.registeredOn, s.rule?.withinDaysOfRegistration ?? 90);
-      out.push({ ...base, rank: 0, title: `${s.name}: ${schemes.chipText(s)}`, body: t('tp.scheme.first', { date: fmt.shortDate(until) }) });
+      out.push({ ...base, rank: 0, title: `${s.name}: ${schemes.chipText(s)}`, facts: [{ value: fmt.shortDate(until), label: t('tp.f.firstTill') }] });
     } else if (st.kind === 'applicable' && s.type === 'free-goods' && st.cap) {
       const left = st.cap - st.used;
       out.push({ ...base, rank: 1, title: `${s.name}: ${schemes.chipText(s)}`,
-        body: s.skus.length > 1 ? t('tp.scheme.left', { left, cap: st.cap, skus: names }) : t('tp.scheme.leftSingle', { left, cap: st.cap }) });
+        facts: [{ value: `${left} / ${st.cap}`, label: t('tp.f.freeLeft') }, till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.anyMix') : t('tp.f.pack') });
     } else if (st.kind === 'used' && s.validTo >= nextVisit && fmt.monthKey(nextVisit) !== fmt.monthKey(today)) {
       out.push({ ...base, rank: 2, title: t('tp.scheme.usedTitle', { name: s.name, month }),
         body: t('tp.scheme.nextMonth', { cap: st.cap, month, date: fmt.shortDate(nextVisit) }) });
     } else if (st.kind === 'applicable' && s.type === 'percent-off') {
-      out.push({ ...base, rank: 3, title: `${s.name}: ${schemes.chipText(s)}`, body: t('tp.scheme.pct', { skus: names, date: fmt.shortDate(s.validTo) }) });
+      out.push({ ...base, rank: 3, title: `${s.name}: ${schemes.chipText(s)}`, facts: [till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.together') : t('tp.f.pack') });
     } else if (st.kind === 'applicable' && s.type === 'free-goods') {
-      out.push({ ...base, rank: 4, title: `${s.name}: ${schemes.chipText(s)}`, body: s.validTo ? t('tp.scheme.till', { date: fmt.shortDate(s.validTo) }) : '' });
+      out.push({ ...base, rank: 4, title: `${s.name}: ${schemes.chipText(s)}`, facts: [till].filter(Boolean),
+        packs, packsLabel: packs.length > 1 ? t('tp.f.anyMix') : t('tp.f.pack') });
     }
   }
   return out.sort((a, b) => a.rank - b.rank).slice(0, 2);

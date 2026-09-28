@@ -206,7 +206,7 @@ function outletCard(root, o) {
       slot.hidden = false;
       return;
     }
-    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0).slice(0, 6) : [];
+    const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0) : [];
     const why = reasons(N);
     const tags = why.filter((r) => r.tone);
     const special = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : '';

@@ -19,6 +19,7 @@ import * as book from './screens/book.js';
 import * as review from './screens/review.js';
 import * as saved from './screens/saved.js';
 import * as scheme from './screens/scheme.js';
+import * as updates from './screens/updates.js';
 import * as leaderboard from './screens/leaderboard.js';
 import * as talkingPoints from './feature/talking-points.js';
 import * as landing from './feature/landing.js';
@@ -28,7 +29,7 @@ import * as season from './feature/season-engine.js';
 import * as seasonCheck from './feature/season-check.js';
 
 const { t, label } = i18n;
-const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard };
+const SCREENS = { login, home, outlets, outlet, book, review, saved, scheme, leaderboard, updates };
 const screenEl = document.getElementById('screen');
 let cleanup = null;
 

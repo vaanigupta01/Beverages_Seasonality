@@ -39,10 +39,10 @@ const THEMES = {
 // illustration, so the card still looks right if the photo can't load (e.g. offline).
 const PHOTO_IDS = {
   cola: 'YavhkwhRBoU',      // fizz bubbles on a bold red background
-  mango: 'pxqxJECu-No',     // juice glass on a tropical orange backdrop
-  water: 'glmqeNTUEfE',     // electric-blue water splash
-  cooler: 'hinE560H5_E',    // neon "drinks" sign
-  shop: 'xLNJprcCSpg',      // colourful balloons against a bright blue sky
+  mango: '8Q93Tun7uhM',     // mango juice topped with flowers
+  water: 'DGZC_fn0aJM',     // studio shot: blue bottle, red ring, blue backdrop
+  cooler: 'ODjUXmZZFwk',    // soda bottles packed in a cooler
+  shop: 'YPpFk6niPf4',      // shopfront glowing with neon at night
   festival: 'xisPXJqwQkA',  // glowing festival lamps
 };
 const photo = (theme) => (PHOTO_IDS[theme] ? `url("https://unsplash.com/photos/${PHOTO_IDS[theme]}/download?w=720"), ` : '');

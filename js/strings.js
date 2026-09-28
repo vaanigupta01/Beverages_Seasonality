@@ -4,6 +4,8 @@
 // Values under tier. ch. shop. cat. area. region. repRole. role. schOffer. schExtras. translate data values.
 
 import { FIELD_EN } from './feature/strings-en.js';
+import { FIELD_MR } from './feature/strings-mr.js';
+import { FIELD_HI } from './feature/strings-hi.js';
 
 export const STRINGS = {
   en: {
@@ -310,6 +312,8 @@ export const STRINGS = {
     'sd.timesUsed': 'Times used',
     'sd.freeGot': 'Free cases got',
     'sd.lastUsed': 'Last used',
+    'sd.offerFree': 'Buy {buy} cases, get {free} free case.',
+    'sd.offerPct': 'Buy {min} or more cases, get {pct}% off.',
     'sd.history': 'Used at this outlet',
     'sd.historyEmpty': 'Not used here yet',
     'sd.historyApplied': 'Applied',
@@ -326,6 +330,15 @@ export const STRINGS = {
     'tp.less': 'Show less',
     'tp.open': 'Talking points · {n}',
     'tp.none': 'Nothing special to raise at this visit.',
+    'tp.f.ly': 'same days last year',
+    'tp.f.recent': 'past {days} days this year',
+    'tp.f.topPacks': 'Top packs last year',
+    'tp.f.till': 'valid till',
+    'tp.f.firstTill': 'welcome offer till',
+    'tp.f.freeLeft': 'free cases left this month',
+    'tp.f.anyMix': 'Any mix of these counts',
+    'tp.f.together': 'These count together',
+    'tp.f.pack': 'Pack',
     'tp.seeScheme': 'See scheme',
     'tp.cat.weather': 'Weather',
     'tp.cat.history': 'Last year',
@@ -469,7 +482,7 @@ export const STRINGS = {
     'status.savedShort': 'ऑर्डर सेव्ह',
     'status.savedShortN': '{n} ऑर्डर सेव्ह',
 
-    'outlets.title': 'दुकाने',
+    'outlets.title': 'सर्व दुकाने',
     'outlets.search': 'नाव, भाग किंवा प्रकार शोधा',
     'outlets.searchLabel': 'दुकाने शोधा',
     'outlets.filters': 'दुकाने फिल्टर करा',
@@ -486,7 +499,7 @@ export const STRINGS = {
     'persona.tag': 'डेमो · पर्सोना {no} · {label}',
     'persona.tip': 'डेमोसाठी: हे दुकान कोणत्या पर्सोनाचे आहे',
 
-    'outlet.title': 'दुकान',
+    'outlet.title': 'दुकानाची माहिती',
     'outlet.stop': 'आजचा रूट · थांबा {n}',
     'outlet.owner': 'मालक',
     'outlet.directions': 'रस्ता दाखवा',
@@ -568,7 +581,7 @@ export const STRINGS = {
     'sch.reason.age': 'फक्त पहिल्या {days} दिवसांतील दुकानांसाठी',
     'sch.reason.first': 'फक्त पहिल्या ऑर्डरसाठी',
 
-    'book.title': 'ऑर्डर बुक करा',
+    'book.title': 'नवीन ऑर्डर',
     'book.search': 'उत्पादने शोधा',
     'book.category': 'प्रकार',
     'book.all': 'सर्व',
@@ -602,7 +615,14 @@ export const STRINGS = {
     'book.keep': '{name} ची ऑर्डर पुढे बदला',
     'book.discard': 'रद्द करा आणि इथे सुरू करा',
 
-    'review.title': 'ऑर्डर तपासा',
+    'review.booked': 'ऑर्डरची किंमत',
+    'review.estTitle': 'स्कीमचा अंदाज · आत्ता लागू नाही',
+    'review.estFree': 'अपेक्षित मोफत पेट्या',
+    'review.estOff': 'अंदाजे सूट',
+    'review.estNote': 'स्कीमचा हिशेब नंतर डिस्ट्रिब्युटर करतो. दुकानदाराला ऑर्डरच्या किमतीचे बिल येते; लाभ क्लेममधून मिळतो.',
+    'book.estFree': 'नंतर अंदाजे {free}',
+    'book.estOff': 'नंतर अंदाजे {amt} सूट',
+    'review.title': 'ऑर्डर सारांश',
     'review.delivery': 'डिलिव्हरी {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} मोफत · {name}',
@@ -629,7 +649,7 @@ export const STRINGS = {
     'rn.pct': '{name}: {pct}% सूट · {amt}',
     'rn.pctFirst': '{name}: पहिल्या ऑर्डरवर {pct}% सूट · {amt}',
 
-    'saved.title': 'ऑर्डर सेव्ह झाली',
+    'saved.title': 'ऑर्डर झाली',
     'saved.gone': 'ही ऑर्डर आता सेव्ह नाही',
     'saved.goneBody': 'डेमो रीसेट झाला असेल.',
     'saved.order': 'ऑर्डर',
@@ -686,6 +706,8 @@ export const STRINGS = {
     'sd.timesUsed': 'किती वेळा वापरले',
     'sd.freeGot': 'मिळालेल्या मोफत पेट्या',
     'sd.lastUsed': 'शेवटचा वापर',
+    'sd.offerFree': '{buy} पेट्या घ्या, {free} मोफत पेटी मिळवा.',
+    'sd.offerPct': '{min} किंवा जास्त पेट्या घ्या, {pct}% सूट मिळवा.',
     'sd.history': 'या दुकानातील वापर',
     'sd.historyEmpty': 'इथे अजून वापर नाही',
     'sd.historyApplied': 'लागू झाली',
@@ -702,6 +724,15 @@ export const STRINGS = {
     'tp.less': 'कमी दाखवा',
     'tp.open': 'बोलण्याचे मुद्दे · {n}',
     'tp.none': 'या भेटीत खास सांगण्यासारखे काही नाही.',
+    'tp.f.ly': 'मागील वर्षी याच दिवसांत',
+    'tp.f.recent': 'यंदा मागील {days} दिवसांत',
+    'tp.f.topPacks': 'मागील वर्षीचे टॉप पॅक',
+    'tp.f.till': 'पर्यंत लागू',
+    'tp.f.firstTill': 'स्वागत ऑफर पर्यंत',
+    'tp.f.freeLeft': 'या महिन्यात बाकी मोफत पेट्या',
+    'tp.f.anyMix': 'यांचे कोणतेही मिश्रण चालेल',
+    'tp.f.together': 'हे सर्व मिळून मोजले जातात',
+    'tp.f.pack': 'पॅक',
     'tp.seeScheme': 'स्कीम पहा',
     'tp.cat.weather': 'हवामान',
     'tp.cat.history': 'गेल्या वर्षी',
@@ -878,7 +909,7 @@ export const STRINGS = {
     'status.savedShort': 'ऑर्डर सेव',
     'status.savedShortN': '{n} ऑर्डर सेव',
 
-    'outlets.title': 'दुकानें',
+    'outlets.title': 'सभी दुकानें',
     'outlets.search': 'नाम, इलाका या प्रकार खोजें',
     'outlets.searchLabel': 'दुकानें खोजें',
     'outlets.filters': 'दुकानें फ़िल्टर करें',
@@ -895,7 +926,7 @@ export const STRINGS = {
     'persona.tag': 'डेमो · पर्सोना {no} · {label}',
     'persona.tip': 'डेमो के लिए: यह दुकान किस पर्सोना की है',
 
-    'outlet.title': 'दुकान',
+    'outlet.title': 'दुकान की जानकारी',
     'outlet.stop': 'आज का रूट · स्टॉप {n}',
     'outlet.owner': 'मालिक',
     'outlet.directions': 'रास्ता देखें',
@@ -977,7 +1008,7 @@ export const STRINGS = {
     'sch.reason.age': 'सिर्फ़ पहले {days} दिन वाली दुकानों के लिए',
     'sch.reason.first': 'सिर्फ़ पहले ऑर्डर पर',
 
-    'book.title': 'ऑर्डर बुक करें',
+    'book.title': 'नया ऑर्डर',
     'book.search': 'प्रोडक्ट खोजें',
     'book.category': 'प्रकार',
     'book.all': 'सभी',
@@ -1011,7 +1042,14 @@ export const STRINGS = {
     'book.keep': '{name} का ऑर्डर बदलते रहें',
     'book.discard': 'हटाएँ और यहाँ शुरू करें',
 
-    'review.title': 'ऑर्डर जाँचें',
+    'review.booked': 'ऑर्डर की कीमत',
+    'review.estTitle': 'स्कीम का अंदाज़ा · अभी लागू नहीं',
+    'review.estFree': 'अपेक्षित फ़्री पेटी',
+    'review.estOff': 'अनुमानित छूट',
+    'review.estNote': 'स्कीम का हिसाब बाद में डिस्ट्रीब्यूटर करता है। दुकानदार को ऑर्डर की कीमत का बिल आता है; फ़ायदा क्लेम से मिलता है।',
+    'book.estFree': 'बाद में लगभग {free}',
+    'book.estOff': 'बाद में लगभग {amt} छूट',
+    'review.title': 'ऑर्डर सारांश',
     'review.delivery': 'डिलीवरी {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} फ़्री · {name}',
@@ -1038,7 +1076,7 @@ export const STRINGS = {
     'rn.pct': '{name}: {pct}% छूट · {amt}',
     'rn.pctFirst': '{name}: पहले ऑर्डर पर {pct}% छूट · {amt}',
 
-    'saved.title': 'ऑर्डर सेव हो गया',
+    'saved.title': 'ऑर्डर हो गया',
     'saved.gone': 'यह ऑर्डर अब सेव नहीं है',
     'saved.goneBody': 'शायद डेमो रीसेट हो गया है।',
     'saved.order': 'ऑर्डर',
@@ -1095,6 +1133,8 @@ export const STRINGS = {
     'sd.timesUsed': 'कितनी बार इस्तेमाल',
     'sd.freeGot': 'मिली मुफ़्त पेटियाँ',
     'sd.lastUsed': 'आख़िरी इस्तेमाल',
+    'sd.offerFree': '{buy} पेटी लें, {free} फ़्री पेटी पाएँ।',
+    'sd.offerPct': '{min} या ज़्यादा पेटी लें, {pct}% छूट पाएँ।',
     'sd.history': 'इस दुकान पर इस्तेमाल',
     'sd.historyEmpty': 'यहाँ अभी इस्तेमाल नहीं हुई',
     'sd.historyApplied': 'लागू हुई',
@@ -1111,6 +1151,15 @@ export const STRINGS = {
     'tp.less': 'कम दिखाएँ',
     'tp.open': 'बात करने के मुद्दे · {n}',
     'tp.none': 'इस विज़िट में ख़ास बताने को कुछ नहीं।',
+    'tp.f.ly': 'पिछले साल इन्हीं दिनों',
+    'tp.f.recent': 'इस साल पिछले {days} दिन',
+    'tp.f.topPacks': 'पिछले साल के टॉप पैक',
+    'tp.f.till': 'तक लागू',
+    'tp.f.firstTill': 'स्वागत ऑफ़र तक',
+    'tp.f.freeLeft': 'इस महीने बची फ़्री पेटी',
+    'tp.f.anyMix': 'इनमें से कोई भी मिलाकर चलेगा',
+    'tp.f.together': 'ये सब मिलाकर गिने जाते हैं',
+    'tp.f.pack': 'पैक',
     'tp.seeScheme': 'स्कीम देखें',
     'tp.cat.weather': 'मौसम',
     'tp.cat.history': 'पिछले साल',
@@ -1209,3 +1258,5 @@ export const STRINGS = {
 };
 
 Object.assign(STRINGS.en, FIELD_EN);
+Object.assign(STRINGS.mr, FIELD_MR);
+Object.assign(STRINGS.hi, FIELD_HI);

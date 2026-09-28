@@ -1,6 +1,6 @@
 // Outlet details tools: call before the visit, add a note (typed or spoken), report a
-// retailer issue, see open issues, the other rep's territory, the last order's SKUs and the
-// estimated stock on hand. Notes and issues are saved in this browser (feature/store.js).
+// retailer issue, see open issues, the other rep's territory and the last order's SKUs.
+// Notes and issues are saved in this browser (feature/store.js).
 
 import * as data from '../data.js';
 import * as fmt from '../format.js';
@@ -8,9 +8,9 @@ import { t, lang } from '../i18n.js';
 import { html, icon, pill, openSheet, toast } from '../ui.js';
 import * as store from './store.js';
 
-// Dialling is off in the demo: the dataset has no phone numbers, and a made-up number
-// could belong to a real person. With real numbers in outlets[].phone, set this to true.
-const CALL_ENABLED = false;
+// The dataset has no phone numbers. Until outlets[].phone is filled, the dialer opens with a
+// placeholder that can't ring anyone (Indian mobiles start with 6–9, never 0).
+const phoneOf = (o) => o.phone ?? `+91 00000 ${String(o.id).replace(/\D/g, '').padStart(5, '0')}`;
 
 // ---- territory ------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ export function install() {
     if (!btn) return;
     e.preventDefault();
     const o = data.outlet(btn.dataset.call);
-    if (o) callSheet(o, () => document.dispatchEvent(new CustomEvent('gt:notes', { detail: o.id })));
+    if (o) dial(o);
   });
 }
 
@@ -98,7 +98,7 @@ export function wire(root, o, refresh) {
     const btn = e.target.closest('[data-tool]');
     if (!btn) return;
     const tool = btn.dataset.tool;
-    if (tool === 'call') await callSheet(o, refresh);
+    if (tool === 'call') dial(o);
     if (tool === 'note' && await noteSheet(o)) refresh('notes');
     if (tool === 'mic' && await noteSheet(o, { listen: true })) refresh('notes');
     if (tool === 'issue' && await issueSheet(o)) refresh('issues');
@@ -110,41 +110,9 @@ export function wire(root, o, refresh) {
 
 // ---- call ------------------------------------------------------------------------
 
-/** When the rep usually checks in here, from the last visits' check-in times. */
-function usualTime(o) {
-  const times = (data.visits(o.id)?.visits ?? []).filter((v) => v.done && v.checkIn).slice(-6).map((v) => v.checkIn).sort();
-  return times.length ? times[Math.floor(times.length / 2)] : null;
-}
-
-export async function callSheet(o, refresh) {
-  const v = data.visits(o.id);
-  const usual = usualTime(o);
-  const owner = o.owner?.name ?? t('f.call.owner');
-  const key = await openSheet({
-    title: t('f.call.title', { name: o.name }),
-    body: html`<p class="call-num">${icon('phone')}<span>${CALL_ENABLED && o.phone ? o.phone : t('f.call.demoNumber')}</span></p>
-      <ul class="prep">
-        <li>${icon('store')}<span>${t('f.call.ask', { owner })}</span></li>
-        ${usual ? html`<li>${icon('clock')}<span>${t('f.call.usual', { time: usual })}</span></li>` : ''}
-        ${v?.nextVisitAfterToday ? html`<li>${icon('calendar')}<span>${t('f.call.next', { date: fmt.shortDate(v.nextVisitAfterToday) })}</span></li>` : ''}
-      </ul>
-      <p class="fine">${t('f.call.log')}</p>`,
-    actions: [
-      { key: 'dial', label: CALL_ENABLED && o.phone ? t('f.call.dial') : t('f.call.dialDemo'), tone: 'success' },
-      { key: 'present', label: t('f.call.present'), tone: 'secondary' },
-      { key: 'closed', label: t('f.call.closed'), tone: 'secondary' },
-      { key: 'later', label: t('f.call.later'), tone: 'secondary' },
-    ],
-    dismissKey: null,
-  });
-  if (key === 'dial') {
-    if (CALL_ENABLED && o.phone) location.href = `tel:${o.phone.replace(/\s/g, '')}`;
-    else toast(t('f.call.noNumber'), 'info');
-  } else if (key && key !== 'route-change') {
-    store.addNote(o.id, t(`f.call.note.${key}`), 'call');
-    toast(t('f.note.saved'));
-    refresh('notes');
-  }
+/** Straight to the phone's dialer with the shop's number filled in. */
+export function dial(o) {
+  location.href = `tel:${phoneOf(o).replace(/\s/g, '')}`;
 }
 
 // ---- notes (typed or spoken) ----------------------------------------------------------
@@ -316,30 +284,4 @@ export function orderLinesHtml(order) {
     <span class="ol-qty num">${fmt.unitsText(r.cases, r.label)}${r.free ? html` <span class="muted">+${r.free}</span>` : ''}</span>
     <span class="ol-val num">${r.value != null ? fmt.rupees(r.value) : ''}</span>
   </li>`)}</ul>`;
-}
-
-const CONF = { high: 'ok', medium: 'info', low: 'caution' };
-
-export function stockOnHandCard(o) {
-  const rows = data.onHand(o.id).slice().sort((a, b) => (b.repCountedCases ?? b.estimatedCasesOnHand) - (a.repCountedCases ?? a.estimatedCasesOnHand));
-  const total = rows.reduce((n, r) => n + (r.repCountedCases ?? r.estimatedCasesOnHand), 0);
-  const counted = rows.filter((r) => r.repCountedCases != null).length;
-  return html`<details class="card collapse fold" data-card="onhand">
-    <summary class="collapse-head">
-      <span class="card-title"><span class="fold-ico ic-teal">${icon('box')}</span><span>${t('f.soh.title')}</span></span>
-      <span class="collapse-sum">${rows.length ? t('f.soh.sum', { n: fmt.num(Math.round(total)) }) : t('f.soh.none')}</span>
-      ${icon('chevron', 'collapse-chev')}
-    </summary>
-    <div class="collapse-body">
-      ${rows.length ? html`<ul class="soh">${rows.map((r) => {
-        const p = data.product(r.sku);
-        const val = r.repCountedCases ?? r.estimatedCasesOnHand;
-        return html`<li>
-          <span class="soh-name">${p?.name ?? r.sku}<span class="soh-meta">${t('f.soh.delivered', { n: r.lastDeliveredCases, date: fmt.shortDate(r.lastDeliveredOn) })}</span></span>
-          <span class="soh-val"><span class="num">~${fmt.num(Math.round(val * 10) / 10)}</span>${r.repCountedCases != null ? pill(t('f.soh.counted'), 'ok') : pill(t(`f.soh.conf.${r.confidence}`), CONF[r.confidence] ?? 'neutral')}</span>
-        </li>`;
-      })}</ul>` : ''}
-      <p class="fine">${t('f.soh.method', { counted })}</p>
-    </div>
-  </details>`;
 }

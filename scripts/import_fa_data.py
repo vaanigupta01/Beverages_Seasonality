@@ -267,6 +267,9 @@ visits = {o["outletId"]: {
 # ---- distributor stock -----------------------------------------------------------
 stock_src = load("distributor_stock")
 STATUS = {"rationed": "rationed", "out-of-stock": "out"}
+NOTE_PLAIN = {   # distributor notes in the rep's words
+    "Below one day of peak cover.": "Distributor has less than one day's stock left at summer sales.",
+}
 current = {s["sku"]: s for s in stock_src["current"]}
 stock_items = []
 for p in products:
@@ -277,7 +280,7 @@ for p in products:
     status = STATUS.get(s["status"], "ok")      # "low" and "against empties" still sell: shown as notes
     item = {"sku": p["sku"], "status": status, "sourceStatus": s["status"],
             "maxCasesPerOutlet": 0 if status == "out" else s["rationPerOutletCases"],
-            "casesAvailable": s["casesAvailable"], "note": s["note"]}
+            "casesAvailable": s["casesAvailable"], "note": NOTE_PLAIN.get(s["note"], s["note"])}
     if status == "rationed":
         item["rationAppliesTo"] = "paid-cases"
     stock_items.append(item)
@@ -476,7 +479,7 @@ field = {
                     "text": "Afternoon power cuts: 250 ml cola going flat in the cooler, customers complaining."}],
     },
     "stockYesterday": {"asOf": "2026-04-27", "items": [
-        {"sku": "CL250", "status": "rationed", "rationPerOutletCases": 4, "note": "Ration of 4 paid cases per outlet"},
+        {"sku": "CL250", "status": "rationed", "rationPerOutletCases": 8, "note": "Ration of 8 paid cases per outlet"},
         {"sku": "MG600", "status": "out-of-stock", "note": "Out since 24 Apr"},
         {"sku": "CL200G", "status": "rationed-against-empties", "note": "Crate float short through the peak"},
         {"sku": "EN300C", "status": "low", "note": "Slow-moving; limited holding"}]},
