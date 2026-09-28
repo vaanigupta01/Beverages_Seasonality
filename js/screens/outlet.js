@@ -109,6 +109,11 @@ const fold = (iconName, tone, title, summary, body, { open = false, cls = '', wa
     <div class="collapse-body">${body}</div>
   </details>`;
 
+/** Small icon tiles for a fold's facts: label on top, the value large, an optional note. */
+const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
+  <span class="tile-l">${icon(i.icon)}${i.label}</span><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}
+</div>`)}</div>`;
+
 function lastOrderCard(all, v, today, visitedToday) {
   const last = all[0];
   // A demo order today counts as today's visit (visits.json only holds past visits).
@@ -116,28 +121,32 @@ function lastOrderCard(all, v, today, visitedToday) {
     ? { date: today, minutes: null }
     : (v?.visits ?? []).filter((x) => x.done && x.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
   const summary = last ? `${fmt.relative(last.date, today)} · ${fmt.casesText(orders.paidCases(last))}` : t('kv.noOrders');
-  return fold('calendar', 'blue', t('card.lastOrder'), summary, html`<dl class="kv">
-    ${last
-      ? html`<div><dt>${t('kv.lastOrder')}</dt><dd>${fmt.shortDate(last.date)} <span class="muted">· ${fmt.relative(last.date, today)}</span></dd></div>
-        <details class="kv-expand"><summary><span class="kv-dt">${t('kv.cases')}</span><span class="kv-dd">${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}${icon('chevron', 'collapse-chev')}</span></summary>${tools.orderLinesHtml(last)}</details>
-        <div><dt>${t('kv.value')}</dt><dd>${fmt.rupees(last.netValue)}</dd></div>`
-      : ''}
-    <div><dt>${t('kv.lastVisit')}</dt><dd>${lastVisit ? html`${fmt.shortDate(lastVisit.date)} <span class="muted">· ${fmt.relative(lastVisit.date, today)}</span>` : html`<span class="muted">${t('kv.noVisits')}</span>`}</dd></div>
-    ${v?.nextVisitAfterToday ? html`<div><dt>${t('kv.nextVisit')}</dt><dd>${fmt.shortDate(v.nextVisitAfterToday)} <span class="muted">· ${fmt.relative(v.nextVisitAfterToday, today)}</span></dd></div>` : ''}
-  </dl>`);
+  return fold('calendar', 'blue', t('card.lastOrder'), summary, html`
+    ${tiles([
+      last && { icon: 'box', label: t('kv.lastOrder'), value: fmt.shortDate(last.date), sub: fmt.relative(last.date, today) },
+      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)) },
+      { icon: 'check', label: t('kv.lastVisit'), value: lastVisit ? fmt.shortDate(lastVisit.date) : '—', sub: lastVisit ? fmt.relative(lastVisit.date, today) : t('kv.noVisits') },
+      v?.nextVisitAfterToday && { icon: 'calendar', label: t('kv.nextVisit'), value: fmt.shortDate(v.nextVisitAfterToday), sub: fmt.relative(v.nextVisitAfterToday, today), tone: 'blue' },
+    ])}
+    ${last ? html`<p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}` : ''}`);
 }
 
 function paymentCard(o, today) {
   const c = o.credit ?? {};
   const overdue = c.overdue ?? 0;
-  const room = Math.max(0, (c.limit ?? 0) - (c.outstanding ?? 0));
+  const limit = c.limit ?? 0;
+  const used = c.outstanding ?? 0;
+  const room = Math.max(0, limit - used);
+  const pct = limit ? Math.min(100, Math.round((used / limit) * 100)) : 0;
   const summary = overdue > 0 ? t('f.pay.due', { amt: fmt.rupees(overdue) }) : t('f.pay.room', { amt: fmt.rupees(room) });
-  return fold('wallet', 'green', t('card.payment'), summary, html`<dl class="kv">
-    <div><dt>${t('kv.creditLimit')}</dt><dd>${fmt.rupees(c.limit ?? 0)}</dd></div>
-    <div><dt>${t('kv.outstanding')}</dt><dd>${fmt.rupees(c.outstanding ?? 0)}</dd></div>
-    <div class="${overdue > 0 ? 'is-warn' : ''}"><dt>${t('kv.overdue')}</dt><dd>${overdue > 0 ? html`${icon('alert')}<span>${t('kv.overdueAmt', { amt: fmt.rupees(overdue) })}</span>` : fmt.rupees(0)}</dd></div>
-    <div><dt>${t('kv.lastPayment')}</dt><dd>${c.lastPaymentDate ? html`${fmt.shortDate(c.lastPaymentDate)} <span class="muted">· ${fmt.relative(c.lastPaymentDate, today)}</span>` : html`<span class="muted">${t('kv.noneYet')}</span>`}</dd></div>
-  </dl>`, { warn: overdue > 0 });
+  return fold('wallet', 'green', t('card.payment'), summary, html`
+    <div class="credit-bar"><div class="credit-top"><span>${t('f.fold.creditUsed', { used: fmt.rupees(used), limit: fmt.rupees(limit) })}</span><b>${t('f.pay.room', { amt: fmt.rupees(room) })}</b></div>
+      <div class="credit-track"><span style="width:${pct}%" class="${overdue > 0 ? 'is-due' : ''}"></span></div></div>
+    ${tiles([
+      { icon: 'alert', label: t('kv.overdue'), value: fmt.rupees(overdue), tone: overdue > 0 ? 'warn' : '' },
+      { icon: 'calendar', label: t('kv.lastPayment'), value: c.lastPaymentDate ? fmt.shortDate(c.lastPaymentDate) : '—', sub: c.lastPaymentDate ? fmt.relative(c.lastPaymentDate, today) : t('kv.noneYet') },
+      c.paymentMode === 'cash-and-credit' && { icon: 'wallet', label: t('f.fold.pays'), value: t('f.fold.cashAbove'), sub: t('f.fold.cashAboveSub', { amt: fmt.rupees(limit) }) },
+    ])}`, { warn: overdue > 0 });
 }
 
 const ORDER = { enrolled: 0, applicable: 1, used: 2, not: 3 };
@@ -148,6 +157,7 @@ function schemesCard(o, all, today) {
   const list = schemes.activeSchemes(today)
     .filter((s) => s.type !== 'program' || hasCooler)
     .map((s) => ({ s, st: schemes.statusFor(s, o, today, all) }))
+    .filter(({ st }) => st.kind !== 'not')          // schemes this shop can't get aren't shown at all
     .sort((a, b) => ORDER[a.st.kind] - ORDER[b.st.kind]);
   if (!list.length) return '';
   const month = fmt.monthName(today, true);
@@ -164,15 +174,14 @@ function schemesCard(o, all, today) {
 }
 
 function historyCard(all, today) {
-  if (!all.length) return fold('history', 'purple', t('card.history'), t('history.empty'), emptyState({ icon: 'box', title: t('history.empty'), body: t('history.emptyBody'), compact: true }));
-  const shown = Math.min(3, all.length);
+  if (!all.length) return fold('history', 'purple', t('card.history'), t('history.empty'), html`<p class="muted">${t('history.emptyBody')}</p>`);
   return fold('history', 'purple', t('card.history'), t('f.hist.sum', { n: all.length }), html`
     ${monthStrip(all, today)}
-    <h3 class="sub-title">${t('history.last', { n: shown })}</h3>
-    <ul class="mini-list">${all.slice(0, 3).map((x) => html`<li>
-      <span>${fmt.shortDate(x.date)}${x.source === 'demo' ? html` ${pill(t('demo.tag'), 'thin')}` : ''}</span>
+    <p class="fold-sub">${t('f.fold.recent')}</p>
+    <ul class="recent">${all.slice(0, 3).map((x) => html`<li>
+      <span class="recent-d">${fmt.shortDate(x.date)}${x.source === 'demo' ? html` <em>${t('f.fold.today')}</em>` : ''}</span>
       <span>${fmt.casesText(orders.paidCases(x))}</span>
-      <span class="num">${fmt.rupees(x.netValue)}</span>
+      <b class="num">${fmt.rupees(x.netValue)}</b>
     </li>`)}</ul>`);
 }
 
@@ -209,34 +218,17 @@ function monthStrip(all, today) {
 function coolerCard(o, today) {
   const c = o.cooler ?? { type: 'none' };
   const a = c.lastAudit;
-  let summary;
-  let body;
-  let warn = false;
-  if (c.type === 'bottler') {
-    summary = t('cooler.company', { count: c.count, litres: c.litres });
-    warn = Boolean(a && (!a.pure || a.tempC > 6)) || Boolean(c.afternoonOutage);
-    body = html`<dl class="kv">
-      ${a ? html`<div><dt>${t('cooler.lastAudit')}</dt><dd>${fmt.shortDate(a.date)} <span class="muted">· ${fmt.relative(a.date, today)}</span></dd></div>
-        <div><dt>${t('cooler.onlyOurs')}</dt><dd>${a.pure ? t('cooler.yes') : html`<span class="text-warn">${icon('alert')}<span>${t('cooler.otherBrands')}</span></span>`}</dd></div>
-        <div><dt>${t('cooler.fillTemp')}</dt><dd>${a.fillPct}% · ${a.tempC > 6 ? html`<span class="text-warn">${icon('alert')}<span>${t('cooler.warm', { t: a.tempC })}</span></span>` : `${a.tempC}°C`}</dd></div>`
-      : html`<div><dt>${t('cooler.lastAudit')}</dt><dd class="muted">${t('cooler.noAudit')}</dd></div>`}
-    </dl>
-    ${c.afternoonOutage ? html`<p class="inline-note">${icon('alert')}<span>${t('cooler.outage')}</span></p>` : ''}`;
-  } else {
-    summary = { 'own-fridge': `${t('cooler.ownFridge')}${c.litres ? ` · ${c.litres} L` : ''}`, 'ice-box': t('cooler.iceBox'), none: t('cooler.none') }[c.type] ?? c.type;
-    body = html`<dl class="kv"><div><dt>${t('cooler.label')}</dt><dd>${summary}</dd></div></dl>`;
-  }
-  if (o.empties?.cratesHeld != null) {
-    body = html`${body}<dl class="kv"><div><dt>${t('cooler.crates')}</dt><dd>${fmt.num(o.empties.cratesHeld)}</dd></div></dl>`;
-  }
-  return html`<details class="card collapse">
-    <summary class="collapse-head">
-      <span class="card-title"><span class="fold-ico ic-teal">${icon('cooler')}</span><span>${t('card.cooler')}</span></span>
-      <span class="collapse-sum ${warn ? 'text-warn' : ''}">${warn ? icon('alert') : ''}<span>${summary}</span></span>
-      ${icon('chevron', 'collapse-chev')}
-    </summary>
-    <div class="collapse-body">${body}</div>
-  </details>`;
+  const kind = c.type === 'bottler' ? t('cooler.company', { count: c.count, litres: c.litres })
+    : ({ 'own-fridge': `${t('cooler.ownFridge')}${c.litres ? ` · ${c.litres} L` : ''}`, 'ice-box': t('cooler.iceBox'), none: t('cooler.none') }[c.type] ?? c.type);
+  const warn = Boolean(a && (!a.pure || a.tempC > 6)) || Boolean(c.afternoonOutage);
+  return fold('cooler', 'teal', t('card.cooler'), kind, html`
+    ${tiles([
+      { icon: 'cooler', label: t('cooler.label'), value: c.type === 'bottler' ? `${c.count} × ${c.litres} L` : kind, sub: c.type === 'bottler' ? t('f.fold.company') : '' },
+      c.slots ? { icon: 'box', label: t('f.fold.fits'), value: t('f.fold.fitsVal', { n: c.slots }), sub: t('f.fold.fitsSub') } : null,
+      o.empties?.cratesHeld != null ? { icon: 'box', label: t('cooler.crates'), value: fmt.num(o.empties.cratesHeld) } : null,
+      a ? { icon: 'check', label: t('cooler.lastAudit'), value: fmt.shortDate(a.date), sub: a.pure ? t('cooler.yes') : t('cooler.otherBrands'), tone: a.pure ? '' : 'warn' } : null,
+    ])}
+    ${c.afternoonOutage ? html`<p class="strip-warn fold-warn">${icon('alert')}<span>${t('f.fold.outage')}</span></p>` : ''}`, { warn });
 }
 
 function bookingsCard(o, today) {

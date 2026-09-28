@@ -10,6 +10,7 @@ import * as fmt from '../format.js';
 import { t, label } from '../i18n.js';
 import { html, mount, fresh, icon, langButton, pill, tierBadge, slot, emptyState } from '../ui.js';
 import { quickActions } from '../feature/outlet-tools.js';
+import { routeMap, wireMap } from '../feature/route-map.js';
 
 export function render(root) {
   const view = fresh(root);
@@ -47,6 +48,7 @@ export function render(root) {
         <div class="day-track" role="progressbar" aria-valuemin="0" aria-valuemax="${route.length}" aria-valuenow="${visited}">
           <span style="width:${route.length ? Math.round((visited / route.length) * 100) : 0}%"></span>
         </div>
+        ${route.length ? routeMap(rows) : ''}
         <dl class="day-stats">
           <div><dt>${icon('note')}${t('home.orders')}</dt><dd>${fmt.num(todays.length)}</dd></div>
           <div><dt>${icon('box')}${t('home.cases')}</dt><dd>${fmt.num(bookedCases)}</dd></div>
@@ -61,6 +63,7 @@ export function render(root) {
         ? html`<ol class="list route-list">${rows.map(routeRow)}</ol>`
         : emptyState({ icon: 'route', title: t('home.noRoute'), body: t('home.noRouteBody') })}
     </div>`);
+  wireMap(view);
 }
 
 function routeRow({ outlet, saved }) {

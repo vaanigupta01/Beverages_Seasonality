@@ -31,6 +31,7 @@ export const STRINGS = {
     'n.order': { one: '{n} order', other: '{n} orders' },
     'n.line': { one: '{n} line', other: '{n} lines' },
     'n.visitsMonth': { one: '{n} visit a month', other: '{n} visits a month' },
+    'n.visitsShort': '{n}×/month',
     'n.function': { one: '{n} function', other: '{n} functions' },
     'pack.PET': 'bottles',
     'pack.glass': 'bottles',
@@ -85,7 +86,7 @@ export const STRINGS = {
     'status.savedShort': 'Order saved',
     'status.savedShortN': '{n} orders saved',
 
-    'outlets.title': 'Outlets',
+    'outlets.title': 'All shops',
     'outlets.search': 'Search name, area or channel',
     'outlets.searchLabel': 'Search outlets',
     'outlets.filters': 'Filter outlets',
@@ -102,7 +103,7 @@ export const STRINGS = {
     'persona.tag': 'Demo · Persona {no} · {label}',
     'persona.tip': 'Demo aid: the persona this outlet stands for',
 
-    'outlet.title': 'Outlet',
+    'outlet.title': 'Shop details',
     'outlet.stop': "Today's route · stop {n}",
     'outlet.owner': 'Owner',
     'outlet.directions': 'Directions',
@@ -184,7 +185,7 @@ export const STRINGS = {
     'sch.reason.age': 'Only for outlets in their first {days} days',
     'sch.reason.first': 'First order only',
 
-    'book.title': 'Book order',
+    'book.title': 'New order',
     'book.search': 'Search products',
     'book.category': 'Category',
     'book.all': 'All',
@@ -218,7 +219,7 @@ export const STRINGS = {
     'book.keep': 'Keep editing {name}',
     'book.discard': 'Discard it and start here',
 
-    'review.title': 'Review order',
+    'review.title': 'Order summary',
     'review.delivery': 'Delivery {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} free expected · {name}',
@@ -252,7 +253,7 @@ export const STRINGS = {
     'rn.pct': '{name}: {pct}% off · {amt}',
     'rn.pctFirst': '{name}: {pct}% off the first order · {amt}',
 
-    'saved.title': 'Order saved',
+    'saved.title': 'Order placed',
     'saved.gone': 'This order is no longer saved',
     'saved.goneBody': 'The demo may have been reset.',
     'saved.order': 'Order',
@@ -407,6 +408,7 @@ export const STRINGS = {
     'n.order': { one: '{n} ऑर्डर', other: '{n} ऑर्डर' },
     'n.line': { one: '{n} ओळ', other: '{n} ओळी' },
     'n.visitsMonth': { one: 'महिन्याला {n} भेट', other: 'महिन्याला {n} भेटी' },
+    'n.visitsShort': '{n}×/महिना',
     'n.function': { one: '{n} कार्यक्रम', other: '{n} कार्यक्रम' },
     'pack.PET': 'बाटल्या',
     'pack.glass': 'बाटल्या',
@@ -809,6 +811,7 @@ export const STRINGS = {
     'n.order': '{n} ऑर्डर',
     'n.line': '{n} लाइन',
     'n.visitsMonth': 'महीने में {n} विज़िट',
+    'n.visitsShort': '{n}×/महीना',
     'n.function': '{n} कार्यक्रम',
     'pack.PET': 'बोतल',
     'pack.glass': 'बोतल',

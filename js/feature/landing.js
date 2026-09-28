@@ -118,8 +118,11 @@ function stockAlerts() {
       up = statusRank[st] > statusRank[prevSt];
       title = t(`f.alert.stock.${st}`, { name });
     }
-    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: up ? 'up' : 'down', icon: 'box', item: now,
-      tag: up ? t('f.alert.tagUp') : t('f.alert.tagDown'), title, sub: now.note });
+    // The tag follows the pack's status now: anything still limited is a stock alert, even when
+    // the limit was raised; only a pack that is fully available again is "back in stock".
+    const limited = st !== 'available';
+    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: limited ? 'down' : 'up', icon: 'box', item: now,
+      tag: limited ? t('f.alert.tagDown') : t('f.alert.tagUp'), title, sub: now.note });
   }
   return out;
 }

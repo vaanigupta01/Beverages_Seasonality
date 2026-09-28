@@ -102,7 +102,7 @@ pre { background: var(--neutral-bg); padding: var(--s3); border-radius: var(--r1
 }
 
 /* ---------- shell: a phone-width column (framed on wide screens) ---------- */
-.shell { max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; background: var(--paper); }
+.shell { max-width: 390px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; background: var(--paper); }
 @media (min-width: 560px) {
   body { background: #dfe6f1; }
   .shell { box-shadow: 0 0 0 1px var(--line-strong), 0 20px 60px rgba(15, 28, 46, 0.12); }
@@ -1173,9 +1173,9 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 .ic-amber { background: #fff1d6; color: #9a5b00; }
 .collapse-sum { font-size: var(--t-xs); }
 .sch-block { margin-bottom: var(--s2); }
-.sch-scroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px var(--s4) 8px; scrollbar-width: none; }
+.sch-scroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--s4); padding: 2px var(--s4) 8px; scrollbar-width: none; }
 .sch-scroll::-webkit-scrollbar { display: none; }
-.sch-card { flex: 0 0 78%; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; min-height: 132px; padding: var(--s3); border-radius: var(--r3); color: #fff; text-decoration: none; background-size: cover; background-position: center; box-shadow: 0 8px 20px rgba(15, 28, 46, 0.18); }
+.sch-card { flex: 0 0 80%; background-color: #1b2233; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; min-height: 132px; padding: var(--s3); border-radius: var(--r3); color: #fff; text-decoration: none; background-size: cover; background-position: center; box-shadow: 0 8px 20px rgba(15, 28, 46, 0.18); }
 .sch-card.st-not, .sch-card.st-used { filter: saturate(0.35); }
 .sch-top { margin-bottom: auto; }
 .sch-top .pill { background: rgba(255, 255, 255, 0.92); border: 0; min-height: 22px; font-size: 11px; }
@@ -1344,6 +1344,171 @@ button.scheme-chip { border: 0; font: inherit; font-size: var(--t-xs); font-weig
 details.lb-row { display: block; padding: 0; background: none; }
 details.lb-row .lb-main { flex: 1; min-width: 0; }
 details.lb-row .lb-score { margin-left: auto; }
+
+/* ====================================================================================
+   v3 · chic highlights: hairline, typographic tags and buttons (no pastel dashboard chips)
+   ==================================================================================== */
+.sheet { max-width: 390px; }
+.toast { max-width: min(358px, calc(100vw - 32px)); }
+.push { width: min(370px, calc(100vw - 20px)); }
+.pill, .row-tags .pill, .profile .row-tags .pill { background: transparent; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); font-weight: 600; letter-spacing: 0.01em; }
+.pill .icon { width: 12px; height: 12px; }
+.pill-neutral { color: var(--ink-2); }
+.pill-info { color: var(--accent); }
+.pill-ok { color: var(--green); }
+.pill-caution { color: #a4580a; }
+.pill-thin { color: var(--thin-ink); }
+.pill-tier { color: var(--ink); border-color: var(--line-strong); }
+.pill-enrolled { background: transparent; color: var(--green); }
+.icon-btn, .icon-btn.is-call, .icon-btn.is-map, .icon-btn.is-issue { background: var(--card); border: 1px solid var(--line-strong); color: var(--ink); box-shadow: 0 1px 2px rgba(15, 28, 46, 0.06); }
+.icon-btn.is-call { background: var(--ink); border-color: var(--ink); color: #fff; }
+.icon-btn .icon { width: 17px; height: 17px; stroke-width: 2; }
+.fold-ico, .ic-blue, .ic-green, .ic-purple, .ic-teal, .ic-pink, .ic-amber { background: transparent; width: 22px; height: 22px; }
+.ic-blue { color: var(--accent); } .ic-green { color: var(--green); } .ic-purple { color: var(--thin-ink); } .ic-teal { color: #0a7f73; } .ic-pink { color: #b0275a; } .ic-amber { color: #b36b00; }
+.so-tagline { background: transparent !important; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.so-pack { border-color: var(--line-strong); }
+.so-pack b, .so-pack.is-focus b { background: none; color: var(--ink); min-width: 0; padding: 0 6px 0 0; font-size: var(--t-sm); }
+.so-pack.is-focus { background: #fff; border-color: #e3b33a; }
+.so-pack.is-focus::before { content: "★"; color: #c78a00; font-size: 10px; margin-right: -2px; }
+.tip, .tip.typ-warning, .tip.typ-scheme, .tip.typ-reco, .tip.lvl-block { background: var(--card); border: 1px solid var(--line); }
+.tip-ico, .tip.typ-warning .tip-ico, .tip.typ-scheme .tip-ico, .tip.typ-reco .tip-ico, .tip.lvl-block .tip-ico, .tip.typ-info .tip-ico { background: transparent; width: 22px; }
+.tip.lvl-block { border-color: #f1b8b1; }
+.tip-act { background: var(--ink) !important; }
+.issue-cap { background: transparent; }
+.sku-sug { background: transparent; border: 1px dashed #b7cbf3; }
+.sku-sug.is-met { background: transparent; border-color: #9fd6b6; }
+.sug-add { background: var(--ink); }
+.chip { border-color: var(--line-strong); }
+.chip[aria-pressed="true"], .chip-suggested[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chip-suggested { color: var(--ink); }
+
+/* hero chips smaller; premium section eyebrows */
+.hchip { min-height: 32px; padding: 0 11px; font-size: 12px; }
+.hchip .icon { width: 14px; height: 14px; }
+.hchip.is-on .hchip-act { font-size: 11px; }
+.alerts-head p { gap: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink); }
+.alerts-head p .icon { display: none; }
+.alerts-head p::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #e0452b; box-shadow: 0 0 0 3px rgba(224, 69, 43, 0.18); }
+.alerts-head::after { content: ""; flex: 1; height: 1px; margin-left: 10px; background: linear-gradient(90deg, var(--line-strong), transparent); order: 1; }
+.alerts-allow { order: 2; margin-left: 8px; }
+.section-title { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink); }
+.next .row-acts { padding-right: 0; }
+.next .icon-btn { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.25); color: #fff; }
+.next .icon-btn.is-call { background: #fff; color: var(--brand); border-color: #fff; }
+
+/* route map (illustrated, draggable) */
+.rmap { position: relative; height: 190px; margin: 0 0 var(--s3); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #f4f1ea; touch-action: none; cursor: grab; user-select: none; }
+.rmap.is-drag { cursor: grabbing; }
+.rmap-canvas { position: absolute; left: 0; top: 0; will-change: transform; }
+.rmap-svg { display: block; }
+.rm-area { font: 800 10px var(--font-body); letter-spacing: 0.22em; fill: #8b8578; }
+.rm-road { font: 700 8px var(--font-body); letter-spacing: 0.1em; fill: #b88a2e; }
+.rm-stop circle { fill: #fff; stroke: #1d5bd8; stroke-width: 2.5; }
+.rm-stop text { font: 800 9px var(--font-body); fill: #1d5bd8; }
+.rm-stop.is-done circle { fill: #138a4f; stroke: #fff; }
+.rm-stop.is-done text { fill: #fff; }
+.rm-stop.is-next circle:not(.rm-pulse) { fill: #1d5bd8; stroke: #fff; }
+.rm-stop.is-next text { fill: #fff; }
+.rm-pulse { fill: rgba(29, 91, 216, 0.25); stroke: none; animation: rm-pulse 1.8s ease-out infinite; transform-origin: center; }
+@keyframes rm-pulse { from { r: 9px; opacity: 0.9; } to { r: 22px; opacity: 0; } }
+.rmap-hint { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); color: var(--ink-2); font-size: 13px; box-shadow: 0 1px 3px rgba(15, 28, 46, 0.2); pointer-events: none; }
+
+.persona-tag { display: inline-block; margin: 0 0 4px; padding: 0; border: 0; font: 700 11px/1.4 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: #a4580a; }
+.persona-since { font-weight: 600; color: var(--muted); letter-spacing: 0.03em; }
+
+/* fold content: tiles, credit bar, recent orders */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tile { display: flex; flex-direction: column; gap: 1px; padding: 9px 10px; border-radius: 12px; border: 1px solid var(--line); background: #fbfcfe; min-width: 0; }
+.tile-l { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.tile-l .icon { width: 13px; height: 13px; }
+.tile-v { font-size: var(--t-md); font-weight: 750; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.tile-s { font-size: 11px; color: var(--muted); }
+.tile.is-warn { border-color: #f3c9a8; background: #fffaf5; } .tile.is-warn .tile-v { color: var(--warm); }
+.tile.is-blue .tile-v { color: var(--accent); }
+.fold-sub { margin: 12px 0 4px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.fold .order-lines { background: transparent; padding: 0; }
+.fold .order-lines li { font-size: 12.5px; padding: 6px 0; }
+.credit-bar { margin-bottom: 10px; }
+.credit-top { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink-2); }
+.credit-top b { color: var(--green); }
+.credit-track { height: 8px; margin-top: 6px; border-radius: 99px; background: #e3f5ea; overflow: hidden; }
+.credit-track span { display: block; height: 100%; border-radius: 99px; background: #1b9a5a; }
+.credit-track span.is-due { background: var(--warm); }
+.recent li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.recent li:first-child { border-top: 0; }
+.recent-d em { font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--accent); margin-left: 4px; }
+.fold-warn { margin: 10px 0 0; }
+.fold .strip { margin-top: 4px; }
+
+.issue-cap-t { max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.so-icon.is-art { background: linear-gradient(160deg, #fff4dc, #ffe2a8); box-shadow: inset 0 0 0 1px rgba(196, 122, 0, 0.18); }
+.so-icon.is-art .so-art { width: 34px; height: 34px; }
+.so-icon.is-small.is-art .so-art { width: 27px; height: 27px; }
+.so-big small { font-size: var(--t-sm); }
+
+/* booking rows v3: compact, stock in the price line, print-style "in order" */
+.sku { padding: 10px 10px 10px 12px; column-gap: 10px; border-radius: 14px; }
+.sku-name { font-size: var(--t-sm); display: block; }
+.focus-mark { color: #c78a00; font-size: 11px; margin-right: 4px; }
+.sku-name .new-tag { margin-left: 6px; vertical-align: 1px; }
+.new-tag { font-size: 10px; padding: 0 6px; border-radius: 4px; background: none; border: 1px solid #cbb8f2; }
+.sku-pack { font-size: 11.5px; margin-top: 1px; }
+.sku-rate { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.sku-rate strong { font-size: var(--t-sm); color: var(--ink); }
+.sku-unit { margin-left: -6px; }
+.stock-mini { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--green); }
+.stock-mini::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.stock-mini.is-limited { color: #a4580a; }
+.stock-mini.is-out { color: var(--danger-ink); }
+.sku-status { display: none; }
+.sku-more { display: inline-grid; place-items: center; width: 26px; height: 26px; min-height: 0; margin-left: auto; padding: 0; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--ink-2); background: var(--card); }
+.sku-more .icon { width: 14px; height: 14px; transform: rotate(90deg); transition: transform 150ms ease; }
+.sku-more[aria-expanded="true"] .icon { transform: rotate(-90deg); }
+.step { width: 36px; height: 38px; font-size: 20px; }
+.qty { width: 38px; height: 38px; font-size: var(--t-md); }
+.stepper { border-radius: 11px; }
+.sku.has-qty { border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.sku.has-qty .qty { color: var(--ink); background: #fff7d6; }
+.sku-chips { margin-top: 6px; }
+.scheme-chip.is-add { min-height: 34px; padding: 2px 4px 2px 10px; background: transparent; border: 1px solid #d8c8f5; color: #5a2fbf; }
+.scheme-chip.is-add .chip-plus { min-width: 30px; height: 26px; background: #5a2fbf; }
+.scheme-chip.is-used { background: transparent; border: 1px dashed var(--line-strong); }
+
+/* login v2 */
+.login2 { min-height: calc(100dvh - var(--demo-h)); display: flex; flex-direction: column; background: var(--paper); }
+.login2-hero { position: relative; padding: var(--s4) var(--s4) 64px; color: #fff; overflow: hidden;
+  background: radial-gradient(90% 70% at 100% 0%, #3b7bff 0, rgba(59, 123, 255, 0) 60%), radial-gradient(70% 60% at 0% 100%, #16a05a 0, rgba(22, 160, 90, 0) 55%), linear-gradient(165deg, #0b1f47, #173f8a); }
+.login2-bar { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.login2-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.01em; }
+.login2-brand .brand-mark { width: 36px; height: 36px; border-radius: 11px; font-size: 14px; box-shadow: none; background: #fff; color: var(--brand); }
+.login2 .lang-seg { margin: 0; padding: 3px; gap: 2px; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.22); }
+.login2 .lang-seg-btn { min-height: 30px; padding: 0 9px; font-size: 11.5px; color: #dbe7ff; }
+.login2 .lang-seg-btn[aria-pressed="true"] { background: #fff; color: var(--brand); }
+.login2-art { position: absolute; right: 18px; bottom: 18px; display: flex; align-items: flex-end; gap: 8px; opacity: 0.95; }
+.bottle { display: block; width: 22px; border-radius: 9px 9px 6px 6px; position: relative; box-shadow: inset -5px 0 0 rgba(0, 0, 0, 0.12); }
+.bottle::before { content: ""; position: absolute; left: 50%; top: -9px; width: 9px; height: 11px; margin-left: -4.5px; border-radius: 3px 3px 0 0; background: inherit; filter: brightness(0.8); }
+.bottle.b1 { height: 58px; background: #ff5a3c; transform: rotate(-8deg); }
+.bottle.b2 { height: 74px; background: #ffb400; }
+.bottle.b3 { height: 50px; background: #35c3ff; transform: rotate(9deg); }
+.login2-title { position: relative; z-index: 1; margin-top: 44px; max-width: 230px; font-size: 27px; font-weight: 800; line-height: 1.15; letter-spacing: -0.025em; }
+.login2-sub { position: relative; z-index: 1; display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12.5px; color: #cfe0ff; }
+.login2-sub .icon { width: 14px; height: 14px; }
+.login2-form { position: relative; z-index: 2; margin: -40px var(--s4) var(--s5); padding: var(--s5) var(--s4) var(--s4); display: grid; gap: var(--s4); border-radius: 22px; background: var(--card); box-shadow: 0 18px 40px rgba(15, 28, 46, 0.14); }
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap > .icon { position: absolute; left: 13px; width: 17px; height: 17px; color: var(--muted); pointer-events: none; }
+.input-wrap .input { width: 100%; height: 48px; padding-left: 40px; border-radius: 13px; background: #f7f9fc; }
+.pw-toggle { position: absolute; right: 6px; min-height: 36px; padding: 0 10px; border: 0; background: none; color: var(--accent); font-size: 12px; font-weight: 700; }
+.login2-go { min-height: 50px; border-radius: 14px; }
+.login2-go .icon { width: 18px; height: 18px; }
+.login2-note { text-align: center; font-size: 11.5px; color: var(--muted); }
+
+/* all shops list: channel monograms */
+.mono-tile { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; }
+.outlet-row { align-items: flex-start; }
+.outlet-row .persona-tag { margin: 3px 0 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #a4580a; }
+.outlet-row .pill-tier { white-space: nowrap; }
+.list-count { font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
 </style>
 </head>
 <body>
@@ -1783,6 +1948,13 @@ modules['feature/strings-en'] = (() => {
 const FIELD_EN = {
   'f.common.ok': 'Got it',
 
+  // Login
+  'f.login.title': 'Ready for today\'s route?',
+  'f.login.shops': '{n} shops',
+  'f.login.show': 'Show',
+  'f.login.hide': 'Hide',
+  'f.login.demo': 'Demo: any name and password works.',
+
   // Landing: header
   'f.clock.in': 'Start day',
   'f.clock.out': 'End',
@@ -1810,11 +1982,11 @@ const FIELD_EN = {
   'f.alert.now': 'now',
   'f.alert.tagNew': 'New scheme',
   'f.alert.tagSoon': 'Scheme soon',
-  'f.alert.tagUp': 'More stock',
+  'f.alert.tagUp': 'Back in stock',
   'f.alert.tagDown': 'Stock alert',
   'f.alert.from': 'from {date}',
   'f.alert.till': 'till {date}',
-  'f.alert.rationUp': '{name}: now {n} cases per shop',
+  'f.alert.rationUp': '{name}: limit raised to {n} per shop',
   'f.alert.rationDown': '{name}: only {n} cases per shop now',
   'f.alert.stock.out-of-stock': '{name} is out of stock',
   'f.alert.stock.rationed': '{name}: limited per shop',
@@ -1886,6 +2058,20 @@ const FIELD_EN = {
   'f.lb.def.casesOrdered': 'All cases booked since 1 Mar.',
 
   // Outlet details
+  'f.fold.lastLines': 'What they ordered',
+  'f.fold.creditUsed': '{used} used of {limit}',
+  'f.fold.pays': 'Pays',
+  'f.fold.cashAbove': 'Cash above limit',
+  'f.fold.cashAboveSub': 'credit up to {amt}',
+  'f.fold.recent': 'Last 3 orders',
+  'f.fold.today': 'today',
+  'f.fold.company': 'company cooler',
+  'f.fold.fits': 'Fits chilled',
+  'f.fold.fitsVal': '{n} cases',
+  'f.fold.fitsSub': 'of 250 ml',
+  'f.fold.outage': 'Afternoon power cuts: drinks get warm after 2 pm',
+  'f.kind.since': 'customer since {year}',
+  'f.kind.new': 'new customer',
   'f.tools.call': 'Call',
   'f.tools.callName': 'Call {name}',
   'f.tools.note': 'Write a note',
@@ -1930,13 +2116,15 @@ const FIELD_EN = {
   'f.note.voice': 'voice',
   'f.note.call': 'call',
   'f.issue.title': 'Shop owner\'s problem',
-  'f.issue.ph': 'e.g. March free case still not received',
+  'f.issue.ph': 'Add details (optional)',
   'f.issue.category': 'What is it about? (pick one or more)',
   'f.issue.save': 'Save problem',
   'f.issue.saved': 'Saved · {cat}',
   'f.issue.cap': { one: 'open problem', other: 'open problems' },
   'f.issue.listTitle': 'Problems at this shop',
-  'f.issue.today': 'Today {time}',
+  'f.issue.today': 'Added today, {time}',
+  'f.issue.earlier': 'Reported earlier, {date}',
+  'f.issue.capLabel': '{n} open problems',
   'f.issue.add': 'Add a problem',
   'f.issue.resolve': 'Mark solved',
   'f.issue.resolved': 'Solved',
@@ -1963,7 +2151,8 @@ const FIELD_EN = {
   'f.soh.method': 'A guess from the last delivery and daily sales. Count the shelf to be sure.',
 
   // Smart order (the recommendation)
-  'f.so.eyebrow': 'Order today',
+  'f.so.eyebrow': 'Suggested order',
+  'f.so.till': 'till {date}',
   'f.so.cases': 'cases',
   'f.so.sub': 'Enough till {date}',
   'f.so.subClosing': 'Shop closes soon. Order little or nothing.',
@@ -2047,7 +2236,7 @@ const FIELD_EN = {
   'f.out.dir.steady': 'Sales likely to stay high',
   'f.out.next': 'Next visit {date} · about {n} cases',
   'f.out.top': 'Top packs: {list}',
-  'f.out.stock': 'Watch stock: {list}',
+  'f.out.stock': 'Distributor is short of {list}',
   'f.out.prep': { one: '1 thing to prepare', other: '{n} things to prepare' },
   'f.out.prepClosure': 'Shop closes from {date}: plan a small last order',
   'f.out.prepBookings': { one: '1 function booked: confirm it next visit', other: '{n} functions booked: confirm them next visit' },
@@ -2057,6 +2246,11 @@ const FIELD_EN = {
 
   // Booking: SKU details
   'f.sku.ration': 'Limited · {n} per shop',
+  'f.sku.sIn': 'In stock',
+  'f.sku.sMax': 'Max {n}',
+  'f.sku.sEmpties': 'Empties only',
+  'f.sku.sLow': 'Low stock',
+  'f.sku.sOut': 'Out of stock',
   'f.sku.details': 'Details',
   'f.sku.newer': 'New pack',
   'f.sku.shelf': 'Stays good for',
@@ -2111,6 +2305,7 @@ const STRINGS = {
     'n.order': { one: '{n} order', other: '{n} orders' },
     'n.line': { one: '{n} line', other: '{n} lines' },
     'n.visitsMonth': { one: '{n} visit a month', other: '{n} visits a month' },
+    'n.visitsShort': '{n}×/month',
     'n.function': { one: '{n} function', other: '{n} functions' },
     'pack.PET': 'bottles',
     'pack.glass': 'bottles',
@@ -2165,7 +2360,7 @@ const STRINGS = {
     'status.savedShort': 'Order saved',
     'status.savedShortN': '{n} orders saved',
 
-    'outlets.title': 'Outlets',
+    'outlets.title': 'All shops',
     'outlets.search': 'Search name, area or channel',
     'outlets.searchLabel': 'Search outlets',
     'outlets.filters': 'Filter outlets',
@@ -2182,7 +2377,7 @@ const STRINGS = {
     'persona.tag': 'Demo · Persona {no} · {label}',
     'persona.tip': 'Demo aid: the persona this outlet stands for',
 
-    'outlet.title': 'Outlet',
+    'outlet.title': 'Shop details',
     'outlet.stop': "Today's route · stop {n}",
     'outlet.owner': 'Owner',
     'outlet.directions': 'Directions',
@@ -2264,7 +2459,7 @@ const STRINGS = {
     'sch.reason.age': 'Only for outlets in their first {days} days',
     'sch.reason.first': 'First order only',
 
-    'book.title': 'Book order',
+    'book.title': 'New order',
     'book.search': 'Search products',
     'book.category': 'Category',
     'book.all': 'All',
@@ -2298,7 +2493,7 @@ const STRINGS = {
     'book.keep': 'Keep editing {name}',
     'book.discard': 'Discard it and start here',
 
-    'review.title': 'Review order',
+    'review.title': 'Order summary',
     'review.delivery': 'Delivery {date} · {rel}',
     'review.qtyRate': '{qty} × {rate}',
     'review.free': '+{n} free expected · {name}',
@@ -2332,7 +2527,7 @@ const STRINGS = {
     'rn.pct': '{name}: {pct}% off · {amt}',
     'rn.pctFirst': '{name}: {pct}% off the first order · {amt}',
 
-    'saved.title': 'Order saved',
+    'saved.title': 'Order placed',
     'saved.gone': 'This order is no longer saved',
     'saved.goneBody': 'The demo may have been reset.',
     'saved.order': 'Order',
@@ -2487,6 +2682,7 @@ const STRINGS = {
     'n.order': { one: '{n} ऑर्डर', other: '{n} ऑर्डर' },
     'n.line': { one: '{n} ओळ', other: '{n} ओळी' },
     'n.visitsMonth': { one: 'महिन्याला {n} भेट', other: 'महिन्याला {n} भेटी' },
+    'n.visitsShort': '{n}×/महिना',
     'n.function': { one: '{n} कार्यक्रम', other: '{n} कार्यक्रम' },
     'pack.PET': 'बाटल्या',
     'pack.glass': 'बाटल्या',
@@ -2889,6 +3085,7 @@ const STRINGS = {
     'n.order': '{n} ऑर्डर',
     'n.line': '{n} लाइन',
     'n.visitsMonth': 'महीने में {n} विज़िट',
+    'n.visitsShort': '{n}×/महीना',
     'n.function': '{n} कार्यक्रम',
     'pack.PET': 'बोतल',
     'pack.glass': 'बोतल',
@@ -3813,13 +4010,15 @@ const TIER_ICON = {
 };
 
 const tierBadge = (outlet, { visits = false } = {}) =>
-  html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t('n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
+  html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t(visits === 'short' ? 'n.visitsShort' : 'n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
 
-/** Muted demo aid so the panel can pick outlets on purpose. */
+/** The kind of shop and how long it has bought from us: "Cautious Kirana · customer since 2017". */
 function personaTag(outlet) {
-  const p = outlet.persona;
-  if (!p) return '';
-  return html`<span class="persona-tag" title="${t('persona.tip')}">${t('persona.tag', { no: String(p.no).padStart(2, '0'), label: String(p.label).replace(/^The /, '') })}</span>`;
+  const kind = outlet.segment?.label ?? outlet.persona?.label;
+  const since = outlet.registeredOn ? outlet.registeredOn.slice(0, 4) : null;
+  if (!kind && !since) return '';
+  const isNew = outlet.registeredOn && outlet.registeredOn >= '2026-01-01';
+  return html`<span class="persona-tag">${kind ? String(kind).replace(/^The /, '') : ''}${since ? html`<span class="persona-since"> · ${isNew ? t('f.kind.new') : t('f.kind.since', { year: since })}</span>` : ''}</span>`;
 }
 
 /**
@@ -3948,38 +4147,45 @@ function render(root) {
   const view = fresh(root);
   const cfg = data.config();
 
-  mount(view, html`
-    <div class="page login">
-      ${langSwitch()}
-      <div class="login-brand">
-        <span class="brand-mark" aria-hidden="true">GT</span>
-        <div>
-          <p class="eyebrow">${t('login.eyebrow', { region: label('region', cfg.region.name) })}</p>
-          <h1 class="display login-title">GT App <span class="proto-tag">${t('login.proto')}</span></h1>
-        </div>
-      </div>
-      <p class="login-lede">${t('login.lede', { distributor: cfg.distributor?.name ?? '' })}</p>
+  const shops = data.route().length;
 
-      <form class="card login-form" novalidate>
+  mount(view, html`
+    <div class="login2">
+      <header class="login2-hero">
+        <div class="login2-bar">
+          <p class="login2-brand"><span class="brand-mark" aria-hidden="true">GT</span><span>GT Field</span></p>
+          ${langSwitch()}
+        </div>
+        <div class="login2-art" aria-hidden="true">
+          <span class="bottle b1"></span><span class="bottle b2"></span><span class="bottle b3"></span>
+        </div>
+        <h1 class="login2-title">${t('f.login.title')}</h1>
+        <p class="login2-sub">${icon('map')}<span>${label('region', cfg.region.name)} · ${fmt.date(cfg.demoDate, { weekday: true, year: false })} · ${t('f.login.shops', { n: shops })}</span></p>
+      </header>
+
+      <form class="login2-form" novalidate>
         <label class="field">
           <span class="field-label">${t('login.username')}</span>
-          <input class="input" name="username" placeholder="${t('login.usernamePh')}" autocomplete="username" autocapitalize="words" spellcheck="false" enterkeyhint="next" aria-describedby="err-username">
+          <span class="input-wrap">${icon('store')}<input class="input" name="username" placeholder="${t('login.usernamePh')}" autocomplete="username" autocapitalize="words" spellcheck="false" enterkeyhint="next" aria-describedby="err-username"></span>
           <span class="field-error" id="err-username" hidden>${icon('alert')}<span>${t('login.errUser')}</span></span>
         </label>
         <label class="field">
           <span class="field-label">${t('login.password')}</span>
-          <input class="input" name="password" type="password" autocomplete="current-password" enterkeyhint="go" aria-describedby="err-password">
+          <span class="input-wrap">${icon('lock')}<input class="input" name="password" type="password" autocomplete="current-password" enterkeyhint="go" aria-describedby="err-password">
+            <button type="button" class="pw-toggle" data-pw aria-label="${t('f.login.show')}">${t('f.login.show')}</button></span>
           <span class="field-error" id="err-password" hidden>${icon('alert')}<span>${t('login.errPass')}</span></span>
         </label>
-        <button class="btn btn-primary btn-block" type="submit">${t('login.submit')}</button>
-        <p class="hint">${icon('info')}<span>${t('login.hint')}</span></p>
+        <button class="btn btn-primary btn-block login2-go" type="submit">${t('login.submit')}${icon('chevron')}</button>
+        <p class="login2-note">${t('f.login.demo')}</p>
       </form>
-
-      <p class="login-foot">
-        <span>${t('login.demoDate')}</span> <strong>${fmt.date(cfg.demoDate, { long: true })}</strong><br>
-        <span>${label('repRole', cfg.rep?.role)} · ${cfg.distributor?.name ?? ''}</span>
-      </p>
     </div>`);
+
+  view.querySelector('[data-pw]').addEventListener('click', (e) => {
+    const pw = view.querySelector('input[name=password]');
+    const show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password';
+    e.currentTarget.textContent = show ? t('f.login.hide') : t('f.login.show');
+  });
 
   const form = view.querySelector('form');
   const fields = ['username', 'password'].map((name) => ({
@@ -4191,14 +4397,16 @@ function install() {
 
 const catsOf = (i) => i.categories ?? (i.category ? [i.category] : ['other']);
 
-/** Open-issues capsule for the profile strip: count + the main category; opens the list. */
+/** Open-problems capsule for the profile strip: how many are open and what they are about
+ *  (every category across them, the first two named). Tap to see the list. */
 function issuesBadge(o) {
   const open = store.openIssues(o.id);
   if (!open.length) return '';
-  const cat = catsOf(open[0])[0];
-  return html`<button type="button" class="issue-cap" data-tool="issues">
+  const cats = [...new Set(open.flatMap(catsOf))];
+  const names = cats.slice(0, 2).map((c) => t(`f.issue.cat.${c}`)).join(', ');
+  return html`<button type="button" class="issue-cap" data-tool="issues" aria-label="${t('f.issue.capLabel', { n: open.length })}">
     <span class="issue-cap-n">${open.length}</span>
-    <span>${t(`f.issue.cat.${cat}`)}</span>${icon('chevron')}
+    <span class="issue-cap-t">${names}${cats.length > 2 ? ` +${cats.length - 2}` : ''}</span>${icon('chevron')}
   </button>`;
 }
 
@@ -4381,8 +4589,8 @@ async function issueSheet(o) {
       box.focus();
     },
   });
-  const text = box?.value.trim();
-  if (key !== 'save' || !text) return false;
+  const text = box?.value.trim() ?? '';
+  if (key !== 'save' || (!text && !picked.size)) return false;
   const categories = picked.size ? [...picked] : classifyAll(text);
   store.addIssue(o.id, { text, categories, auto: !touched });
   toast(t('f.issue.saved', { cat: categories.map((c) => t(`f.issue.cat.${c}`)).join(', ') }));
@@ -4395,8 +4603,8 @@ async function issuesList(o) {
     title: t('f.issue.listTitle'),
     body: html`<ul class="issue-list">${list.map((i) => html`<li class="${i.status === 'open' ? 'is-open' : ''}">
       <div class="issue-cats">${catsOf(i).map((c) => html`<span class="issue-cat">${icon(CAT_ICON[c])}${t(`f.issue.cat.${c}`)}</span>`)}</div>
-      <p class="issue-text">${i.text}</p>
-      <p class="issue-meta">${i.date ? fmt.shortDate(i.date) : t('f.issue.today', { time: i.time })}${i.status === 'resolved' ? html` · <span class="ok-text">${icon('check')}${t('f.issue.resolved')}</span>` : ''}
+      ${i.text ? html`<p class="issue-text">${i.text}</p>` : ''}
+      <p class="issue-meta">${i.seeded ? t('f.issue.earlier', { date: fmt.shortDate(i.date) }) : t('f.issue.today', { time: i.time })}${i.status === 'resolved' ? html` · <span class="ok-text">${icon('check')}${t('f.issue.resolved')}</span>` : ''}
         ${i.status === 'open' ? html`<button type="button" class="link-btn" data-resolve="${i.id}">${t('f.issue.resolve')}</button>` : ''}</p>
     </li>`)}</ul>`,
     actions: [{ key: 'add', label: t('f.issue.add'), tone: 'secondary' }, { key: 'close', label: t('common.close'), tone: 'primary' }],
@@ -4457,6 +4665,151 @@ function stockOnHandCard(o) {
 return { otherRep, territoryPill, confirmCrossTerritory, directionsUrl, quickActions, install, issuesBadge, wire, callSheet, notesList, notesHtml, ISSUE_CATEGORIES, classifyAll, classifyIssue, orderLinesHtml, stockOnHandCard };
 })();
 
+/* ==================== js/feature/route-map.js ==================== */
+modules['feature/route-map'] = (() => {
+// Today's route on an illustrated map of Pune West. Static and offline: no map API, no tiles.
+// The four areas sit where they are in real life (Pashan north, Bavdhan west, Kothrud east,
+// Warje south); the stops follow the beat's loop in route order, drawn like a navigation
+// app's highlighted route.
+// The map is bigger than its window: drag it in any direction.
+
+const data = modules['data'];
+const { html, raw } = modules['ui'];
+
+const W = 720; const H = 460;               // map canvas (drawing units)
+const SCALE = 0.7;                          // shown at 70%, so more of the beat fits the window
+const AREAS = {                             // centre and spread of each area on the canvas
+  Pashan: { x: 360, y: 90, rx: 150, ry: 55 },
+  Bavdhan: { x: 150, y: 250, rx: 95, ry: 110 },
+  Kothrud: { x: 450, y: 250, rx: 150, ry: 70 },
+  Warje: { x: 380, y: 390, rx: 170, ry: 45 },
+};
+const DEPOT = { x: 560, y: 330 };           // the distributor's godown, where the day starts
+
+/** Smooth path through points (Catmull-Rom → cubic Bézier). */
+function smooth(pts) {
+  if (pts.length < 2) return '';
+  let d = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[i - 1] ?? pts[i]; const p1 = pts[i]; const p2 = pts[i + 1]; const p3 = pts[i + 2] ?? p2;
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+    d += ` C${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${p2.x},${p2.y}`;
+  }
+  return d;
+}
+
+// The beat as one clean loop from the godown through Kothrud, Pashan, Bavdhan and Warje and back.
+// The map is illustrative (the data has no coordinates), so stops are spaced along this loop in
+// route order, the way a planned beat reads on a navigation app.
+const LOOP = [DEPOT, { x: 630, y: 240 }, { x: 540, y: 130 }, { x: 410, y: 70 }, { x: 270, y: 105 },
+  { x: 150, y: 190 }, { x: 110, y: 310 }, { x: 210, y: 395 }, { x: 370, y: 420 }, { x: 490, y: 385 }];
+
+function loopPoints(n) {
+  // Sample the smooth loop densely, then place n stops at equal distances along it.
+  const pts = [];
+  const ring = [...LOOP, LOOP[0]];
+  for (let i = 0; i < ring.length - 1; i += 1) {
+    const p0 = ring[i - 1] ?? ring[ring.length - 2]; const p1 = ring[i]; const p2 = ring[i + 1]; const p3 = ring[i + 2] ?? ring[1];
+    for (let k = 0; k < 24; k += 1) {
+      const t = k / 24; const t2 = t * t; const t3 = t2 * t;
+      const f = (a, b, c, d) => 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
+      pts.push({ x: f(p0.x, p1.x, p2.x, p3.x), y: f(p0.y, p1.y, p2.y, p3.y) });
+    }
+  }
+  const len = [0];
+  for (let i = 1; i < pts.length; i += 1) len.push(len[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+  const total = len.at(-1);
+  return Array.from({ length: n }, (_, i) => {
+    const target = ((i + 1) / (n + 1)) * total;
+    const j = Math.max(1, len.findIndex((l) => l >= target));
+    const a = pts[j - 1]; const b = pts[j];
+    const nx = -(b.y - a.y); const ny = b.x - a.x; const nl = Math.hypot(nx, ny) || 1;
+    const wob = (i % 2 ? 1 : -1) * 9;       // a small side-to-side step, like shops on either side of a road
+    return { x: Math.round(b.x + (nx / nl) * wob), y: Math.round(b.y + (ny / nl) * wob) };
+  });
+}
+
+/** rows: [{ outlet, saved: [] }] in route order. */
+function routeMap(rows) {
+  const spots = loopPoints(rows.length);
+  const stops = rows.map((r, i) => ({ ...spots[i], n: data.visits(r.outlet.id)?.routeOrder ?? i + 1, done: r.saved.length > 0 }));
+  const nextIdx = stops.findIndex((s) => !s.done);
+  const path = smooth([DEPOT, ...stops, DEPOT]);
+  const doneUpTo = nextIdx === -1 ? stops.length : nextIdx;
+  const donePath = doneUpTo ? smooth([DEPOT, ...stops.slice(0, doneUpTo)]) : '';
+  const svg = `<svg class="rmap-svg" viewBox="0 0 ${W} ${H}" width="${Math.round(W * SCALE)}" height="${Math.round(H * SCALE)}" aria-hidden="true">
+    <defs>
+      <pattern id="rm-dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="0.9" fill="#d9dfe8"/></pattern>
+      <filter id="rm-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#0f1c2e" flood-opacity=".25"/></filter>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#f4f1ea"/>
+    <rect width="${W}" height="${H}" fill="url(#rm-dots)"/>
+    <path d="M0,40 C120,70 200,20 320,55 S560,40 720,80 L720,0 L0,0z" fill="#e6efdc"/>
+    <ellipse cx="90" cy="120" rx="80" ry="55" fill="#dcead0"/>
+    <ellipse cx="640" cy="170" rx="70" ry="40" fill="#dcead0"/>
+    <ellipse cx="250" cy="430" rx="90" ry="30" fill="#dcead0"/>
+    <path d="M-10,180 C80,160 150,200 230,180 S380,150 470,175 S640,210 730,190" fill="none" stroke="#b9d9f0" stroke-width="16" stroke-linecap="round"/>
+    <path d="M-10,180 C80,160 150,200 230,180 S380,150 470,175 S640,210 730,190" fill="none" stroke="#cfe6f7" stroke-width="8" stroke-linecap="round"/>
+    <g fill="none" stroke-linecap="round">
+      <path d="M40,330 C200,300 330,330 470,300 S650,260 720,250" stroke="#e3dccd" stroke-width="14"/>
+      <path d="M40,330 C200,300 330,330 470,300 S650,260 720,250" stroke="#fffdf8" stroke-width="10"/>
+      <path d="M300,0 C320,120 280,240 330,460" stroke="#e3dccd" stroke-width="12"/>
+      <path d="M300,0 C320,120 280,240 330,460" stroke="#fffdf8" stroke-width="8"/>
+      <path d="M600,0 C570,140 610,300 560,460" stroke="#f3d9a4" stroke-width="12"/>
+      <path d="M600,0 C570,140 610,300 560,460" stroke="#fff3d3" stroke-width="7"/>
+      <path d="M0,250 C120,240 200,270 300,245" stroke="#e8e2d4" stroke-width="7"/>
+      <path d="M430,120 C470,200 520,220 600,230" stroke="#e8e2d4" stroke-width="7"/>
+      <path d="M120,400 C220,380 300,410 420,395" stroke="#e8e2d4" stroke-width="7"/>
+    </g>
+    <text x="598" y="20" class="rm-road" transform="rotate(84 598 20)">NH-48</text>
+    ${Object.entries(AREAS).map(([name, a]) => `<text x="${a.x}" y="${a.y - a.ry - 8}" class="rm-area" text-anchor="middle">${name.toUpperCase()}</text>`).join('')}
+    <path d="${path}" fill="none" stroke="#fff" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${path}" fill="none" stroke="#1d5bd8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 0"/>
+    ${donePath ? `<path d="${donePath}" fill="none" stroke="#9aa6b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+    <g filter="url(#rm-shadow)"><rect x="${DEPOT.x - 13}" y="${DEPOT.y - 13}" width="26" height="26" rx="7" fill="#0f2a5c"/>
+      <path d="M${DEPOT.x - 6},${DEPOT.y + 5}v-7l6-4 6 4v7z" fill="#fff"/></g>
+    ${stops.map((s, i) => `<g class="rm-stop${s.done ? ' is-done' : ''}${i === nextIdx ? ' is-next' : ''}" transform="translate(${s.x} ${s.y})">
+      ${i === nextIdx ? '<circle r="15" class="rm-pulse"/>' : ''}
+      <circle r="9.5" filter="url(#rm-shadow)"/>
+      <text y="3.4" text-anchor="middle">${s.done ? '✓' : s.n}</text></g>`).join('')}
+  </svg>`;
+  return html`<div class="rmap" data-rmap>
+    <div class="rmap-canvas" data-rmap-canvas>${raw(svg)}</div>
+    <span class="rmap-hint">⤧</span>
+  </div>`;
+}
+
+/** Drag the map inside its window; starts centred on the next stop. */
+function wireMap(root) {
+  const box = root.querySelector('[data-rmap]');
+  const canvas = root.querySelector('[data-rmap-canvas]');
+  if (!box || !canvas) return;
+  const vw = () => box.clientWidth; const vh = () => box.clientHeight;
+  const clampX = (x) => Math.min(0, Math.max(vw() - W * SCALE, x));
+  const clampY = (y) => Math.min(0, Math.max(vh() - H * SCALE, y));
+  const next = canvas.querySelector('.is-next') ?? canvas.querySelector('.rm-stop');
+  let x = 0; let y = 0;
+  if (next) {
+    const m = /translate\(([\d.]+) ([\d.]+)\)/.exec(next.getAttribute('transform') ?? '');
+    if (m) { x = clampX(vw() / 2 - Number(m[1]) * SCALE); y = clampY(vh() / 2 - Number(m[2]) * SCALE); }
+  }
+  const put = () => { canvas.style.transform = `translate(${x}px, ${y}px)`; };
+  put();
+  let start = null;
+  box.addEventListener('pointerdown', (e) => { start = { px: e.clientX, py: e.clientY, x, y }; box.setPointerCapture(e.pointerId); box.classList.add('is-drag'); });
+  box.addEventListener('pointermove', (e) => {
+    if (!start) return;
+    x = clampX(start.x + e.clientX - start.px); y = clampY(start.y + e.clientY - start.py); put();
+  });
+  const end = () => { start = null; box.classList.remove('is-drag'); };
+  box.addEventListener('pointerup', end);
+  box.addEventListener('pointercancel', end);
+}
+
+return { routeMap, wireMap };
+})();
+
 /* ==================== js/screens/home.js ==================== */
 modules['screens/home'] = (() => {
 // Landing: the rep's day at a glance. A branded header (greeting, clock in/out, rank, summer
@@ -4471,6 +4824,7 @@ const fmt = modules['format'];
 const { t, label } = modules['i18n'];
 const { html, mount, fresh, icon, langButton, pill, tierBadge, slot, emptyState } = modules['ui'];
 const { quickActions } = modules['feature/outlet-tools'];
+const { routeMap, wireMap } = modules['feature/route-map'];
 
 function render(root) {
   const view = fresh(root);
@@ -4508,6 +4862,7 @@ function render(root) {
         <div class="day-track" role="progressbar" aria-valuemin="0" aria-valuemax="${route.length}" aria-valuenow="${visited}">
           <span style="width:${route.length ? Math.round((visited / route.length) * 100) : 0}%"></span>
         </div>
+        ${route.length ? routeMap(rows) : ''}
         <dl class="day-stats">
           <div><dt>${icon('note')}${t('home.orders')}</dt><dd>${fmt.num(todays.length)}</dd></div>
           <div><dt>${icon('box')}${t('home.cases')}</dt><dd>${fmt.num(bookedCases)}</dd></div>
@@ -4522,6 +4877,7 @@ function render(root) {
         ? html`<ol class="list route-list">${rows.map(routeRow)}</ol>`
         : emptyState({ icon: 'route', title: t('home.noRoute'), body: t('home.noRouteBody') })}
     </div>`);
+  wireMap(view);
 }
 
 function routeRow({ outlet, saved }) {
@@ -4654,6 +5010,18 @@ function render(root) {
   apply();
 }
 
+// A colour per channel for the shop's monogram tile, so the list scans by type at a glance.
+const CHANNEL_TINT = {
+  'Traditional Kirana': ['#fff1dc', '#a35a00'], Convenience: ['#e6f0ff', '#1d4fb0'], 'Eating & Drinking (seating)': ['#fde8ee', '#b0275a'],
+  'Eating & Drinking (standing)': ['#fdeede', '#b4431a'], 'Paan/Cigarette shop': ['#e7f6ec', '#11663c'], Education: ['#efe9fd', '#5a2fbf'],
+  'At-work': ['#e5f4f6', '#0a6d7a'], 'Entertainment & Leisure': ['#fff4cf', '#8a6500'], 'Modern Trade (small format)': ['#eceff4', '#3d4b60'], Wholesale: ['#f1e8e2', '#6b3d1f'],
+};
+const monogram = (o) => {
+  const [bg, fg] = CHANNEL_TINT[o.channel] ?? ['#eef2f7', '#3d4b60'];
+  const letters = o.name.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
+  return html`<span class="mono-tile" style="background:${bg};color:${fg}" aria-hidden="true">${letters}</span>`;
+};
+
 function row(o, onRoute, today) {
   const saved = orders.demoOrdersOn(o.id, today);
   // Searchable in English and in the current language.
@@ -4662,11 +5030,12 @@ function row(o, onRoute, today) {
   const type = o.shopType && o.shopType !== o.channel ? ` · ${label('shop', o.shopType)}` : '';
   return html`<li class="row-wrap" data-outlet="${o.id}" data-search="${search}">
     <a class="row outlet-row" href="#/outlet/${o.id}">
+      ${monogram(o)}
       <span class="row-main">
         <span class="row-title">${o.name}</span>
         <span class="row-meta">${label('area', o.area)} · ${label('ch', o.channel)}${type}</span>
         <span class="row-tags">
-          ${tierBadge(o, { visits: true })}
+          ${tierBadge(o, { visits: 'short' })}
           ${saved.length ? pill(saved.length > 1 ? t('status.savedShortN', { n: saved.length }) : t('status.savedShort'), 'ok', 'check') : ''}
           ${onRoute ? '' : pill(t('outlets.notOnRoute'), 'neutral')}
         </span>
@@ -4682,7 +5051,7 @@ return { render };
 
 /* ==================== js/feature/scheme-art.js ==================== */
 modules['feature/scheme-art'] = (() => {
-// Illustrated backgrounds for scheme cards: one small SVG scene per theme (cola fizz, mango juice,
+// Backgrounds for scheme cards: a stock photo per theme over a small SVG scene (cola fizz, mango juice,
 // water, cooler, new outlet, festival), drawn inline so they work offline, with a dark gradient
 // over the text side so white text stays readable. schemeArt(scheme) → an inline style string.
 
@@ -4719,6 +5088,17 @@ const THEMES = {
   rect('#6b1d3a', '#d9480f')),
 };
 
+// Stock photos (Unsplash, free licence, no brand marks), loaded online. Each sits above its
+// illustration, so the card still looks right if the photo can't load (e.g. offline).
+const PHOTO_IDS = {
+  cola: 'uCtJy7YavP8',      // glass of fizzy soda with ice
+  mango: 'jKADJEdhk1U',     // tall glass of mango juice
+  water: '7xTp5vlbbSY',     // glass of water in blue light
+  cooler: 'SvhXD3kPSTY',    // drinks in a shop fridge
+  shop: 'bAKYjjvAQIE',      // a kirana shop in Kamshet, Maharashtra
+};
+const photo = (theme) => (PHOTO_IDS[theme] ? `url("https://unsplash.com/photos/${PHOTO_IDS[theme]}/download?w=720"), ` : '');
+
 /** Which picture fits the scheme: by its packs first, then by its type. */
 function themeOf(s) {
   const skus = Array.isArray(s.skus) ? s.skus.join(' ') : '';
@@ -4731,8 +5111,8 @@ function themeOf(s) {
 }
 
 function schemeArt(s) {
-  const art = THEMES[themeOf(s)];
-  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.82) 0%, rgba(8, 14, 30, 0.55) 48%, rgba(8, 14, 30, 0.05) 100%), ${art};`;
+  const theme = themeOf(s);
+  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.84) 0%, rgba(8, 14, 30, 0.5) 55%, rgba(8, 14, 30, 0.1) 100%), ${photo(theme)}${THEMES[theme]};`;
 }
 
 return { schemeArt };
@@ -4851,6 +5231,11 @@ const fold = (iconName, tone, title, summary, body, { open = false, cls = '', wa
     <div class="collapse-body">${body}</div>
   </details>`;
 
+/** Small icon tiles for a fold's facts: label on top, the value large, an optional note. */
+const tiles = (items) => html`<div class="tiles">${items.filter(Boolean).map((i) => html`<div class="tile ${i.tone ? `is-${i.tone}` : ''}">
+  <span class="tile-l">${icon(i.icon)}${i.label}</span><b class="tile-v">${i.value}</b>${i.sub ? html`<span class="tile-s">${i.sub}</span>` : ''}
+</div>`)}</div>`;
+
 function lastOrderCard(all, v, today, visitedToday) {
   const last = all[0];
   // A demo order today counts as today's visit (visits.json only holds past visits).
@@ -4858,28 +5243,32 @@ function lastOrderCard(all, v, today, visitedToday) {
     ? { date: today, minutes: null }
     : (v?.visits ?? []).filter((x) => x.done && x.date <= today).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
   const summary = last ? `${fmt.relative(last.date, today)} · ${fmt.casesText(orders.paidCases(last))}` : t('kv.noOrders');
-  return fold('calendar', 'blue', t('card.lastOrder'), summary, html`<dl class="kv">
-    ${last
-      ? html`<div><dt>${t('kv.lastOrder')}</dt><dd>${fmt.shortDate(last.date)} <span class="muted">· ${fmt.relative(last.date, today)}</span></dd></div>
-        <details class="kv-expand"><summary><span class="kv-dt">${t('kv.cases')}</span><span class="kv-dd">${fmt.casesText(orders.paidCases(last))}${orders.freeCases(last) ? ` ${t('kv.plusFree', { n: orders.freeCases(last) })}` : ''}${icon('chevron', 'collapse-chev')}</span></summary>${tools.orderLinesHtml(last)}</details>
-        <div><dt>${t('kv.value')}</dt><dd>${fmt.rupees(last.netValue)}</dd></div>`
-      : ''}
-    <div><dt>${t('kv.lastVisit')}</dt><dd>${lastVisit ? html`${fmt.shortDate(lastVisit.date)} <span class="muted">· ${fmt.relative(lastVisit.date, today)}</span>` : html`<span class="muted">${t('kv.noVisits')}</span>`}</dd></div>
-    ${v?.nextVisitAfterToday ? html`<div><dt>${t('kv.nextVisit')}</dt><dd>${fmt.shortDate(v.nextVisitAfterToday)} <span class="muted">· ${fmt.relative(v.nextVisitAfterToday, today)}</span></dd></div>` : ''}
-  </dl>`);
+  return fold('calendar', 'blue', t('card.lastOrder'), summary, html`
+    ${tiles([
+      last && { icon: 'box', label: t('kv.lastOrder'), value: fmt.shortDate(last.date), sub: fmt.relative(last.date, today) },
+      last && { icon: 'wallet', label: t('kv.value'), value: fmt.rupees(last.netValue), sub: fmt.casesText(orders.paidCases(last)) },
+      { icon: 'check', label: t('kv.lastVisit'), value: lastVisit ? fmt.shortDate(lastVisit.date) : '—', sub: lastVisit ? fmt.relative(lastVisit.date, today) : t('kv.noVisits') },
+      v?.nextVisitAfterToday && { icon: 'calendar', label: t('kv.nextVisit'), value: fmt.shortDate(v.nextVisitAfterToday), sub: fmt.relative(v.nextVisitAfterToday, today), tone: 'blue' },
+    ])}
+    ${last ? html`<p class="fold-sub">${t('f.fold.lastLines')}</p>${tools.orderLinesHtml(last)}` : ''}`);
 }
 
 function paymentCard(o, today) {
   const c = o.credit ?? {};
   const overdue = c.overdue ?? 0;
-  const room = Math.max(0, (c.limit ?? 0) - (c.outstanding ?? 0));
+  const limit = c.limit ?? 0;
+  const used = c.outstanding ?? 0;
+  const room = Math.max(0, limit - used);
+  const pct = limit ? Math.min(100, Math.round((used / limit) * 100)) : 0;
   const summary = overdue > 0 ? t('f.pay.due', { amt: fmt.rupees(overdue) }) : t('f.pay.room', { amt: fmt.rupees(room) });
-  return fold('wallet', 'green', t('card.payment'), summary, html`<dl class="kv">
-    <div><dt>${t('kv.creditLimit')}</dt><dd>${fmt.rupees(c.limit ?? 0)}</dd></div>
-    <div><dt>${t('kv.outstanding')}</dt><dd>${fmt.rupees(c.outstanding ?? 0)}</dd></div>
-    <div class="${overdue > 0 ? 'is-warn' : ''}"><dt>${t('kv.overdue')}</dt><dd>${overdue > 0 ? html`${icon('alert')}<span>${t('kv.overdueAmt', { amt: fmt.rupees(overdue) })}</span>` : fmt.rupees(0)}</dd></div>
-    <div><dt>${t('kv.lastPayment')}</dt><dd>${c.lastPaymentDate ? html`${fmt.shortDate(c.lastPaymentDate)} <span class="muted">· ${fmt.relative(c.lastPaymentDate, today)}</span>` : html`<span class="muted">${t('kv.noneYet')}</span>`}</dd></div>
-  </dl>`, { warn: overdue > 0 });
+  return fold('wallet', 'green', t('card.payment'), summary, html`
+    <div class="credit-bar"><div class="credit-top"><span>${t('f.fold.creditUsed', { used: fmt.rupees(used), limit: fmt.rupees(limit) })}</span><b>${t('f.pay.room', { amt: fmt.rupees(room) })}</b></div>
+      <div class="credit-track"><span style="width:${pct}%" class="${overdue > 0 ? 'is-due' : ''}"></span></div></div>
+    ${tiles([
+      { icon: 'alert', label: t('kv.overdue'), value: fmt.rupees(overdue), tone: overdue > 0 ? 'warn' : '' },
+      { icon: 'calendar', label: t('kv.lastPayment'), value: c.lastPaymentDate ? fmt.shortDate(c.lastPaymentDate) : '—', sub: c.lastPaymentDate ? fmt.relative(c.lastPaymentDate, today) : t('kv.noneYet') },
+      c.paymentMode === 'cash-and-credit' && { icon: 'wallet', label: t('f.fold.pays'), value: t('f.fold.cashAbove'), sub: t('f.fold.cashAboveSub', { amt: fmt.rupees(limit) }) },
+    ])}`, { warn: overdue > 0 });
 }
 
 const ORDER = { enrolled: 0, applicable: 1, used: 2, not: 3 };
@@ -4890,6 +5279,7 @@ function schemesCard(o, all, today) {
   const list = schemes.activeSchemes(today)
     .filter((s) => s.type !== 'program' || hasCooler)
     .map((s) => ({ s, st: schemes.statusFor(s, o, today, all) }))
+    .filter(({ st }) => st.kind !== 'not')          // schemes this shop can't get aren't shown at all
     .sort((a, b) => ORDER[a.st.kind] - ORDER[b.st.kind]);
   if (!list.length) return '';
   const month = fmt.monthName(today, true);
@@ -4906,15 +5296,14 @@ function schemesCard(o, all, today) {
 }
 
 function historyCard(all, today) {
-  if (!all.length) return fold('history', 'purple', t('card.history'), t('history.empty'), emptyState({ icon: 'box', title: t('history.empty'), body: t('history.emptyBody'), compact: true }));
-  const shown = Math.min(3, all.length);
+  if (!all.length) return fold('history', 'purple', t('card.history'), t('history.empty'), html`<p class="muted">${t('history.emptyBody')}</p>`);
   return fold('history', 'purple', t('card.history'), t('f.hist.sum', { n: all.length }), html`
     ${monthStrip(all, today)}
-    <h3 class="sub-title">${t('history.last', { n: shown })}</h3>
-    <ul class="mini-list">${all.slice(0, 3).map((x) => html`<li>
-      <span>${fmt.shortDate(x.date)}${x.source === 'demo' ? html` ${pill(t('demo.tag'), 'thin')}` : ''}</span>
+    <p class="fold-sub">${t('f.fold.recent')}</p>
+    <ul class="recent">${all.slice(0, 3).map((x) => html`<li>
+      <span class="recent-d">${fmt.shortDate(x.date)}${x.source === 'demo' ? html` <em>${t('f.fold.today')}</em>` : ''}</span>
       <span>${fmt.casesText(orders.paidCases(x))}</span>
-      <span class="num">${fmt.rupees(x.netValue)}</span>
+      <b class="num">${fmt.rupees(x.netValue)}</b>
     </li>`)}</ul>`);
 }
 
@@ -4951,34 +5340,17 @@ function monthStrip(all, today) {
 function coolerCard(o, today) {
   const c = o.cooler ?? { type: 'none' };
   const a = c.lastAudit;
-  let summary;
-  let body;
-  let warn = false;
-  if (c.type === 'bottler') {
-    summary = t('cooler.company', { count: c.count, litres: c.litres });
-    warn = Boolean(a && (!a.pure || a.tempC > 6)) || Boolean(c.afternoonOutage);
-    body = html`<dl class="kv">
-      ${a ? html`<div><dt>${t('cooler.lastAudit')}</dt><dd>${fmt.shortDate(a.date)} <span class="muted">· ${fmt.relative(a.date, today)}</span></dd></div>
-        <div><dt>${t('cooler.onlyOurs')}</dt><dd>${a.pure ? t('cooler.yes') : html`<span class="text-warn">${icon('alert')}<span>${t('cooler.otherBrands')}</span></span>`}</dd></div>
-        <div><dt>${t('cooler.fillTemp')}</dt><dd>${a.fillPct}% · ${a.tempC > 6 ? html`<span class="text-warn">${icon('alert')}<span>${t('cooler.warm', { t: a.tempC })}</span></span>` : `${a.tempC}°C`}</dd></div>`
-      : html`<div><dt>${t('cooler.lastAudit')}</dt><dd class="muted">${t('cooler.noAudit')}</dd></div>`}
-    </dl>
-    ${c.afternoonOutage ? html`<p class="inline-note">${icon('alert')}<span>${t('cooler.outage')}</span></p>` : ''}`;
-  } else {
-    summary = { 'own-fridge': `${t('cooler.ownFridge')}${c.litres ? ` · ${c.litres} L` : ''}`, 'ice-box': t('cooler.iceBox'), none: t('cooler.none') }[c.type] ?? c.type;
-    body = html`<dl class="kv"><div><dt>${t('cooler.label')}</dt><dd>${summary}</dd></div></dl>`;
-  }
-  if (o.empties?.cratesHeld != null) {
-    body = html`${body}<dl class="kv"><div><dt>${t('cooler.crates')}</dt><dd>${fmt.num(o.empties.cratesHeld)}</dd></div></dl>`;
-  }
-  return html`<details class="card collapse">
-    <summary class="collapse-head">
-      <span class="card-title"><span class="fold-ico ic-teal">${icon('cooler')}</span><span>${t('card.cooler')}</span></span>
-      <span class="collapse-sum ${warn ? 'text-warn' : ''}">${warn ? icon('alert') : ''}<span>${summary}</span></span>
-      ${icon('chevron', 'collapse-chev')}
-    </summary>
-    <div class="collapse-body">${body}</div>
-  </details>`;
+  const kind = c.type === 'bottler' ? t('cooler.company', { count: c.count, litres: c.litres })
+    : ({ 'own-fridge': `${t('cooler.ownFridge')}${c.litres ? ` · ${c.litres} L` : ''}`, 'ice-box': t('cooler.iceBox'), none: t('cooler.none') }[c.type] ?? c.type);
+  const warn = Boolean(a && (!a.pure || a.tempC > 6)) || Boolean(c.afternoonOutage);
+  return fold('cooler', 'teal', t('card.cooler'), kind, html`
+    ${tiles([
+      { icon: 'cooler', label: t('cooler.label'), value: c.type === 'bottler' ? `${c.count} × ${c.litres} L` : kind, sub: c.type === 'bottler' ? t('f.fold.company') : '' },
+      c.slots ? { icon: 'box', label: t('f.fold.fits'), value: t('f.fold.fitsVal', { n: c.slots }), sub: t('f.fold.fitsSub') } : null,
+      o.empties?.cratesHeld != null ? { icon: 'box', label: t('cooler.crates'), value: fmt.num(o.empties.cratesHeld) } : null,
+      a ? { icon: 'check', label: t('cooler.lastAudit'), value: fmt.shortDate(a.date), sub: a.pure ? t('cooler.yes') : t('cooler.otherBrands'), tone: a.pure ? '' : 'warn' } : null,
+    ])}
+    ${c.afternoonOutage ? html`<p class="strip-warn fold-warn">${icon('alert')}<span>${t('f.fold.outage')}</span></p>` : ''}`, { warn });
 }
 
 function bookingsCard(o, today) {
@@ -5043,6 +5415,16 @@ function statusTag(sku) {
   return html`<span class="stock-tag is-${s.kind}"><span class="stock-dot" aria-hidden="true"></span>${text}</span>`;
 }
 
+/** The same status in two or three words, for the price line of a SKU row. */
+function statusShort(sku) {
+  const s = stockStatus(sku);
+  const text = s.kind === 'out' ? t('f.sku.sOut')
+    : s.ration ? t('f.sku.sMax', { n: s.ration })
+    : s.status === 'rationed-against-empties' ? t('f.sku.sEmpties')
+    : s.status === 'low' ? t('f.sku.sLow') : t('f.sku.sIn');
+  return html`<span class="stock-mini is-${s.kind}">${text}</span>`;
+}
+
 /** Newer-SKU evidence: nearby retailers (same area) ordering it more than last year, plus the
  *  demo offtake figure from field.json (labelled as demo evidence). */
 function newSkuEvidence(sku, outlet) {
@@ -5086,7 +5468,7 @@ function detailHtml(p, outlet) {
   </div>`;
 }
 
-return { stockStatus, isOrderable, alternativeFor, statusTag, newSkuEvidence, isNewer, detailHtml };
+return { stockStatus, isOrderable, alternativeFor, statusTag, statusShort, newSkuEvidence, isNewer, detailHtml };
 })();
 
 /* ==================== js/screens/book.js ==================== */
@@ -5400,24 +5782,24 @@ function renderBooking(root, o) {
 function skuRow(p, o, today, pastAndDemo) {
   const unit = t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case');
   const size = p.pack?.ml >= 1000 ? `${p.pack.ml / 1000} L` : `${p.pack?.ml} ml`;
-  const pack = `${p.unitsPerCase} ${t(`pack.${p.pack?.type}`) === `pack.${p.pack?.type}` ? t('pack.units') : t(`pack.${p.pack?.type}`)} × ${size}${p.returnable ? ` · ${t('book.returnable')}` : ''}`;
+  const pack = `${p.unitsPerCase} × ${size}${p.returnable ? ` · ${t('book.returnable')}` : ''}`;
   const search = [p.name, p.sku, p.category, label('cat', p.category), p.flavour, p.pack?.type, `${p.pack?.ml}`].filter(Boolean).join(' ').toLowerCase();
   const chips = schemes.schemesForSku(p.sku, today).map((s) => {
     const st = schemes.statusFor(s, o, today, pastAndDemo);
-    if (st.kind === 'not') return html`<span class="scheme-chip is-off">${s.name} · ${lcFirst(st.reason)}</span>`;
+    if (st.kind === 'not') return '';           // schemes this shop can't get aren't shown
     if (st.kind === 'used') {
       return html`<span class="scheme-chip is-used">${icon('tag')}${t('book.capUsed', { chip: schemes.chipText(s), cap: st.cap, month: fmt.monthName(today) })}</span>`;
     }
     const n = schemes.quickAdd(s);
     return html`<button type="button" class="scheme-chip is-add" data-quick="${n}" data-scheme="${s.id}" aria-label="${t('book.chipAdd', { n, unit, name: p.name, scheme: s.name })}">${icon('tag')}<span>${schemes.chipText(s)}</span><span class="chip-plus" aria-hidden="true">+${n}</span></button>`;
-  });
+  }).filter(Boolean);
 
   return html`<li class="sku ${sku.isOrderable(p.sku) ? '' : 'is-out'}" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
     <div class="sku-text">
-      <p class="sku-name">${p.name}</p>
+      <p class="sku-name">${p.focus ? html`<span class="focus-mark" title="${t('f.sku.focus')}">★</span>` : ''}${p.name}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}</p>
       <p class="sku-pack">${pack}</p>
-      <p class="sku-rate"><strong>${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit })}</strong>${p.returnable ? t('book.deposit') : ''} · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })}</p>
-      <p class="sku-status">${sku.statusTag(p.sku)}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}<button type="button" class="sku-more" data-more aria-expanded="false">${t('f.sku.details')}</button></p>
+      <p class="sku-rate"><strong>${fmt.rupees(p.ptrPerCase)}</strong><span class="sku-unit">/${unit}</span> · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })} ${sku.statusShort(p.sku)}
+        <button type="button" class="sku-more" data-more aria-expanded="false" aria-label="${t('f.sku.details')}">${icon('chevron')}</button></p>
     </div>
     <div class="stepper">
       <button type="button" class="step" data-step="-1" aria-label="${t('book.fewer', { unit, name: p.name })}">−</button>
@@ -7368,8 +7750,11 @@ function stockAlerts() {
       up = statusRank[st] > statusRank[prevSt];
       title = t(`f.alert.stock.${st}`, { name });
     }
-    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: up ? 'up' : 'down', icon: 'box', item: now,
-      tag: up ? t('f.alert.tagUp') : t('f.alert.tagDown'), title, sub: now.note });
+    // The tag follows the pack's status now: anything still limited is a stock alert, even when
+    // the limit was raised; only a pack that is fully available again is "back in stock".
+    const limited = st !== 'available';
+    if (title) out.push({ id: `stock:${now.sku}:${st}:${now.maxCasesPerOutlet ?? ''}`, kind: 'stock', tone: limited ? 'down' : 'up', icon: 'box', item: now,
+      tag: limited ? t('f.alert.tagDown') : t('f.alert.tagUp'), title, sub: now.note });
   }
   return out;
 }
@@ -7518,7 +7903,7 @@ const orders = modules['orders'];
 const { cart } = modules['cart'];
 const fmt = modules['format'];
 const { t } = modules['i18n'];
-const { html, mount, icon, openSheet, pill } = modules['ui'];
+const { html, raw, mount, icon, openSheet, pill } = modules['ui'];
 const season = modules['feature/season-engine'];
 const metrics = modules['feature/metrics'];
 const store = modules['feature/store'];
@@ -7539,10 +7924,10 @@ const typeOf = (f) => TYPE[f.rule] ?? (f.level === 'block' || f.level === 'warn'
 
 let whatIf = false;                          // what-if heat wave, per session
 let offCart = null;                          // the live-cart subscription of the current screen
-const offered = new Set();                   // outlets where the review pop-up already showed for this cart
+const offered = new Map();                   // outlet → opportunities already offered for this cart
 
 function install() {
-  cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });
+  cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });   // a new cart starts fresh
   app.on('screen:rendered', ({ screen, outletId, root }) => {
     offCart?.();
     offCart = null;
@@ -7555,6 +7940,16 @@ function install() {
     if (screen === 'saved') afterSubmit(root, o);
   });
 }
+
+/** A little crate of bottles, the Smart order mark (instead of a generic box icon). */
+const CRATE = raw(`<svg class="so-art" viewBox="0 0 48 48" aria-hidden="true">
+  <rect x="9" y="7" width="7" height="16" rx="3" fill="#ff5a3c"/><rect x="11" y="3" width="3" height="5" rx="1" fill="#b3121f"/>
+  <rect x="20.5" y="5" width="7" height="18" rx="3" fill="#ffb400"/><rect x="22.5" y="1.5" width="3" height="5" rx="1" fill="#c47a00"/>
+  <rect x="32" y="8" width="7" height="15" rx="3" fill="#35c3ff"/><rect x="34" y="4" width="3" height="5" rx="1" fill="#0b63c9"/>
+  <path d="M5 21h38l-3 22a3 3 0 01-3 2.6H11a3 3 0 01-3-2.6z" fill="#0f2a5c"/>
+  <path d="M8.5 27h31M9.3 33h29.4M10 39h28" stroke="#3f63b5" stroke-width="1.6"/>
+  <rect x="17" y="24.5" width="14" height="5" rx="2.5" fill="#ffd166"/>
+</svg>`);
 
 const opts = () => (whatIf ? { whatIf: WHAT_IF } : {});
 /** "Cola 250 ml" from "Cola 250 ml PET": the pack type adds little on a phone screen. */
@@ -7639,14 +8034,14 @@ function outletCard(root, o) {
     const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0).slice(0, 6) : [];
     const why = reasons(N);
     const tags = why.filter((r) => r.tone);
-    const sub = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : t('f.so.sub', { date: until(N) });
+    const special = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : '';
     mount(slot, html`<section class="so" aria-labelledby="so-title">
       <div class="so-head">
-        <span class="so-icon">${icon('box')}</span>
+        <span class="so-icon is-art">${CRATE}</span>
         <div class="so-text">
           <p class="so-eyebrow">${t('f.so.eyebrow')}${N.mode === 'peers' ? html`<span class="so-tag">${t('f.so.guess')}</span>` : ''}${whatIf ? html`<span class="so-tag is-hot">43°C</span>` : ''}</p>
-          <h2 class="so-big" id="so-title">${N.totals.realisable}<small> ${t('f.so.cases')}</small></h2>
-          <p class="so-sub">${sub}</p>
+          <h2 class="so-big" id="so-title">${N.totals.realisable}<small> ${t('f.so.cases')} · ${t('f.so.till', { date: until(N) })}</small></h2>
+          ${special ? html`<p class="so-sub">${special}</p>` : ''}
         </div>
       </div>
       ${packs.length ? html`<div class="so-packs">${packs.map(([sku, s]) => html`<span class="so-pack ${data.product(sku)?.focus ? 'is-focus' : ''}">${name(sku)}<b>${s.realisable}</b></span>`)}</div>` : ''}
@@ -7692,12 +8087,25 @@ function coverFindings(o, N, lines) {
   return out;
 }
 
+/** "1 more case earns a free case": top up a scheme pack already in the cart (within any
+ *  distributor limit) rather than the scheme's first pack, so the rep adds what they were building. */
+function topUpInCart(f, lines) {
+  if (f.rule !== 'threshold' || !f.action?.set) return f;
+  const [[sku, n]] = Object.entries(f.action.set);
+  const short = n - (lines[sku] ?? 0);
+  const name = (f.text.match(/\(([^)]+)\)\.?$/) ?? [])[1];
+  const scheme = data.schemes().find((s) => s.name === name && Array.isArray(s.skus) && s.skus.includes(sku));
+  const pick = scheme?.skus.find((k) => (lines[k] ?? 0) > 0 && isOrderable(k)
+    && (!data.stockFor(k)?.maxCasesPerOutlet || data.stockFor(k).status !== 'rationed' || lines[k] + short <= data.stockFor(k).maxCasesPerOutlet));
+  return pick && pick !== sku ? { ...f, action: { set: { [pick]: lines[pick] + short } } } : f;
+}
+
 function findingsFor(o, lines) {
   const C = season.check(o.id, lines, opts());
   const N = C.need;
   const extra = N.display ? coverFindings(o, N, lines) : [];
   const order = { block: 0, warn: 1, nudge: 2, info: 3 };
-  const all = [...C.findings.filter((f) => !QUIET.has(f.rule)).map((f) => ({ ...f, text: simple(f, N, lines) })), ...extra.map((f) => ({ audience: 'both', ...f }))]
+  const all = [...C.findings.filter((f) => !QUIET.has(f.rule)).map((f) => topUpInCart(f, lines)).map((f) => ({ ...f, text: simple(f, N, lines) })), ...extra.map((f) => ({ audience: 'both', ...f }))]
     .sort((a, b) => order[a.level] - order[b.level]);
   return { C, all };
 }
@@ -7751,7 +8159,7 @@ function booking(root, o) {
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
     mount(slot, html`<section class="so-live" aria-live="polite">
       ${N.display && target ? html`<div class="so-live-head">
-        <span class="so-icon is-small">${icon('box')}</span>
+        <span class="so-icon is-small is-art">${CRATE}</span>
         <div class="so-live-text"><p><b>${t('f.so.liveTitle', { n: target })}</b> <span class="muted">· ${t('f.so.sub', { date: until(N) })}</span></p>
           <div class="meter is-small"><span class="meter-fill ${have > target * 1.5 ? 'is-over' : ''}" style="width:${pct}%"></span></div>
           <p class="so-live-count">${t('f.so.inCart', { have, target })}</p></div>
@@ -7832,10 +8240,15 @@ function review(root, o) {
   slot.hidden = false;
   slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(list[Number(b.dataset.act)].action)));
 
-  // One pop-up per cart, for the best opportunity (never for warnings).
+  // The pop-up shows the best opportunity (never a warning), once for each different one: going
+  // back, taking a scheme to 1–2 cases short and returning offers that scheme even if another
+  // idea was offered before.
   const offer = OFFER_ORDER.map((r) => list.find((f) => f.rule === r && f.action?.set)).find(Boolean);
-  if (offer && !offered.has(o.id)) {
-    offered.add(o.id);
+  const key = offer ? `${offer.rule}:${Object.keys(offer.action.set).map((k) => `${k}:${lines[k] ?? 0}>${offer.action.set[k]}`).join(',')}` : null;
+  const shown = offered.get(o.id) ?? new Set();
+  if (offer && !shown.has(key)) {
+    shown.add(key);
+    offered.set(o.id, shown);
     const [[sku, n]] = Object.entries(offer.action.set);
     const add = Math.max(1, n - (lines[sku] ?? 0));
     const isScheme = offer.rule === 'threshold';

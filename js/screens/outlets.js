@@ -98,6 +98,18 @@ export function render(root) {
   apply();
 }
 
+// A colour per channel for the shop's monogram tile, so the list scans by type at a glance.
+const CHANNEL_TINT = {
+  'Traditional Kirana': ['#fff1dc', '#a35a00'], Convenience: ['#e6f0ff', '#1d4fb0'], 'Eating & Drinking (seating)': ['#fde8ee', '#b0275a'],
+  'Eating & Drinking (standing)': ['#fdeede', '#b4431a'], 'Paan/Cigarette shop': ['#e7f6ec', '#11663c'], Education: ['#efe9fd', '#5a2fbf'],
+  'At-work': ['#e5f4f6', '#0a6d7a'], 'Entertainment & Leisure': ['#fff4cf', '#8a6500'], 'Modern Trade (small format)': ['#eceff4', '#3d4b60'], Wholesale: ['#f1e8e2', '#6b3d1f'],
+};
+const monogram = (o) => {
+  const [bg, fg] = CHANNEL_TINT[o.channel] ?? ['#eef2f7', '#3d4b60'];
+  const letters = o.name.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
+  return html`<span class="mono-tile" style="background:${bg};color:${fg}" aria-hidden="true">${letters}</span>`;
+};
+
 function row(o, onRoute, today) {
   const saved = orders.demoOrdersOn(o.id, today);
   // Searchable in English and in the current language.
@@ -106,11 +118,12 @@ function row(o, onRoute, today) {
   const type = o.shopType && o.shopType !== o.channel ? ` · ${label('shop', o.shopType)}` : '';
   return html`<li class="row-wrap" data-outlet="${o.id}" data-search="${search}">
     <a class="row outlet-row" href="#/outlet/${o.id}">
+      ${monogram(o)}
       <span class="row-main">
         <span class="row-title">${o.name}</span>
         <span class="row-meta">${label('area', o.area)} · ${label('ch', o.channel)}${type}</span>
         <span class="row-tags">
-          ${tierBadge(o, { visits: true })}
+          ${tierBadge(o, { visits: 'short' })}
           ${saved.length ? pill(saved.length > 1 ? t('status.savedShortN', { n: saved.length }) : t('status.savedShort'), 'ok', 'check') : ''}
           ${onRoute ? '' : pill(t('outlets.notOnRoute'), 'neutral')}
         </span>

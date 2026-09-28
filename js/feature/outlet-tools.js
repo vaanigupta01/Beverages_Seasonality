@@ -79,14 +79,16 @@ export function install() {
 
 const catsOf = (i) => i.categories ?? (i.category ? [i.category] : ['other']);
 
-/** Open-issues capsule for the profile strip: count + the main category; opens the list. */
+/** Open-problems capsule for the profile strip: how many are open and what they are about
+ *  (every category across them, the first two named). Tap to see the list. */
 export function issuesBadge(o) {
   const open = store.openIssues(o.id);
   if (!open.length) return '';
-  const cat = catsOf(open[0])[0];
-  return html`<button type="button" class="issue-cap" data-tool="issues">
+  const cats = [...new Set(open.flatMap(catsOf))];
+  const names = cats.slice(0, 2).map((c) => t(`f.issue.cat.${c}`)).join(', ');
+  return html`<button type="button" class="issue-cap" data-tool="issues" aria-label="${t('f.issue.capLabel', { n: open.length })}">
     <span class="issue-cap-n">${open.length}</span>
-    <span>${t(`f.issue.cat.${cat}`)}</span>${icon('chevron')}
+    <span class="issue-cap-t">${names}${cats.length > 2 ? ` +${cats.length - 2}` : ''}</span>${icon('chevron')}
   </button>`;
 }
 
@@ -269,8 +271,8 @@ async function issueSheet(o) {
       box.focus();
     },
   });
-  const text = box?.value.trim();
-  if (key !== 'save' || !text) return false;
+  const text = box?.value.trim() ?? '';
+  if (key !== 'save' || (!text && !picked.size)) return false;
   const categories = picked.size ? [...picked] : classifyAll(text);
   store.addIssue(o.id, { text, categories, auto: !touched });
   toast(t('f.issue.saved', { cat: categories.map((c) => t(`f.issue.cat.${c}`)).join(', ') }));
@@ -283,8 +285,8 @@ async function issuesList(o) {
     title: t('f.issue.listTitle'),
     body: html`<ul class="issue-list">${list.map((i) => html`<li class="${i.status === 'open' ? 'is-open' : ''}">
       <div class="issue-cats">${catsOf(i).map((c) => html`<span class="issue-cat">${icon(CAT_ICON[c])}${t(`f.issue.cat.${c}`)}</span>`)}</div>
-      <p class="issue-text">${i.text}</p>
-      <p class="issue-meta">${i.date ? fmt.shortDate(i.date) : t('f.issue.today', { time: i.time })}${i.status === 'resolved' ? html` · <span class="ok-text">${icon('check')}${t('f.issue.resolved')}</span>` : ''}
+      ${i.text ? html`<p class="issue-text">${i.text}</p>` : ''}
+      <p class="issue-meta">${i.seeded ? t('f.issue.earlier', { date: fmt.shortDate(i.date) }) : t('f.issue.today', { time: i.time })}${i.status === 'resolved' ? html` · <span class="ok-text">${icon('check')}${t('f.issue.resolved')}</span>` : ''}
         ${i.status === 'open' ? html`<button type="button" class="link-btn" data-resolve="${i.id}">${t('f.issue.resolve')}</button>` : ''}</p>
     </li>`)}</ul>`,
     actions: [{ key: 'add', label: t('f.issue.add'), tone: 'secondary' }, { key: 'close', label: t('common.close'), tone: 'primary' }],

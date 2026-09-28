@@ -307,24 +307,24 @@ function renderBooking(root, o) {
 function skuRow(p, o, today, pastAndDemo) {
   const unit = t(p.caseLabel === 'crate' ? 'unit.crate' : 'unit.case');
   const size = p.pack?.ml >= 1000 ? `${p.pack.ml / 1000} L` : `${p.pack?.ml} ml`;
-  const pack = `${p.unitsPerCase} ${t(`pack.${p.pack?.type}`) === `pack.${p.pack?.type}` ? t('pack.units') : t(`pack.${p.pack?.type}`)} × ${size}${p.returnable ? ` · ${t('book.returnable')}` : ''}`;
+  const pack = `${p.unitsPerCase} × ${size}${p.returnable ? ` · ${t('book.returnable')}` : ''}`;
   const search = [p.name, p.sku, p.category, label('cat', p.category), p.flavour, p.pack?.type, `${p.pack?.ml}`].filter(Boolean).join(' ').toLowerCase();
   const chips = schemes.schemesForSku(p.sku, today).map((s) => {
     const st = schemes.statusFor(s, o, today, pastAndDemo);
-    if (st.kind === 'not') return html`<span class="scheme-chip is-off">${s.name} · ${lcFirst(st.reason)}</span>`;
+    if (st.kind === 'not') return '';           // schemes this shop can't get aren't shown
     if (st.kind === 'used') {
       return html`<span class="scheme-chip is-used">${icon('tag')}${t('book.capUsed', { chip: schemes.chipText(s), cap: st.cap, month: fmt.monthName(today) })}</span>`;
     }
     const n = schemes.quickAdd(s);
     return html`<button type="button" class="scheme-chip is-add" data-quick="${n}" data-scheme="${s.id}" aria-label="${t('book.chipAdd', { n, unit, name: p.name, scheme: s.name })}">${icon('tag')}<span>${schemes.chipText(s)}</span><span class="chip-plus" aria-hidden="true">+${n}</span></button>`;
-  });
+  }).filter(Boolean);
 
   return html`<li class="sku ${sku.isOrderable(p.sku) ? '' : 'is-out'}" data-sku="${p.sku}" data-category="${p.category}" data-search="${search}">
     <div class="sku-text">
-      <p class="sku-name">${p.name}</p>
+      <p class="sku-name">${p.focus ? html`<span class="focus-mark" title="${t('f.sku.focus')}">★</span>` : ''}${p.name}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}</p>
       <p class="sku-pack">${pack}</p>
-      <p class="sku-rate"><strong>${t('book.rate', { rate: fmt.rupees(p.ptrPerCase), unit })}</strong>${p.returnable ? t('book.deposit') : ''} · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })}</p>
-      <p class="sku-status">${sku.statusTag(p.sku)}${sku.isNewer(p.sku) ? html`<span class="new-tag">${t('f.sku.newer')}</span>` : ''}<button type="button" class="sku-more" data-more aria-expanded="false">${t('f.sku.details')}</button></p>
+      <p class="sku-rate"><strong>${fmt.rupees(p.ptrPerCase)}</strong><span class="sku-unit">/${unit}</span> · ${t('book.mrp', { mrp: fmt.rupees(p.mrpPerUnit) })} ${sku.statusShort(p.sku)}
+        <button type="button" class="sku-more" data-more aria-expanded="false" aria-label="${t('f.sku.details')}">${icon('chevron')}</button></p>
     </div>
     <div class="stepper">
       <button type="button" class="step" data-step="-1" aria-label="${t('book.fewer', { unit, name: p.name })}">−</button>

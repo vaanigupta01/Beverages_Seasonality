@@ -122,13 +122,15 @@ const TIER_ICON = {
 };
 
 export const tierBadge = (outlet, { visits = false } = {}) =>
-  html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t('n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
+  html`<span class="pill pill-tier" data-tier="${outlet.tier}">${raw(TIER_ICON[outlet.tier] ?? '')}<span>${label('tier', outlet.tier)}${visits && outlet.visitsPerMonth ? ` · ${t(visits === 'short' ? 'n.visitsShort' : 'n.visitsMonth', { n: outlet.visitsPerMonth })}` : ''}</span></span>`;
 
-/** Muted demo aid so the panel can pick outlets on purpose. */
+/** The kind of shop and how long it has bought from us: "Cautious Kirana · customer since 2017". */
 export function personaTag(outlet) {
-  const p = outlet.persona;
-  if (!p) return '';
-  return html`<span class="persona-tag" title="${t('persona.tip')}">${t('persona.tag', { no: String(p.no).padStart(2, '0'), label: String(p.label).replace(/^The /, '') })}</span>`;
+  const kind = outlet.segment?.label ?? outlet.persona?.label;
+  const since = outlet.registeredOn ? outlet.registeredOn.slice(0, 4) : null;
+  if (!kind && !since) return '';
+  const isNew = outlet.registeredOn && outlet.registeredOn >= '2026-01-01';
+  return html`<span class="persona-tag">${kind ? String(kind).replace(/^The /, '') : ''}${since ? html`<span class="persona-since"> · ${isNew ? t('f.kind.new') : t('f.kind.since', { year: since })}</span>` : ''}</span>`;
 }
 
 /**

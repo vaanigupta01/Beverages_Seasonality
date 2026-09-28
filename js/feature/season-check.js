@@ -13,7 +13,7 @@ import * as orders from '../orders.js';
 import { cart } from '../cart.js';
 import * as fmt from '../format.js';
 import { t } from '../i18n.js';
-import { html, mount, icon, openSheet, pill } from '../ui.js';
+import { html, raw, mount, icon, openSheet, pill } from '../ui.js';
 import * as season from './season-engine.js';
 import * as metrics from './metrics.js';
 import * as store from './store.js';
@@ -34,10 +34,10 @@ const typeOf = (f) => TYPE[f.rule] ?? (f.level === 'block' || f.level === 'warn'
 
 let whatIf = false;                          // what-if heat wave, per session
 let offCart = null;                          // the live-cart subscription of the current screen
-const offered = new Set();                   // outlets where the review pop-up already showed for this cart
+const offered = new Map();                   // outlet → opportunities already offered for this cart
 
 export function install() {
-  cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });
+  cart.subscribe(({ type, cart: c }) => { if (type === 'start' && c.outletId) offered.delete(c.outletId); });   // a new cart starts fresh
   app.on('screen:rendered', ({ screen, outletId, root }) => {
     offCart?.();
     offCart = null;
@@ -50,6 +50,16 @@ export function install() {
     if (screen === 'saved') afterSubmit(root, o);
   });
 }
+
+/** A little crate of bottles, the Smart order mark (instead of a generic box icon). */
+const CRATE = raw(`<svg class="so-art" viewBox="0 0 48 48" aria-hidden="true">
+  <rect x="9" y="7" width="7" height="16" rx="3" fill="#ff5a3c"/><rect x="11" y="3" width="3" height="5" rx="1" fill="#b3121f"/>
+  <rect x="20.5" y="5" width="7" height="18" rx="3" fill="#ffb400"/><rect x="22.5" y="1.5" width="3" height="5" rx="1" fill="#c47a00"/>
+  <rect x="32" y="8" width="7" height="15" rx="3" fill="#35c3ff"/><rect x="34" y="4" width="3" height="5" rx="1" fill="#0b63c9"/>
+  <path d="M5 21h38l-3 22a3 3 0 01-3 2.6H11a3 3 0 01-3-2.6z" fill="#0f2a5c"/>
+  <path d="M8.5 27h31M9.3 33h29.4M10 39h28" stroke="#3f63b5" stroke-width="1.6"/>
+  <rect x="17" y="24.5" width="14" height="5" rx="2.5" fill="#ffd166"/>
+</svg>`);
 
 const opts = () => (whatIf ? { whatIf: WHAT_IF } : {});
 /** "Cola 250 ml" from "Cola 250 ml PET": the pack type adds little on a phone screen. */
@@ -134,14 +144,14 @@ function outletCard(root, o) {
     const packs = N.totals.realisable ? packsOf(N).filter(([, s]) => s.realisable > 0).slice(0, 6) : [];
     const why = reasons(N);
     const tags = why.filter((r) => r.tone);
-    const sub = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : t('f.so.sub', { date: until(N) });
+    const special = N.mode === 'closing' ? t('f.so.subClosing') : N.mode === 'peers' && N.newOutlet ? t('f.so.subNew', { date: fmt.shortDate(N.cover.nextVisit) }) : '';
     mount(slot, html`<section class="so" aria-labelledby="so-title">
       <div class="so-head">
-        <span class="so-icon">${icon('box')}</span>
+        <span class="so-icon is-art">${CRATE}</span>
         <div class="so-text">
           <p class="so-eyebrow">${t('f.so.eyebrow')}${N.mode === 'peers' ? html`<span class="so-tag">${t('f.so.guess')}</span>` : ''}${whatIf ? html`<span class="so-tag is-hot">43°C</span>` : ''}</p>
-          <h2 class="so-big" id="so-title">${N.totals.realisable}<small> ${t('f.so.cases')}</small></h2>
-          <p class="so-sub">${sub}</p>
+          <h2 class="so-big" id="so-title">${N.totals.realisable}<small> ${t('f.so.cases')} · ${t('f.so.till', { date: until(N) })}</small></h2>
+          ${special ? html`<p class="so-sub">${special}</p>` : ''}
         </div>
       </div>
       ${packs.length ? html`<div class="so-packs">${packs.map(([sku, s]) => html`<span class="so-pack ${data.product(sku)?.focus ? 'is-focus' : ''}">${name(sku)}<b>${s.realisable}</b></span>`)}</div>` : ''}
@@ -187,12 +197,25 @@ function coverFindings(o, N, lines) {
   return out;
 }
 
+/** "1 more case earns a free case": top up a scheme pack already in the cart (within any
+ *  distributor limit) rather than the scheme's first pack, so the rep adds what they were building. */
+function topUpInCart(f, lines) {
+  if (f.rule !== 'threshold' || !f.action?.set) return f;
+  const [[sku, n]] = Object.entries(f.action.set);
+  const short = n - (lines[sku] ?? 0);
+  const name = (f.text.match(/\(([^)]+)\)\.?$/) ?? [])[1];
+  const scheme = data.schemes().find((s) => s.name === name && Array.isArray(s.skus) && s.skus.includes(sku));
+  const pick = scheme?.skus.find((k) => (lines[k] ?? 0) > 0 && isOrderable(k)
+    && (!data.stockFor(k)?.maxCasesPerOutlet || data.stockFor(k).status !== 'rationed' || lines[k] + short <= data.stockFor(k).maxCasesPerOutlet));
+  return pick && pick !== sku ? { ...f, action: { set: { [pick]: lines[pick] + short } } } : f;
+}
+
 function findingsFor(o, lines) {
   const C = season.check(o.id, lines, opts());
   const N = C.need;
   const extra = N.display ? coverFindings(o, N, lines) : [];
   const order = { block: 0, warn: 1, nudge: 2, info: 3 };
-  const all = [...C.findings.filter((f) => !QUIET.has(f.rule)).map((f) => ({ ...f, text: simple(f, N, lines) })), ...extra.map((f) => ({ audience: 'both', ...f }))]
+  const all = [...C.findings.filter((f) => !QUIET.has(f.rule)).map((f) => topUpInCart(f, lines)).map((f) => ({ ...f, text: simple(f, N, lines) })), ...extra.map((f) => ({ audience: 'both', ...f }))]
     .sort((a, b) => order[a.level] - order[b.level]);
   return { C, all };
 }
@@ -246,7 +269,7 @@ function booking(root, o) {
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
     mount(slot, html`<section class="so-live" aria-live="polite">
       ${N.display && target ? html`<div class="so-live-head">
-        <span class="so-icon is-small">${icon('box')}</span>
+        <span class="so-icon is-small is-art">${CRATE}</span>
         <div class="so-live-text"><p><b>${t('f.so.liveTitle', { n: target })}</b> <span class="muted">· ${t('f.so.sub', { date: until(N) })}</span></p>
           <div class="meter is-small"><span class="meter-fill ${have > target * 1.5 ? 'is-over' : ''}" style="width:${pct}%"></span></div>
           <p class="so-live-count">${t('f.so.inCart', { have, target })}</p></div>
@@ -327,10 +350,15 @@ function review(root, o) {
   slot.hidden = false;
   slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(list[Number(b.dataset.act)].action)));
 
-  // One pop-up per cart, for the best opportunity (never for warnings).
+  // The pop-up shows the best opportunity (never a warning), once for each different one: going
+  // back, taking a scheme to 1–2 cases short and returning offers that scheme even if another
+  // idea was offered before.
   const offer = OFFER_ORDER.map((r) => list.find((f) => f.rule === r && f.action?.set)).find(Boolean);
-  if (offer && !offered.has(o.id)) {
-    offered.add(o.id);
+  const key = offer ? `${offer.rule}:${Object.keys(offer.action.set).map((k) => `${k}:${lines[k] ?? 0}>${offer.action.set[k]}`).join(',')}` : null;
+  const shown = offered.get(o.id) ?? new Set();
+  if (offer && !shown.has(key)) {
+    shown.add(key);
+    offered.set(o.id, shown);
     const [[sku, n]] = Object.entries(offer.action.set);
     const add = Math.max(1, n - (lines[sku] ?? 0));
     const isScheme = offer.rule === 'threshold';

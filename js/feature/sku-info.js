@@ -37,6 +37,16 @@ export function statusTag(sku) {
   return html`<span class="stock-tag is-${s.kind}"><span class="stock-dot" aria-hidden="true"></span>${text}</span>`;
 }
 
+/** The same status in two or three words, for the price line of a SKU row. */
+export function statusShort(sku) {
+  const s = stockStatus(sku);
+  const text = s.kind === 'out' ? t('f.sku.sOut')
+    : s.ration ? t('f.sku.sMax', { n: s.ration })
+    : s.status === 'rationed-against-empties' ? t('f.sku.sEmpties')
+    : s.status === 'low' ? t('f.sku.sLow') : t('f.sku.sIn');
+  return html`<span class="stock-mini is-${s.kind}">${text}</span>`;
+}
+
 /** Newer-SKU evidence: nearby retailers (same area) ordering it more than last year, plus the
  *  demo offtake figure from field.json (labelled as demo evidence). */
 export function newSkuEvidence(sku, outlet) {

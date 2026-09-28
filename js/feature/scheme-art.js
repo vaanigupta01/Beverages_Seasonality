@@ -1,4 +1,4 @@
-// Illustrated backgrounds for scheme cards: one small SVG scene per theme (cola fizz, mango juice,
+// Backgrounds for scheme cards: a stock photo per theme over a small SVG scene (cola fizz, mango juice,
 // water, cooler, new outlet, festival), drawn inline so they work offline, with a dark gradient
 // over the text side so white text stays readable. schemeArt(scheme) → an inline style string.
 
@@ -35,6 +35,17 @@ const THEMES = {
   rect('#6b1d3a', '#d9480f')),
 };
 
+// Stock photos (Unsplash, free licence, no brand marks), loaded online. Each sits above its
+// illustration, so the card still looks right if the photo can't load (e.g. offline).
+const PHOTO_IDS = {
+  cola: 'uCtJy7YavP8',      // glass of fizzy soda with ice
+  mango: 'jKADJEdhk1U',     // tall glass of mango juice
+  water: '7xTp5vlbbSY',     // glass of water in blue light
+  cooler: 'SvhXD3kPSTY',    // drinks in a shop fridge
+  shop: 'bAKYjjvAQIE',      // a kirana shop in Kamshet, Maharashtra
+};
+const photo = (theme) => (PHOTO_IDS[theme] ? `url("https://unsplash.com/photos/${PHOTO_IDS[theme]}/download?w=720"), ` : '');
+
 /** Which picture fits the scheme: by its packs first, then by its type. */
 function themeOf(s) {
   const skus = Array.isArray(s.skus) ? s.skus.join(' ') : '';
@@ -47,6 +58,6 @@ function themeOf(s) {
 }
 
 export function schemeArt(s) {
-  const art = THEMES[themeOf(s)];
-  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.82) 0%, rgba(8, 14, 30, 0.55) 48%, rgba(8, 14, 30, 0.05) 100%), ${art};`;
+  const theme = themeOf(s);
+  return `background-image: linear-gradient(90deg, rgba(8, 14, 30, 0.84) 0%, rgba(8, 14, 30, 0.5) 55%, rgba(8, 14, 30, 0.1) 100%), ${photo(theme)}${THEMES[theme]};`;
 }
