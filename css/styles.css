@@ -1560,3 +1560,7 @@ details.lb-row .lb-score { margin-left: auto; }
 .why-ok { display: grid; place-items: center; width: 30px; height: 30px; flex: none; }
 .sku-sug .sug-add { flex: none; }
 .why-qty { font-weight: 750 !important; color: var(--ink) !important; }
+/* the tick after a pack is added stays small; the reason keeps the full row */
+.sku-sug > .why-ok { flex: none; width: 30px; }
+.sku-sug.is-met { padding-right: 5px; }
+.sku-sug.is-met .why-ok .icon { width: 16px; height: 16px; }
