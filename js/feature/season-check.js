@@ -311,6 +311,44 @@ function tipsHtml(list, { limit = TIPS_SHOWN } = {}) {
     ${rep.length ? html`<details class="tips-more is-rep"><summary>${icon('lock')}<span>${t('tp.forYou')} · ${rep.length}</span>${icon('chevron', 'collapse-chev')}</summary><ul class="tips">${rep.map((f) => tipHtml(f, list.indexOf(f)))}</ul></details>` : ''}`;
 }
 
+/** Why this pack, and why this many: a short tag for the pitch, one line, and the facts behind it.
+ *  Built from the engine's own numbers for the pack (sales rate, expected sales till the next
+ *  delivery, estimated shelf stock, the checks that capped it) and the shop's last order. */
+function packWhy(o, N, sku, s) {
+  const days = N.cover.sellingDays || N.cover.days || 7;
+  const perWeek = s.rate ?? 0;
+  const base = perWeek * (days / 7);                                    // same pace as the last 4 weeks
+  const lift = base > 0 ? Math.round(((s.expected / base) - 1) * 100) : 0;   // heat, season, events on top
+  const oh = data.onHand(o.id).find((r) => r.sku === sku);
+  const left = oh ? (oh.repCountedCases ?? oh.estimatedCasesOnHand ?? 0) : null;
+  const last = orders.allOrdersFor(o.id).filter((x) => x.date < N.cover.today).find((x) => x.lines.some((l) => l.sku === sku && l.cases > 0));
+  const lastQty = last ? last.lines.filter((l) => l.sku === sku).reduce((a, l) => a + l.cases, 0) : 0;
+  const r1 = (x) => Math.round(x * 10) / 10;
+
+  const facts = [];
+  if (N.mode === 'peers') facts.push({ icon: 'store', text: t('f.why.fPeers', { n: r1(perWeek) }) });
+  else if (N.mode === 'bookings') facts.push({ icon: 'calendar', text: t('f.why.fBookings') });
+  else if (perWeek) facts.push({ icon: 'history', text: t('f.why.fRate', { n: r1(perWeek) }) });
+  facts.push({ icon: 'trend', text: lift >= 5 ? t('f.why.fLift', { n: r1(s.expected), date: until(N), pct: lift }) : t('f.why.fExpected', { n: r1(s.expected), date: until(N) }) });
+  if (left != null) facts.push({ icon: 'box', text: t(oh.repCountedCases != null ? 'f.why.fCounted' : 'f.why.fLeft', { n: r1(left) }) });
+  if (last) facts.push({ icon: 'calendar', text: t('f.why.fLast', { n: lastQty, date: fmt.shortDate(last.date) }) });
+  const st = data.stockFor(sku);
+  if (s.gates.includes('distributor')) facts.push({ icon: 'truck', text: t('f.why.fRation', { n: st?.maxCasesPerOutlet ?? s.realisable }) });
+  if (s.gates.includes('cooler')) facts.push({ icon: 'cooler', text: t('f.why.fCooler') });
+  if (s.gates.includes('credit')) facts.push({ icon: 'wallet', text: t('f.why.fCredit') });
+  if (s.gates.includes('safe-cap')) facts.push({ icon: 'alert', text: t('f.why.fCap') });
+
+  // One headline, in order of how strong a reason it is to buy now.
+  const need = s.expected;
+  const whole = (x) => Math.round(x);
+  if (N.mode === 'bookings') return { tag: t('f.why.tBookings'), tone: 'event', line: t('f.why.lBookings'), facts };
+  if (N.mode === 'peers') return { tag: t('f.why.tPeers'), tone: 'new', line: t('f.why.lPeers', { n: whole(perWeek) }), facts };
+  if (left != null && need >= 1 && left <= Math.max(0.5, need * 0.3)) return { tag: t('f.why.tLow'), tone: 'low', line: whole(left) ? t('f.why.lLow', { left: whole(left), n: whole(perWeek) }) : t('f.why.lLowNone', { n: whole(perWeek) }), facts };
+  if (lift >= 10) return { tag: t('f.why.tExtra'), tone: 'extra', line: t('f.why.lExtra', { pct: lift }), facts };
+  if (!last || fmt.daysBetween(last.date, N.cover.today) > 21) return { tag: t('f.why.tMissing'), tone: 'low', line: last ? t('f.why.lMissing', { date: fmt.shortDate(last.date) }) : t('f.why.lNever'), facts };
+  return { tag: t('f.why.tRefill'), tone: 'refill', line: s.onHand ? t('f.why.lRefillOh', { n: whole(perWeek), oh: s.onHand }) : t('f.why.lRefill', { n: whole(perWeek) }), facts };
+}
+
 function booking(root, o) {
   const slot = root.querySelector('[data-slot="booking-season"]');
   if (!slot) return;
@@ -349,15 +387,21 @@ function booking(root, o) {
     slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(all[Number(b.dataset.act)].action)));
     slot.querySelector('[data-fs-add]')?.addEventListener('click', () => applyAction({ set: schemeGap(focus, cart.lines()).set }));
     slot.querySelector('[data-addall]')?.addEventListener('click', () => missing.forEach(([sku, s]) => cart.set(sku, s.realisable)));
-    // Per-pack: "Suggested 5 · Add" under each suggested SKU.
+    // Per-pack: why this pack and this number, one line (tap to open the reasons), with Add.
     root.querySelectorAll('[data-slot="sku-hint"]').forEach((h) => {
       const sku = h.dataset.sku;
       const s = N.display ? N.skus[sku] : null;
       if (!s || !(s.realisable > 0)) { h.hidden = true; return; }
       const inCart = lines[sku] ?? 0;
       const met = inCart >= s.realisable;
-      mount(h, html`<div class="sku-sug ${met ? 'is-met' : ''}">${icon(met ? 'check' : 'box')}<span>${t('f.so.skuHint', { n: s.realisable })}${s.onHand ? html` <span class="muted">· ${t('f.so.skuShelf', { n: s.onHand })}</span>` : ''}</span>
-        ${met ? '' : html`<button type="button" class="sug-add" data-sug="${sku}" data-n="${s.realisable}">${t('f.act.add', { n: s.realisable - inCart })}</button>`}</div>`);
+      const why = packWhy(o, N, sku, s);
+      const wasOpen = h.querySelector('.sku-why')?.open;
+      mount(h, html`<div class="sku-sug ${met ? 'is-met' : ''} tone-${why.tone}">
+        <details class="sku-why" ${wasOpen ? 'open' : ''}>
+          <summary><span class="why-tag">${why.tag}</span><span class="why-line">${why.line}</span>${icon('chevron', 'why-chev')}</summary>
+          <ul class="why-list"><li class="why-qty">${icon('box')}<span>${t('f.why.qty', { n: s.realisable })}</span></li>${why.facts.map((f) => html`<li>${icon(f.icon)}<span>${f.text}</span></li>`)}</ul>
+        </details>
+        ${met ? html`<span class="why-ok">${icon('check')}</span>` : html`<button type="button" class="sug-add" data-sug="${sku}" data-n="${s.realisable}">${t('f.act.add', { n: s.realisable - inCart })}</button>`}</div>`);
       h.hidden = false;
       h.querySelector('[data-sug]')?.addEventListener('click', (e) => cart.set(sku, Number(e.currentTarget.dataset.n)));
     });
