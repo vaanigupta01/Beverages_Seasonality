@@ -303,6 +303,7 @@ export const FIELD_MR = {
   // After submit
   'f.saved.order': 'ऑर्डर · {cases} · {value}',
   'f.saved.gain': 'प्री-समर टार्गेटमध्ये +{n} पेट्या',
+  'f.saved.gainTail': 'पेट्या प्री-समर टार्गेटमध्ये',
   'f.saved.noGain': 'या ऑर्डरमध्ये फोकस पॅक नाहीत, त्यामुळे प्री-समर टार्गेट बदलले नाही',
   'f.out.title': 'या दुकानात पुढचा आठवडा',
   'f.out.dir.up': 'विक्री वाढण्याची शक्यता',

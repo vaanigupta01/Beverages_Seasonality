@@ -303,6 +303,7 @@ export const FIELD_HI = {
   // After submit
   'f.saved.order': 'ऑर्डर · {cases} · {value}',
   'f.saved.gain': 'प्री-समर टारगेट में +{n} पेटी',
+  'f.saved.gainTail': 'पेटी प्री-समर टारगेट में',
   'f.saved.noGain': 'इस ऑर्डर में फ़ोकस पैक नहीं, इसलिए प्री-समर टारगेट नहीं बदला',
   'f.out.title': 'इस दुकान पर अगला हफ़्ता',
   'f.out.dir.up': 'बिक्री बढ़ने की संभावना',

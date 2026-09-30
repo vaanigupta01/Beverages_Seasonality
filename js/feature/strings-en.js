@@ -306,6 +306,7 @@ export const FIELD_EN = {
   // After submit
   'f.saved.order': 'Order · {cases} · {value}',
   'f.saved.gain': '+{n} cases to your pre-summer target',
+  'f.saved.gainTail': 'cases to your pre-summer target',
   'f.saved.noGain': 'No focus packs in this order, so the pre-summer target did not move',
   'f.out.title': 'Next week at this shop',
   'f.out.dir.up': 'Sales likely to go up',

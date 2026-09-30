@@ -214,7 +214,7 @@ function fillNext(root) {
   const latest = wins.at(-1);
   const n = day.next;
   mount(slot, html`
-    ${latest ? html`<p class="win ${fresh.length ? 'is-new' : ''}">${icon(latest.icon)}<span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
+    ${latest ? html`<p class="win is-reward ${fresh.length ? 'is-new' : ''}"><span class="win-ico">${icon(latest.icon)}</span><span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
     ${n ? html`<section class="next">
       <p class="next-label">${t('f.next.label', { stop: data.visits(n.id)?.routeOrder ?? '' })}</p>
       <div class="next-row">

@@ -1580,6 +1580,58 @@ details.lb-row .lb-score { margin-left: auto; }
 .sku-sug > .why-ok { flex: none; width: 30px; }
 .sku-sug.is-met { padding-right: 5px; }
 .sku-sug.is-met .why-ok .icon { width: 16px; height: 16px; }
+
+/* rewards: gold pill, icon badge, a sheen and a small wiggle when new (light, B2B) */
+.win.is-reward, .gain-line.is-reward { position: relative; overflow: hidden; gap: 10px; padding: 8px 12px 8px 8px; border: 1px solid #f3d27a; border-radius: 14px; background: linear-gradient(120deg, #fff8e1, #ffecb3 60%, #ffe08a); color: #6b4700; font-weight: 750; box-shadow: 0 6px 16px -10px rgba(196, 130, 0, 0.55); }
+.win-ico { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(145deg, #ffc93d, #e08a00); color: #fff; box-shadow: 0 2px 6px rgba(224, 138, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.win-ico .icon { width: 16px; height: 16px; color: #fff !important; }
+.gain-n { font-size: 1.15em; font-weight: 850; color: #a15c00; }
+.is-reward::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.75) 50%, transparent 65%); transform: translateX(-120%); animation: reward-sheen 1.4s ease-out calc(var(--d, 0ms) + 350ms) 1 both; pointer-events: none; }
+.is-reward.is-new { animation: reward-in 520ms cubic-bezier(0.2, 0.9, 0.3, 1.35) var(--d, 0ms) both; }
+.is-reward.is-new .win-ico { animation: reward-wiggle 700ms ease-in-out calc(var(--d, 0ms) + 380ms) 2; }
+.gain-line.is-flat { background: var(--paper); color: var(--muted); }
+@keyframes reward-in { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes reward-sheen { to { transform: translateX(120%); } }
+@keyframes reward-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg) scale(1.08); } 45% { transform: rotate(10deg) scale(1.08); } 70% { transform: rotate(-5deg); } }
+@media (prefers-reduced-motion: reduce) { .is-reward, .is-reward::after, .is-reward .win-ico { animation: none !important; } }
+
+/* fold tiles: soft tinted surfaces, no grey outlines */
+.tile { border: 0; border-radius: 12px; background: linear-gradient(160deg, #f4f7ff, #fbfcff); box-shadow: inset 0 0 0 1px rgba(29, 91, 216, 0.07), 0 3px 10px -8px rgba(15, 28, 46, 0.35); }
+.tile-l { color: #5b6b85; font-weight: 600; }
+.tile-l .icon { color: var(--accent); }
+.tile-v { color: var(--ink); }
+.tile.is-blue { background: linear-gradient(160deg, #e7efff, #f5f8ff); box-shadow: inset 0 0 0 1px rgba(29, 91, 216, 0.14), 0 3px 10px -8px rgba(29, 91, 216, 0.5); }
+.tile.is-warn { border: 0; background: linear-gradient(160deg, #fff1e6, #fff9f4); box-shadow: inset 0 0 0 1px rgba(214, 102, 30, 0.16); }
+.tile.is-warn .tile-l .icon { color: var(--warm); }
+.tile.is-toggle { border: 0; background: linear-gradient(160deg, #eaf1ff, #f6f9ff); box-shadow: inset 0 0 0 1px rgba(29, 91, 216, 0.16), 0 3px 10px -8px rgba(29, 91, 216, 0.5); }
+.fold .tiles { gap: 8px; }
+.credit-track { background: #e9eef8; }
+.credit-track span { background: linear-gradient(90deg, #1b9a5a, #3cc98a); }
+.recent li { border-top-color: #eef1f6; }
+
+/* order placed: a receipt, not a grey table */
+.saved .kv.receipt { position: relative; padding: 14px 14px 12px; border-radius: 12px; background: linear-gradient(180deg, #fbfcff, #f4f7fd); box-shadow: inset 0 0 0 1px rgba(29, 91, 216, 0.08); font-size: var(--t-sm); }
+.receipt > div { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border: 0 !important; }
+.receipt dt { color: #5b6b85; }
+.receipt > div::after { content: none; }
+.receipt dt::after { content: ""; flex: 1; }
+.receipt > div > dt { display: flex; flex: 1; align-items: baseline; gap: 6px; }
+.receipt > div > dt::after { content: ""; flex: 1; border-bottom: 1.5px dotted #c9d3e4; transform: translateY(-3px); }
+.receipt dd { font-weight: 700; }
+.receipt .rc-id dd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; padding: 2px 8px; border-radius: 6px; background: #e8eefb; color: #2a4a8a; }
+.receipt .kv-total { margin-top: 6px; padding-top: 10px; border-top: 1.5px dashed #c9d3e4 !important; }
+.receipt .kv-total dt { color: var(--ink); font-weight: 800; }
+.receipt .kv-total dd { font-size: 1.25em; font-weight: 850; color: var(--ink); }
+.receipt .rc-save dd { color: var(--green); }
+.receipt .rc-save dt { color: var(--green); }
+.receipt .rc-deliv { margin-top: 6px; padding: 8px 10px !important; border-radius: 10px; background: #eaf7ef; }
+.receipt .rc-deliv dt { color: #17613d; font-weight: 700; }
+.receipt .rc-deliv dt::after { border-color: transparent; }
+.receipt .rc-deliv dd { color: #17613d; }
+.receipt .rc-deliv dt .icon { width: 15px; height: 15px; }
+.goal-gain { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px 1px 6px; border-radius: var(--pill); background: rgba(60, 201, 138, 0.16); animation: gain-glow 1.8s ease-out 400ms 1 both; }
+@keyframes gain-glow { 0% { box-shadow: 0 0 0 0 rgba(60, 201, 138, 0.6); transform: scale(0.9); } 30% { transform: scale(1.08); } 60% { transform: scale(1); } 100% { box-shadow: 0 0 0 10px rgba(60, 201, 138, 0); } }
+@media (prefers-reduced-motion: reduce) { .goal-gain { animation: none; } }
 </style>
 </head>
 <body>
@@ -2318,6 +2370,7 @@ const FIELD_EN = {
   // After submit
   'f.saved.order': 'Order · {cases} · {value}',
   'f.saved.gain': '+{n} cases to your pre-summer target',
+  'f.saved.gainTail': 'cases to your pre-summer target',
   'f.saved.noGain': 'No focus packs in this order, so the pre-summer target did not move',
   'f.out.title': 'Next week at this shop',
   'f.out.dir.up': 'Sales likely to go up',
@@ -2666,6 +2719,7 @@ const FIELD_MR = {
   // After submit
   'f.saved.order': 'ऑर्डर · {cases} · {value}',
   'f.saved.gain': 'प्री-समर टार्गेटमध्ये +{n} पेट्या',
+  'f.saved.gainTail': 'पेट्या प्री-समर टार्गेटमध्ये',
   'f.saved.noGain': 'या ऑर्डरमध्ये फोकस पॅक नाहीत, त्यामुळे प्री-समर टार्गेट बदलले नाही',
   'f.out.title': 'या दुकानात पुढचा आठवडा',
   'f.out.dir.up': 'विक्री वाढण्याची शक्यता',
@@ -3014,6 +3068,7 @@ const FIELD_HI = {
   // After submit
   'f.saved.order': 'ऑर्डर · {cases} · {value}',
   'f.saved.gain': 'प्री-समर टारगेट में +{n} पेटी',
+  'f.saved.gainTail': 'पेटी प्री-समर टारगेट में',
   'f.saved.noGain': 'इस ऑर्डर में फ़ोकस पैक नहीं, इसलिए प्री-समर टारगेट नहीं बदला',
   'f.out.title': 'इस दुकान पर अगला हफ़्ता',
   'f.out.dir.up': 'बिक्री बढ़ने की संभावना',
@@ -6820,13 +6875,13 @@ function render(root, { id }) {
       ${slot('saved-outlook')}
       <details class="card collapse fold">
         <summary class="collapse-head"><span class="card-title"><span class="fold-ico ic-green">${icon('note')}</span><span>${t('f.saved.order', { cases: fmt.casesText(paid), value: fmt.rupees(order.netValue) })}</span></span>${icon('chevron', 'collapse-chev')}</summary>
-        <div class="collapse-body"><dl class="kv">
-          <div><dt>${t('saved.order')}</dt><dd class="mono">${order.id}</dd></div>
+        <div class="collapse-body"><dl class="kv receipt">
+          <div class="rc-id"><dt>${t('saved.order')}</dt><dd>${order.id}</dd></div>
           <div><dt>${t('saved.cases')}</dt><dd>${fmt.casesText(paid)}${free ? ` ${t('kv.plusFree', { n: free })}` : ''}</dd></div>
           <div><dt>${t('saved.lines')}</dt><dd>${fmt.num(order.lines.filter((l) => l.cases).length)}</dd></div>
           <div class="kv-total"><dt>${t('review.booked')}</dt><dd>${fmt.rupees(order.netValue)}</dd></div>
-          ${order.schemeEstimate?.discount ? html`<div><dt>${t('review.estOff')}</dt><dd>${fmt.rupees(order.schemeEstimate.discount)}</dd></div>` : ''}
-          <div><dt>${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} <span class="muted">· ${fmt.relative(delivery, today)}</span></dd></div>
+          ${order.schemeEstimate?.discount ? html`<div class="rc-save"><dt>${t('review.estOff')}</dt><dd>− ${fmt.rupees(order.schemeEstimate.discount)}</dd></div>` : ''}
+          <div class="rc-deliv"><dt>${icon('truck')}${t('saved.delivery')}</dt><dd>${fmt.shortDate(delivery)} · ${fmt.relative(delivery, today)}</dd></div>
         </dl></div>
       </details>
       <div class="stack">
@@ -7357,7 +7412,7 @@ function fillNext(root) {
   const latest = wins.at(-1);
   const n = day.next;
   mount(slot, html`
-    ${latest ? html`<p class="win ${fresh.length ? 'is-new' : ''}">${icon(latest.icon)}<span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
+    ${latest ? html`<p class="win is-reward ${fresh.length ? 'is-new' : ''}"><span class="win-ico">${icon(latest.icon)}</span><span>${t(latest.key, latest.vars ?? {})}</span>${wins.length > 1 ? html`<span class="win-count">+${wins.length - 1}</span>` : ''}</p>` : ''}
     ${n ? html`<section class="next">
       <p class="next-label">${t('f.next.label', { stop: data.visits(n.id)?.routeOrder ?? '' })}</p>
       <div class="next-row">
@@ -9104,7 +9159,8 @@ function booking(root, o) {
     const missing = N.display ? packsOf(N).filter(([sku, s]) => s.realisable > (lines[sku] ?? 0)) : [];
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
     const focus = focusScheme(o);
-    mount(slot, html`<section class="so-live" aria-live="polite">
+    const empty = !(N.display && target) && !focus && !all.length && !(N.display && have);
+    mount(slot, empty ? '' : html`<section class="so-live" aria-live="polite">
       ${N.display && target ? html`<div class="so-live-head">
         <span class="so-icon is-small is-art">${CRATE}</span>
         <div class="so-live-text"><p><b>${t('f.so.liveTitle', { n: target })}</b> <span class="muted">· ${t('f.so.sub', { date: until(N) })}</span></p>
@@ -9113,9 +9169,9 @@ function booking(root, o) {
         ${missing.length ? html`<button type="button" class="btn btn-primary btn-compact" data-addall>${t('f.so.addAll')}</button>` : html`<span class="so-done">${icon('check')}</span>`}
       </div>` : ''}
       ${focus ? focusStrip(focus, lines) : ''}
-      ${all.length ? tipsHtml(all) : have ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
+      ${all.length ? tipsHtml(all) : have && N.display ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
     </section>`);
-    slot.hidden = false;
+    slot.hidden = empty;   // nothing to say (e.g. a wholesaler): no empty bar
     slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(all[Number(b.dataset.act)].action)));
     slot.querySelector('[data-fs-add]')?.addEventListener('click', () => applyAction({ set: schemeGap(focus, cart.lines()).set }));
     slot.querySelector('[data-addall]')?.addEventListener('click', () => missing.forEach(([sku, s]) => cart.set(sku, s.realisable)));
@@ -9234,8 +9290,9 @@ function afterSubmit(root, o) {
   const gain = metrics.targetToday();
   const N = season.need(o.id);
   mount(slot, html`
-    ${wins.map((w) => html`<p class="win is-new">${icon(w.icon)}<span>${t(w.key, w.vars ?? {})}</span></p>`)}
-    <p class="gain-line">${icon('target')}<span>${gain ? t('f.saved.gain', { n: fmt.num(gain) }) : t('f.saved.noGain')}</span></p>
+    ${gain ? html`<p class="gain-line is-reward is-new"><span class="win-ico">${icon('target')}</span><span><b class="gain-n">+${fmt.num(gain)}</b> ${t('f.saved.gainTail')}</span></p>`
+      : html`<p class="gain-line is-flat">${icon('target')}<span>${t('f.saved.noGain')}</span></p>`}
+    ${wins.map((w, i) => html`<p class="win is-reward is-new" style="--d:${(i + 1) * 180}ms"><span class="win-ico">${icon(w.icon)}</span><span>${t(w.key, w.vars ?? {})}</span></p>`)}
     ${N.display ? outlookHtml(o, N) : ''}`);
   slot.hidden = false;
 }

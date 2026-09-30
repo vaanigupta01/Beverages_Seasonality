@@ -372,7 +372,8 @@ function booking(root, o) {
     const missing = N.display ? packsOf(N).filter(([sku, s]) => s.realisable > (lines[sku] ?? 0)) : [];
     const pct = target ? Math.min(100, Math.round((have / target) * 100)) : 0;
     const focus = focusScheme(o);
-    mount(slot, html`<section class="so-live" aria-live="polite">
+    const empty = !(N.display && target) && !focus && !all.length && !(N.display && have);
+    mount(slot, empty ? '' : html`<section class="so-live" aria-live="polite">
       ${N.display && target ? html`<div class="so-live-head">
         <span class="so-icon is-small is-art">${CRATE}</span>
         <div class="so-live-text"><p><b>${t('f.so.liveTitle', { n: target })}</b> <span class="muted">· ${t('f.so.sub', { date: until(N) })}</span></p>
@@ -381,9 +382,9 @@ function booking(root, o) {
         ${missing.length ? html`<button type="button" class="btn btn-primary btn-compact" data-addall>${t('f.so.addAll')}</button>` : html`<span class="so-done">${icon('check')}</span>`}
       </div>` : ''}
       ${focus ? focusStrip(focus, lines) : ''}
-      ${all.length ? tipsHtml(all) : have ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
+      ${all.length ? tipsHtml(all) : have && N.display ? html`<p class="sc-ok">${icon('check')}<span>${t('f.so.allGood')}</span></p>` : ''}
     </section>`);
-    slot.hidden = false;
+    slot.hidden = empty;   // nothing to say (e.g. a wholesaler): no empty bar
     slot.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => applyAction(all[Number(b.dataset.act)].action)));
     slot.querySelector('[data-fs-add]')?.addEventListener('click', () => applyAction({ set: schemeGap(focus, cart.lines()).set }));
     slot.querySelector('[data-addall]')?.addEventListener('click', () => missing.forEach(([sku, s]) => cart.set(sku, s.realisable)));
@@ -502,8 +503,9 @@ function afterSubmit(root, o) {
   const gain = metrics.targetToday();
   const N = season.need(o.id);
   mount(slot, html`
-    ${wins.map((w) => html`<p class="win is-new">${icon(w.icon)}<span>${t(w.key, w.vars ?? {})}</span></p>`)}
-    <p class="gain-line">${icon('target')}<span>${gain ? t('f.saved.gain', { n: fmt.num(gain) }) : t('f.saved.noGain')}</span></p>
+    ${gain ? html`<p class="gain-line is-reward is-new"><span class="win-ico">${icon('target')}</span><span><b class="gain-n">+${fmt.num(gain)}</b> ${t('f.saved.gainTail')}</span></p>`
+      : html`<p class="gain-line is-flat">${icon('target')}<span>${t('f.saved.noGain')}</span></p>`}
+    ${wins.map((w, i) => html`<p class="win is-reward is-new" style="--d:${(i + 1) * 180}ms"><span class="win-ico">${icon(w.icon)}</span><span>${t(w.key, w.vars ?? {})}</span></p>`)}
     ${N.display ? outlookHtml(o, N) : ''}`);
   slot.hidden = false;
 }
