@@ -19,6 +19,24 @@
    green for done, amber for attention. Restyle the whole app from the tokens below.
    Colour always means something, and never on its own (an icon or word goes with it). */
 
+/* Devanagari reads smaller than Latin at the same size: enlarge only those letters (Hindi, Marathi),
+   so English, numbers and the layout stay exactly as they are. Uses the phone's own Devanagari font. */
+@font-face {
+  font-family: "Deva Up";
+  src: local("Noto Sans Devanagari"), local("NotoSansDevanagari-Regular"), local("Noto Sans Devanagari UI"),
+       local("Kohinoor Devanagari"), local("Devanagari Sangam MN"), local("Nirmala UI"), local("Mangal"),
+       local("Lohit Devanagari"), local("FreeSans");
+  unicode-range: U+0900-097F, U+A8E0-A8FF, U+1CD0-1CFF;
+  size-adjust: 114%;
+}
+@font-face {
+  font-family: "Deva Up";
+  font-weight: 600 900;
+  src: local("Noto Sans Devanagari Bold"), local("NotoSansDevanagari-Bold"), local("Kohinoor Devanagari Semibold"),
+       local("Devanagari Sangam MN Bold"), local("Nirmala UI Bold"), local("Mangal Bold"), local("FreeSans Bold"), local("FreeSansBold");
+  unicode-range: U+0900-097F, U+A8E0-A8FF, U+1CD0-1CFF;
+  size-adjust: 114%;
+}
 :root {
   /* colour: cool light surfaces, one blue for actions and selection, green for done/positive,
      amber for attention, red only for real problems. Text contrast on card/paper ≥ 4.5:1. */
@@ -39,7 +57,7 @@
   --margin-rule: transparent;
 
   /* type: one family (Inter; Noto Sans Devanagari for Marathi and Hindi), weights do the hierarchy */
-  --font-body: "Inter", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --font-body: "Inter", "Deva Up", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   --font-display: var(--font-body);
   --font-mono: var(--font-body);
   --t-xs: 12px; --t-sm: 13.5px; --t-md: 15px; --t-lg: 17px; --t-xl: 20px; --t-2xl: 23px;
