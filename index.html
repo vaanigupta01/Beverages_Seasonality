@@ -1650,6 +1650,18 @@ details.lb-row .lb-score { margin-left: auto; }
 .goal-gain { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px 1px 6px; border-radius: var(--pill); background: rgba(60, 201, 138, 0.16); animation: gain-glow 1.8s ease-out 400ms 1 both; }
 @keyframes gain-glow { 0% { box-shadow: 0 0 0 0 rgba(60, 201, 138, 0.6); transform: scale(0.9); } 30% { transform: scale(1.08); } 60% { transform: scale(1); } 100% { box-shadow: 0 0 0 10px rgba(60, 201, 138, 0); } }
 @media (prefers-reduced-motion: reduce) { .goal-gain { animation: none; } }
+
+/* leaderboard: 'i' next to each metric, with a definition bubble */
+.page-lb, .view { position: relative; }
+.tip-i { display: inline-grid; place-items: center; width: 15px; height: 15px; min-height: 0; margin-left: 4px; padding: 0; border: 0; border-radius: 50%; background: rgba(29, 91, 216, 0.12); color: var(--accent); font: italic 700 10px/1 Georgia, serif; vertical-align: 1px; cursor: pointer; }
+.lb-me .tip-i { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.lb-tile .tip-i { background: rgba(29, 91, 216, 0.12); color: var(--accent); }
+.tip-i.is-open { background: var(--accent); color: #fff; }
+.tip-bubble { position: absolute; z-index: 40; display: grid; gap: 3px; padding: 10px 12px; border-radius: 12px; background: #0f1c2e; color: #e8eef8; font-size: 12.5px; line-height: 1.45; box-shadow: 0 12px 28px -10px rgba(15, 28, 46, 0.55); animation: reward-in 160ms ease-out both; }
+.tip-bubble b { color: #fff; font-size: 12px; }
+.tip-bubble::before { content: ""; position: absolute; top: -6px; left: calc(var(--arrow, 50%) - 6px); border: 6px solid transparent; border-top: 0; border-bottom-color: #0f1c2e; }
+.lb-me .lb-tile .tip-i { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.lb-me .tip-i.is-open { background: #fff; color: var(--brand); }
 </style>
 </head>
 <body>
@@ -7510,6 +7522,9 @@ const METRICS = [
 const MEDAL = ['#f4c542', '#c9d1dc', '#d9925a'];
 const TINTS = ['#e8f0ff', '#e3f5ea', '#fff1dc', '#f0ebfb', '#fde8ee', '#e0f4f7'];
 
+/** A small 'i' next to a metric's name; tapping it shows what the metric means. */
+const info = (key) => html`<button type="button" class="tip-i" data-tip="${key}" aria-label="${t('f.lb.defs')}: ${t(`f.lb.short.${key}`)}">i</button>`;
+
 const value = (m, r) => (m.pct ? `${r[m.key]}%` : fmt.num(r[m.key]));
 const initials = (name) => String(name).split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
@@ -7528,12 +7543,12 @@ function render(root) {
             <p class="lb-me-name">${t('f.lb.youAre', { name: me.name })}</p>
             <p class="lb-me-gap">${ahead ? t('f.lb.gap', { gap: ahead.preSeasonPct - me.preSeasonPct, name: ahead.name.split(' ')[0] }) : t('f.lb.top')}</p>
           </div>
-          <span class="lb-me-pct"><b>${me.preSeasonPct}%</b><small>${t('f.lb.short.preSeasonPct')}</small></span>
+          <span class="lb-me-pct"><b>${me.preSeasonPct}%</b><small>${t('f.lb.short.preSeasonPct')}${info('preSeasonPct')}</small></span>
         </div>
-        <div class="lb-tiles">${METRICS.map((m) => html`<div class="lb-tile">${icon(m.icon)}<b>${value(m, me)}</b><span>${t(`f.lb.short.${m.key}`)}</span></div>`)}</div>
+        <div class="lb-tiles">${METRICS.map((m) => html`<div class="lb-tile">${icon(m.icon)}<b>${value(m, me)}</b><span>${t(`f.lb.short.${m.key}`)}${info(m.key)}</span></div>`)}</div>
       </section>
 
-      <p class="lb-list-head"><span>${t('f.lb.rep')}</span><span>${t('f.lb.short.preSeasonPct')}</span></p>
+      <p class="lb-list-head"><span>${t('f.lb.rep')}</span><span>${t('f.lb.short.preSeasonPct')}${info('preSeasonPct')}</span></p>
       <ol class="lb-list">
         ${rows.map((r, i) => html`<li class="${r.isMe ? 'is-me' : ''}">
           <details class="lb-row">
@@ -7548,13 +7563,33 @@ function render(root) {
         </li>`)}
       </ol>
 
-      <details class="card lb-defs">
-        <summary class="collapse-head"><span class="card-title">${icon('info')}<span>${t('f.lb.defs')}</span></span>${icon('chevron', 'collapse-chev')}</summary>
-        <div class="collapse-body">
-          ${['preSeasonPct', ...METRICS.map((m) => m.key)].map((k) => html`<details class="def"><summary>${t(`f.lb.short.${k}`)}${icon('chevron', 'collapse-chev')}</summary><p>${t(`f.lb.def.${k}`)}</p></details>`)}
-        </div>
-      </details>
     </div>`);
+
+  // One definition bubble at a time, under the 'i' that was tapped; any other tap closes it.
+  let bubble = null;
+  const close = () => { bubble?.remove(); bubble = null; view.querySelector('.tip-i.is-open')?.classList.remove('is-open'); };
+  view.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-tip]');
+    const wasOpen = btn?.classList.contains('is-open');
+    close();
+    if (!btn || wasOpen) return;
+    e.stopPropagation();
+    e.preventDefault();
+    btn.classList.add('is-open');
+    bubble = document.createElement('div');
+    bubble.className = 'tip-bubble';
+    bubble.setAttribute('role', 'tooltip');
+    bubble.innerHTML = String(html`<b>${t(`f.lb.short.${btn.dataset.tip}`)}</b><span>${t(`f.lb.def.${btn.dataset.tip}`)}</span>`);
+    view.append(bubble);
+    const r = btn.getBoundingClientRect();
+    const host = view.getBoundingClientRect();
+    const w = Math.min(280, host.width - 24);
+    const left = Math.max(12, Math.min(r.left + r.width / 2 - host.left - w / 2, host.width - w - 12));
+    bubble.style.width = `${w}px`;
+    bubble.style.left = `${left}px`;
+    bubble.style.top = `${r.bottom - host.top + 8}px`;
+    bubble.style.setProperty('--arrow', `${r.left + r.width / 2 - host.left - left}px`);
+  });
 }
 
 return { render };

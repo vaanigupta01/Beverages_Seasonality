@@ -1634,3 +1634,15 @@ details.lb-row .lb-score { margin-left: auto; }
 .goal-gain { display: inline-flex; align-items: center; gap: 3px; padding: 1px 8px 1px 6px; border-radius: var(--pill); background: rgba(60, 201, 138, 0.16); animation: gain-glow 1.8s ease-out 400ms 1 both; }
 @keyframes gain-glow { 0% { box-shadow: 0 0 0 0 rgba(60, 201, 138, 0.6); transform: scale(0.9); } 30% { transform: scale(1.08); } 60% { transform: scale(1); } 100% { box-shadow: 0 0 0 10px rgba(60, 201, 138, 0); } }
 @media (prefers-reduced-motion: reduce) { .goal-gain { animation: none; } }
+
+/* leaderboard: 'i' next to each metric, with a definition bubble */
+.page-lb, .view { position: relative; }
+.tip-i { display: inline-grid; place-items: center; width: 15px; height: 15px; min-height: 0; margin-left: 4px; padding: 0; border: 0; border-radius: 50%; background: rgba(29, 91, 216, 0.12); color: var(--accent); font: italic 700 10px/1 Georgia, serif; vertical-align: 1px; cursor: pointer; }
+.lb-me .tip-i { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.lb-tile .tip-i { background: rgba(29, 91, 216, 0.12); color: var(--accent); }
+.tip-i.is-open { background: var(--accent); color: #fff; }
+.tip-bubble { position: absolute; z-index: 40; display: grid; gap: 3px; padding: 10px 12px; border-radius: 12px; background: #0f1c2e; color: #e8eef8; font-size: 12.5px; line-height: 1.45; box-shadow: 0 12px 28px -10px rgba(15, 28, 46, 0.55); animation: reward-in 160ms ease-out both; }
+.tip-bubble b { color: #fff; font-size: 12px; }
+.tip-bubble::before { content: ""; position: absolute; top: -6px; left: calc(var(--arrow, 50%) - 6px); border: 6px solid transparent; border-top: 0; border-bottom-color: #0f1c2e; }
+.lb-me .lb-tile .tip-i { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.lb-me .tip-i.is-open { background: #fff; color: var(--brand); }
